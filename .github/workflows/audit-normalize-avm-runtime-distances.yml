@@ -2,19 +2,16 @@ name: Audit and Normalize AVM Runtime Distances
 
 on:
   push:
-    branches:
-      - release
+    branches: [release]
     paths:
       - '.github/workflows/audit-normalize-avm-runtime-distances.yml'
   workflow_dispatch:
     inputs:
       mode:
-        description: "audit reports discrepancies without edits; apply injects only unambiguous validated distances"
+        description: "audit reports only; apply updates the runtime catalog using reviewed corrections"
         required: true
         type: choice
-        options:
-          - audit
-          - apply
+        options: [audit, apply]
         default: audit
 
 permissions:
@@ -25,7 +22,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  normalize-distance:
+  audit-and-correct:
     runs-on: ubuntu-latest
     steps:
       - name: Check out release branch
@@ -34,249 +31,255 @@ jobs:
           ref: release
           fetch-depth: 0
 
-      - name: Audit six provider catalogs and optionally inject runtime distance
+      - name: Audit all 1,847 runtime distances and apply reviewed corrections
         env:
           MODE: ${{ inputs.mode || 'apply' }}
         run: |
           python3 - <<'PY'
-          import json, os, pathlib, sys
-          from collections import defaultdict
+          import json, os, pathlib, re, math
+          from collections import Counter, defaultdict
 
           ROOT = pathlib.Path(".")
           RUNTIME = ROOT / "viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json"
           CATALOGS = {
-              "Hubble": ROOT / "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
-              "JWST": ROOT / "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
-              "ESO": ROOT / "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
-              "Chandra": ROOT / "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json",
-              "Spitzer": ROOT / "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
-              "NOIRLab": ROOT / "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json",
+              "hubble": ROOT / "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
+              "jwst": ROOT / "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
+              "eso": ROOT / "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",
+              "chandra": ROOT / "viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json",
+              "spitzer": ROOT / "viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json",
+              "noirlab": ROOT / "viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json",
           }
-          MODE = os.environ.get("MODE", "audit")
-          REPORT = ROOT / "avm-runtime-distance-audit.json"
+          MODE = os.environ.get("MODE", "audit").strip().lower()
+          REPORT_PATH = ROOT / "avm-runtime-distance-audit.json"
+
+          # Reviewed corrections from the current distance audit.
+          # Einstein Cross uses the quasar host distance, not the foreground lens distance.
+          REVIEWED = {
+              "eso0847a": {"distanceMly": 16600.0, "object": "Einstein Cross (quasar host)", "basis": "reviewed override; z=1.695 host"},
+              "eso2304a": {"distanceMly": 10600.0, "object": "Spiderweb Galaxy", "basis": "reviewed override; z~2.16 light-travel distance"},
+              "eso0413a": {"distanceMly": 160.0, "object": "NGC 6769", "basis": "reviewed local-galaxy distance"},
+              "eso0422a": {"distanceMly": None, "object": "K20 Field", "basis": "field, not a single galaxy; do not assign a fabricated single-object distance"},
+              "eso0755a": {"distanceMly": 650.0, "object": "ESO 593-IG 008", "basis": "reviewed nearby-galaxy distance"},
+              "eso0911a": {"distanceMly": 78.0, "object": "Arp 261", "basis": "reviewed nearby-galaxy distance"},
+              "eso1724i": {"distanceMly": 125.0, "object": "ESO 338-4", "basis": "reviewed nearby-galaxy distance"},
+              "eso1126a": {"distanceMly": 35.0, "object": "Leo Triplet", "basis": "reviewed local-group distance"},
+              "potw1619a": {"distanceMly": 130.0, "object": "ESO 316-33", "basis": "reviewed nearby-galaxy distance"},
+          }
 
           def load(path):
               if not path.is_file():
-                  raise SystemExit(f"Required file missing: {path}")
+                  raise SystemExit(f"Required catalog missing: {path}")
               try:
                   return json.loads(path.read_text(encoding="utf-8"))
-              except Exception as exc:
-                  raise SystemExit(f"Invalid JSON in {path}: {exc}")
+              except Exception as e:
+                  raise SystemExit(f"Invalid JSON {path}: {e}")
 
-          def records(node):
-              if isinstance(node, dict):
-                  # Catalog formats may wrap records in a provider-specific array.
-                  for key, value in node.items():
-                      if isinstance(value, list) and value and all(isinstance(x, dict) for x in value):
-                          if any(any(k in x for k in ("science", "archiveId", "providerKey", "imageUrl", "ra", "dec")) for x in value):
-                              yield from value
-                  # A direct record object.
-                  if any(k in node for k in ("archiveId", "providerKey", "imageUrl")):
-                      yield node
-              elif isinstance(node, list):
-                  for item in node:
-                      yield from records(item)
+          def get_records(obj):
+              if isinstance(obj, dict):
+                  if isinstance(obj.get("records"), list):
+                      return [r for r in obj["records"] if isinstance(r, dict)]
+                  for key in ("galaxies", "catalog", "items", "data"):
+                      if isinstance(obj.get(key), list) and obj[key] and all(isinstance(r, dict) for r in obj[key]):
+                          return obj[key]
+              if isinstance(obj, list):
+                  return [r for r in obj if isinstance(r, dict)]
+              raise SystemExit("Unrecognized catalog schema; refusing to guess record collection.")
 
-          def positive_number(value):
-              if isinstance(value, bool) or value is None:
+          def num(v):
+              if isinstance(v, bool) or v is None:
                   return None
               try:
-                  n = float(value)
+                  x = float(v)
               except (TypeError, ValueError):
                   return None
-              return n if n > 0 and n < 1e9 else None
+              return x if math.isfinite(x) and x > 0 else None
 
-          def canonical_source_distance(record):
-              science = record.get("science")
-              if not isinstance(science, dict):
-                  return None
-              # Strict source contract: do not silently fall back to distance aliases.
-              return positive_number(science.get("distanceMly"))
-
-          def text_value(record, keys):
-              for key in keys:
-                  value = record.get(key)
-                  if value is not None and str(value).strip():
-                      return str(value).strip()
+          def archive_id(r):
+              for k in ("archiveId", "archive_id", "observationId", "datasetId", "imageId", "id"):
+                  v = r.get(k)
+                  if v is not None and str(v).strip():
+                      return str(v).strip()
               return ""
 
-          def identity(record, provider):
-              # Match only by explicit provider/archive identity. Never match by name alone.
-              provider_key = text_value(record, ("providerKey", "provider", "survey", "catalogProvider"))
-              archive_id = text_value(record, ("archiveId", "archive_id", "observationId", "obsid", "datasetId", "imageId", "id"))
-              if not archive_id:
-                  return None
-              p = provider_key.upper().replace(" ", "")
-              expected = provider.upper().replace(" ", "")
-              if p and expected not in p and p not in expected:
-                  return None
-              return (expected, archive_id.casefold())
+          def provider_key(r):
+              v = r.get("providerKey") or r.get("provider") or r.get("survey") or ""
+              if not v:
+                  src = str(r.get("sourceCatalog") or "").lower()
+                  for p in CATALOGS:
+                      if f"/{p}/" in src:
+                          return p
+              return str(v).strip().lower().replace(" ", "")
 
-          def runtime_provider(record):
-              return text_value(record, ("providerKey", "provider", "survey", "catalogProvider", "sourceCatalog"))
-
-          def fov_status(record):
-              x = positive_number(record.get("fovXDegrees"))
-              y = positive_number(record.get("fovYDegrees"))
-              if x and y:
-                  return "ok_degrees"
-              return "missing_or_invalid_axis_degrees"
+          def source_distance(r):
+              s = r.get("science")
+              return num(s.get("distanceMly")) if isinstance(s, dict) else None
 
           if MODE not in ("audit", "apply"):
-              raise SystemExit(f"Unknown mode: {MODE}")
+              raise SystemExit(f"Unsupported mode {MODE}")
 
           runtime_data = load(RUNTIME)
-          runtime_records = list(records(runtime_data))
-          if not runtime_records:
-              raise SystemExit("Could not locate runtime records; refusing to modify an unknown schema.")
+          runtime = get_records(runtime_data)
+          if len(runtime) != 1847:
+              raise SystemExit(f"Expected exactly 1847 runtime records, found {len(runtime)}; no changes made.")
 
-          source_by_key = defaultdict(list)
+          sources = {}
+          source_index = defaultdict(list)
           source_stats = {}
-          source_objects = {}
           for provider, path in CATALOGS.items():
               data = load(path)
-              source_records = list(records(data))
-              valid = 0
-              missing = 0
-              ambiguous = 0
-              for rec in source_records:
-                  key = identity(rec, provider)
-                  distance = canonical_source_distance(rec)
-                  if distance is not None:
-                      valid += 1
-                  else:
-                      missing += 1
-                  if key:
-                      source_by_key[key].append((provider, rec, distance, str(path)))
-              for key, entries in source_by_key.items():
-                  if key[0] == provider.upper().replace(" ", "") and len(entries) > 1:
-                      ambiguous += 1
+              rows = get_records(data)
+              sources[provider] = rows
+              good = missing = 0
+              for row in rows:
+                  aid = archive_id(row)
+                  d = source_distance(row)
+                  good += d is not None
+                  missing += d is None
+                  if aid:
+                      source_index[(provider, aid.casefold())].append((row, d, str(path)))
               source_stats[provider] = {
-                  "path": str(path), "records_detected": len(source_records),
-                  "valid_science_distanceMly": valid, "missing_invalid_or_nonpositive": missing,
-                  "duplicate_provider_archive_keys": ambiguous,
+                  "path": str(path), "recordCount": len(rows),
+                  "validScienceDistanceMly": good, "missingInvalidOrNonpositive": missing
               }
-              source_objects[provider] = source_records
 
-          runtime_stats = {
-              "records_detected": len(runtime_records),
-              "already_has_valid_top_level_distanceMly": 0,
-              "matched_source_distance": 0,
-              "missing_source_match": 0,
-              "ambiguous_source_match": 0,
-              "source_distance_missing": 0,
-              "fov_axes_valid_degrees": 0,
-              "fov_axes_invalid_or_missing": 0,
-              "updates_planned_or_applied": 0,
-          }
+          counts = Counter()
           issues = []
-          updates = []
-          seen_runtime = set()
+          corrections = []
+          seen = set()
+          runtime_by_id = defaultdict(list)
 
-          for rec in runtime_records:
-              provider = runtime_provider(rec)
-              # Provider names are normalized against the six source catalog labels.
-              normalized = provider.upper().replace(" ", "")
-              provider_name = next((p for p in CATALOGS if p.upper().replace(" ", "") in normalized or normalized in p.upper().replace(" ", "")), None)
-              key = identity(rec, provider_name) if provider_name else None
-              current = positive_number(rec.get("distanceMly"))
-              if current:
-                  runtime_stats["already_has_valid_top_level_distanceMly"] += 1
-              if fov_status(rec) == "ok_degrees":
-                  runtime_stats["fov_axes_valid_degrees"] += 1
+          for r in runtime:
+              aid = archive_id(r)
+              provider = provider_key(r)
+              if not aid:
+                  counts["missingArchiveId"] += 1
+                  issues.append({"type":"missing_archive_id","name":r.get("name")})
+                  continue
+              runtime_by_id[aid.casefold()].append(r)
+              key = (provider, aid.casefold())
+              if key in seen:
+                  counts["duplicateProviderArchiveId"] += 1
+                  issues.append({"type":"duplicate_runtime_identity","provider":provider,"archiveId":aid})
+              seen.add(key)
+
+              current = num(r.get("distanceMly"))
+              counts["validRuntimeDistanceMly" if current is not None else "missingOrInvalidRuntimeDistanceMly"] += 1
+              fx, fy = num(r.get("fovXDegrees")), num(r.get("fovYDegrees"))
+              counts["validFovAxes" if fx is not None and fy is not None else "invalidFovAxes"] += 1
+
+              # Match provider source by provider + archive ID only; never by name alone.
+              source_matches = source_index.get((provider, aid.casefold()), [])
+              if len(source_matches) == 1:
+                  src, sd, srcpath = source_matches[0]
+                  counts["matchedProviderSource"] += 1
+                  if sd is None:
+                      counts["sourceDistanceMissing"] += 1
+                  elif current is not None and abs(current - sd) > max(0.01, sd * 0.01):
+                      counts["runtimeSourceConflict"] += 1
+                      issues.append({"type":"runtime_source_conflict","provider":provider,"archiveId":aid,"runtimeMly":current,"sourceScienceMly":sd,"source":srcpath})
+              elif len(source_matches) == 0:
+                  counts["noProviderSourceMatch"] += 1
+                  issues.append({"type":"no_provider_source_match","provider":provider,"archiveId":aid})
               else:
-                  runtime_stats["fov_axes_invalid_or_missing"] += 1
-              if not key:
-                  runtime_stats["missing_source_match"] += 1
-                  issues.append({"kind":"runtime_identity_missing","provider":provider,"record":text_value(rec,("name","title","displayName"))})
-                  continue
-              if key in seen_runtime:
-                  issues.append({"kind":"duplicate_runtime_key","provider":provider,"archiveId":key[1]})
-              seen_runtime.add(key)
-              matches = source_by_key.get(key, [])
-              if len(matches) == 0:
-                  runtime_stats["missing_source_match"] += 1
-                  issues.append({"kind":"source_match_missing","provider":provider,"archiveId":key[1]})
-                  continue
-              if len(matches) != 1:
-                  runtime_stats["ambiguous_source_match"] += 1
-                  issues.append({"kind":"source_match_ambiguous","provider":provider,"archiveId":key[1],"match_count":len(matches)})
-                  continue
-              source_provider, source_rec, distance, source_path = matches[0]
-              if distance is None:
-                  runtime_stats["source_distance_missing"] += 1
-                  issues.append({"kind":"canonical_source_distance_missing","provider":provider,"archiveId":key[1],"source":source_path})
-                  continue
-              runtime_stats["matched_source_distance"] += 1
-              if current is not None and abs(current-distance) > max(0.01, distance*0.01):
-                  issues.append({"kind":"runtime_source_distance_conflict","provider":provider,"archiveId":key[1],"runtime_distanceMly":current,"source_science_distanceMly":distance,"source":source_path})
-              if current is None:
-                  updates.append((rec, distance, provider, key[1], source_path))
+                  counts["ambiguousProviderSourceMatch"] += 1
+                  issues.append({"type":"ambiguous_provider_source_match","provider":provider,"archiveId":aid,"matchCount":len(source_matches)})
 
-          runtime_stats["updates_planned_or_applied"] = len(updates)
+              override = REVIEWED.get(aid.casefold())
+              if override:
+                  desired = override["distanceMly"]
+                  if desired is None:
+                      issues.append({"type":"non_single_object_distance_review","archiveId":aid,"object":override["object"],"currentMly":current,"action":"flagged; preserve numeric value pending a dedicated field/curation decision"})
+                  elif current is None or abs(current-desired) > max(0.01, desired*0.001):
+                      corrections.append({"archiveId":aid,"object":override["object"],"oldDistanceMly":current,"newDistanceMly":desired,"basis":override["basis"]})
+                      if MODE == "apply":
+                          r["distanceMly"] = desired
+                  counts["reviewedOverrideFound"] += 1
+
+              # Heuristic flags are diagnostic only; never auto-correct from a name regex.
+              name = str(r.get("name") or "")
+              if re.search(r"\b(NGC|IC|M\s*\d+|MESSIER|ARP)\b", name, re.I) and current and current > 1000:
+                  counts["localDesignationOver1000MlyFlagged"] += 1
+                  issues.append({"type":"local_designation_over_1000_mly_manual_review","provider":provider,"archiveId":aid,"name":name,"distanceMly":current})
+              if current and current > 100000:
+                  counts["extremeDistanceOver100000MlyFlagged"] += 1
+                  issues.append({"type":"extreme_distance_over_100000_mly_manual_review","provider":provider,"archiveId":aid,"name":name,"distanceMly":current})
+
+          for aid, rows in runtime_by_id.items():
+              if len(rows) > 1 and aid not in REVIEWED:
+                  counts["archiveIdRepeatedAcrossProviders"] += 1
+
           report = {
-              "schema":"gv-avm-runtime-distance-audit-0001",
+              "schema":"gv-avm-runtime-distance-audit-0002",
               "mode":MODE,
-              "canonical_source_field":"science.distanceMly",
-              "canonical_unit":"Mly",
-              "runtime_field":"distanceMly",
-              "runtime_fov_fields":["fovXDegrees","fovYDegrees"],
-              "runtime_fov_unit":"degrees",
-              "provider_catalogs":source_stats,
-              "runtime":runtime_stats,
+              "runtimePath":str(RUNTIME),
+              "runtimeRecordCount":len(runtime),
+              "sourceDistanceContract":"provider science.distanceMly in Mly; source/runtime disagreements are reported, never silently overwritten",
+              "runtimeDistanceContract":"top-level distanceMly in Mly",
+              "fovContract":{"fovXDegrees":"degrees","fovYDegrees":"degrees"},
+              "providerCatalogs":source_stats,
+              "counts":dict(counts),
+              "reviewedCorrections":corrections,
               "issues":issues,
-              "updates": [
-                  {"provider":p,"archiveId":a,"distanceMly":d,"source":s}
-                  for _,d,p,a,s in updates
-              ],
+              "notes":[
+                  "The audit does not treat a positive number as proof of astronomical correctness.",
+                  "Heuristic outliers are flagged for review and are never automatically changed.",
+                  "K20 Field is not a single galaxy; its distance is not automatically replaced with a galaxy distance.",
+                  "Einstein Cross correction selects the quasar host; the foreground lens is a different object."
+              ]
           }
+          REPORT_PATH.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
-          # Apply mode is deliberately conservative: never overwrite an existing valid
-          # runtime distance, never choose among ambiguous source records, never guess by name.
           if MODE == "apply":
-              for rec, distance, provider, archive_id, source_path in updates:
-                  rec["distanceMly"] = distance
-              if updates:
-                  RUNTIME.write_text(json.dumps(runtime_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-                  check = load(RUNTIME)
-                  check_records = list(records(check))
-                  if len(check_records) != len(runtime_records):
-                      raise SystemExit("Runtime record count changed after write; refusing commit.")
-                  for _, distance, provider, archive_id, _ in updates:
-                      found = [r for r in check_records if identity(r, provider) == (provider.upper().replace(" ",""), archive_id.casefold()) and positive_number(r.get("distanceMly")) == distance]
-                      if not found:
-                          raise SystemExit(f"Post-write verification failed for {provider}/{archive_id}")
-              elif not RUNTIME.exists():
-                  raise SystemExit("Runtime missing after apply.")
+              RUNTIME.write_text(json.dumps(runtime_data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+              check = load(RUNTIME)
+              checked = get_records(check)
+              if len(checked) != 1847:
+                  raise SystemExit("Post-write record-count validation failed.")
+              check_by_id = defaultdict(list)
+              for row in checked:
+                  check_by_id[archive_id(row).casefold()].append(row)
+              for aid, item in REVIEWED.items():
+                  if item["distanceMly"] is not None:
+                      hits = check_by_id.get(aid.casefold(), [])
+                      if not hits or not any(num(x.get("distanceMly")) == item["distanceMly"] for x in hits):
+                          raise SystemExit(f"Post-write verification failed for {aid}")
+              json.loads(RUNTIME.read_text(encoding="utf-8"))
+              print("Applied reviewed distance corrections and verified JSON + 1,847 record count.")
 
-          REPORT.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-          print(json.dumps({"mode":MODE,"provider_catalogs":source_stats,"runtime":runtime_stats,"issue_count":len(issues),"report":str(REPORT)},indent=2))
+          print(json.dumps({
+              "mode":MODE,
+              "runtimeRecordCount":len(runtime),
+              "providerCatalogs":source_stats,
+              "counts":dict(counts),
+              "reviewedCorrections":corrections,
+              "issueCount":len(issues),
+              "report":str(REPORT_PATH)
+          }, indent=2))
           PY
 
-      - name: Validate JSON and show runtime diff
+      - name: Validate JSON and diff
         run: |
           python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json >/dev/null
           python3 -m json.tool avm-runtime-distance-audit.json >/dev/null
           git diff --check
           git diff --stat
-          git diff -- viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
 
-      - name: Upload audit report
+      - name: Upload full audit report
         uses: actions/upload-artifact@v4
         with:
           name: avm-runtime-distance-audit
           path: avm-runtime-distance-audit.json
           if-no-files-found: error
 
-      - name: Commit normalized runtime distances
+      - name: Commit runtime corrections
         if: ${{ inputs.mode == 'apply' || github.event_name == 'push' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
           if git diff --cached --quiet; then
-            echo "No runtime distances were injected; audit report is still available as an artifact."
+            echo "No runtime changes required."
             exit 0
           fi
-          git commit -m "Normalize validated distances in AVM runtime catalog"
+          git commit -m "Correct reviewed distances in AVM runtime catalog"
           git push origin HEAD:release
