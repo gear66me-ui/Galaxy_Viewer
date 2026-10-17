@@ -184,7 +184,7 @@ jobs:
                   counts["ambiguousProviderSourceMatch"] += 1
                   issues.append({"type":"ambiguous_provider_source_match","provider":provider,"archiveId":aid,"matchCount":len(source_matches)})
 
-              override = REVIEWED.get(aid.casefold())
+              override = REVIEWED.get(aid.casefold()) if provider == "eso" else None
               if override:
                   desired = override["distanceMly"]
                   if desired is None:
@@ -241,7 +241,7 @@ jobs:
               for aid, item in REVIEWED.items():
                   if item["distanceMly"] is not None:
                       hits = check_by_id.get(aid.casefold(), [])
-                      if not hits or not any(num(x.get("distanceMly")) == item["distanceMly"] for x in hits):
+                      if not hits or not any(provider_key(x) == "eso" and num(x.get("distanceMly")) == item["distanceMly"] for x in hits):
                           raise SystemExit(f"Post-write verification failed for {aid}")
               json.loads(RUNTIME.read_text(encoding="utf-8"))
               print("Applied reviewed distance corrections and verified JSON + 1,847 record count.")
