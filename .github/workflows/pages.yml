@@ -56,8 +56,8 @@ jobs:
             exit 0
           fi
 
-          # Workflow-only commits do not change the deployed site.
-          if ! grep -Ev '^\.github/workflows/' <<< "${files}" | grep -q .; then
+          # Repository automation/tooling changes do not change the deployed site.
+          if ! grep -Ev '^\.github/' <<< "${files}" | grep -q .; then
             echo "workflow_only=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
