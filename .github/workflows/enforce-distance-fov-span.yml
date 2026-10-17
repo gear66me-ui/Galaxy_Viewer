@@ -42,13 +42,13 @@ jobs:
               raise SystemExit(f"STOP: expected exactly one old size() function, found {count}; no changes made")
           source = source.replace(old, new)
           # Keep the module available to the release runtime after this commit.
-          source = source.replace("const VERSION='0055';", "const VERSION='0056';")
+          source = source.replace("const VERSION='0055';", "const VERSION='0055';")
           module.write_text(source, encoding="utf-8")
 
           runtime = Path("viewer/RC-V1.0.0.8.py")
           text = runtime.read_text(encoding="utf-8")
           import re
-          pattern = r"destinationPresentationUrl:'https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@[^']+/viewer/modules/destination-presentation/gv-destination-presentation-[^']+\\.js'"
+          pattern = r"destinationPresentationUrl:'[^']*gv-destination-presentation-[^']*'"
           replacement = "destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0055.js'"
           text, replacements = re.subn(pattern, replacement, text)
           if replacements != 1:
