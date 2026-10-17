@@ -47,11 +47,12 @@ jobs:
 
           runtime = Path("viewer/RC-V1.0.0.8.py")
           text = runtime.read_text(encoding="utf-8")
-          old_url = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d4c95ace9c0ec81e948b2440ead7b06c269b344d/viewer/modules/destination-presentation/gv-destination-presentation-0055.js"
-          new_url = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0055.js"
-          if old_url not in text:
-              raise SystemExit("STOP: expected pinned destination module URL not found in viewer/RC-V1.0.0.8.py")
-          text = text.replace(old_url, new_url)
+          import re
+          pattern = r"destinationPresentationUrl:'https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@[^']+/viewer/modules/destination-presentation/gv-destination-presentation-[^']+\\.js'"
+          replacement = "destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0055.js'"
+          text, replacements = re.subn(pattern, replacement, text)
+          if replacements != 1:
+              raise SystemExit(f"STOP: expected exactly one destinationPresentationUrl entry, found {replacements}")
           runtime.write_text(text, encoding="utf-8")
 
           # Static guards: size calculation must not read precomputed physical sizes.
