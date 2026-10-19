@@ -60,7 +60,7 @@ jobs:
             "heic1507d": {"name":"2MASX J15100402+0740370", "z":0.04584, "source":"NASA/ESA Hubble object redshift"},
             "heic1507h": {"name":"UGC 11185", "z":0.0412, "source":"NASA/ESA Hubble object redshift"},
             "heic1507c": {"name":"NGC 5972", "z":0.0297, "source":"NASA/ESA Hubble object redshift"},
-            "gemini0302a": {"name":"HCG 87", "z":None, "source":"requires component-specific redshift verification"},
+            "gemini0302a": {"name":"HCG 87", "z":0.0296, "source":"Hickson compact-group median heliocentric velocity; use group/foreground redshift, not background source"},
             "iotw2342c": {"name":"NGC 6240", "z":0.02448, "source":"published nearby-galaxy redshift; foreground galaxy"},
             "potw2024a": {"name":"PLCK G045.1+61.1", "z":3.436761, "source":"published high-redshift cluster redshift"},
             "noao-n4935mandel": {"name":"NGC 4935", "z":0.021329, "source":"published galaxy redshift"}
