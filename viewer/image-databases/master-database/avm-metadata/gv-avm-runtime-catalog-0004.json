@@ -49394,9 +49394,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 2778.361,
+      "distanceMly": 19500.0,
       "science": {},
-      "redshift": 0.202
+      "redshift": 2.522536
     },
     {
       "providerKey": "hubble",
