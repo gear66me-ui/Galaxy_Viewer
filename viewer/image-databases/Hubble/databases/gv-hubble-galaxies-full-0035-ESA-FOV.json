@@ -84155,7 +84155,7 @@
       "title": "X-rays, dark matter and galaxies in cluster Abell 2744",
       "ra": 3.58572223295,
       "dec": -30.399954521,
-      "distance": "298085.4 million light-years",
+      "distance": "4.119 billion light-years",
       "constellation": "Sculptor",
       "fieldOfView": "6.7153 x 6.7145 arcminutes",
       "orientation": "AVM/WCS rotation 0.040000 degrees",
@@ -84180,11 +84180,11 @@
         "None"
       ],
       "science": {
-        "distanceMly": 298085.408042,
-        "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
+        "distanceMly": 4119.1906,
+        "distanceMethod": "FLRW_comoving_radial_distance_flat_lcdm_H0_67.6_Om_0.315_from_z_0.308",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "298085.4 million light-years",
+        "distanceDisplay": "4.119 billion light-years",
         "distanceEstimated": true,
         "sizeKly": [
           582280.05,
@@ -84200,10 +84200,10 @@
         "ageEstimated": true,
         "ageDisplay": "EST. 3.47 GYR",
         "ageEvidence": null,
-        "redshift": null,
-        "redshiftDisplay": null,
-        "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshift": 0.308,
+        "redshiftDisplay": "z=0.308",
+        "redshiftEstimated": false,
+        "redshiftMethod": "ESA_Hubble_authoritative_redshift"
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "Abell 2744",
@@ -86056,7 +86056,7 @@
       "title": "Galaxy cluster Abell 2744 with dark matter map",
       "ra": 3.59334685309,
       "dec": -30.393633191,
-      "distance": "298085.4 million light-years",
+      "distance": "4.119 billion light-years",
       "constellation": "Sculptor",
       "fieldOfView": "5.9202 x 5.9547 arcminutes",
       "orientation": "AVM/WCS rotation 0.000000 degrees",
@@ -86077,11 +86077,11 @@
         "FORS1"
       ],
       "science": {
-        "distanceMly": 298085.408042,
-        "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
+        "distanceMly": 4119.1906,
+        "distanceMethod": "FLRW_comoving_radial_distance_flat_lcdm_H0_67.6_Om_0.315_from_z_0.308",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "298085.4 million light-years",
+        "distanceDisplay": "4.119 billion light-years",
         "distanceEstimated": true,
         "sizeKly": [
           516326.195,
@@ -86097,10 +86097,10 @@
         "ageEstimated": true,
         "ageDisplay": "EST. 3.47 GYR",
         "ageEvidence": null,
-        "redshift": null,
-        "redshiftDisplay": null,
-        "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshift": 0.308,
+        "redshiftDisplay": "z=0.308",
+        "redshiftEstimated": false,
+        "redshiftMethod": "ESA_Hubble_authoritative_redshift"
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "Abell 2744",
@@ -99333,7 +99333,7 @@
       "title": "A spacetime magnifying glass",
       "ra": 344.700696798,
       "dec": -34.8018378407,
-      "distance": "308717 million light-years",
+      "distance": "4.168 billion light-years",
       "constellation": "Pisces Austrinus",
       "fieldOfView": "2.2684 x 2.0157 arcminutes",
       "orientation": "AVM/WCS rotation 107.600000 degrees",
@@ -99355,11 +99355,11 @@
         "WFC3"
       ],
       "science": {
-        "distanceMly": 308716.98717,
-        "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
+        "distanceMly": 4168.209233,
+        "distanceMethod": "FLRW_comoving_radial_distance_flat_lcdm_H0_67.6_Om_0.315_from_z_0.312",
         "distanceEvidence": null,
         "distanceRangeMly": null,
-        "distanceDisplay": "308717 million light-years",
+        "distanceDisplay": "4.168 billion light-years",
         "distanceEstimated": true,
         "sizeKly": [
           203704.691,
@@ -99375,10 +99375,10 @@
         "ageEstimated": true,
         "ageDisplay": "EST. 3.57 GYR",
         "ageEvidence": null,
-        "redshift": null,
-        "redshiftDisplay": null,
-        "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshift": 0.312,
+        "redshiftDisplay": "z=0.312",
+        "redshiftEstimated": false,
+        "redshiftMethod": "ESA_Hubble_authoritative_redshift"
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "Abell S1077",
