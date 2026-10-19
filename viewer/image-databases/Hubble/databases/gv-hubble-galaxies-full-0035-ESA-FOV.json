@@ -93306,7 +93306,7 @@
       "title": "Galaxy cluster RCS2 032727-132623 (uncropped)",
       "ra": 51.868372669,
       "dec": -13.443448478,
-      "distance": "547083 million light-years",
+      "distance": 7029.261,
       "constellation": "Eridanus",
       "fieldOfView": "1.7962 x 1.7632 arcminutes",
       "orientation": "AVM/WCS rotation 52.956938 degrees",
@@ -93327,7 +93327,7 @@
         "WFC3"
       ],
       "science": {
-        "distanceMly": 547083.032473,
+        "distanceMly": 7029.261,
         "distanceMethod": "NED_OverviewOfObject_D_3K_CMB",
         "distanceEvidence": null,
         "distanceRangeMly": null,
@@ -93347,10 +93347,10 @@
         "ageEstimated": true,
         "ageDisplay": "EST. 5.45 GYR",
         "ageEvidence": null,
-        "redshift": null,
-        "redshiftDisplay": null,
-        "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshift": 0.5637,
+        "redshiftDisplay": 0.5637,
+        "redshiftEstimated": 0.5637,
+        "redshiftMethod": 0.5637
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "RCS2 032727-132623",
