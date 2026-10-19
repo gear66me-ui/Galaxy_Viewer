@@ -289,7 +289,7 @@
       ],
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.7943,
+      "distanceMly": 122.9152925,
       "science": {}
     },
     {
@@ -2615,7 +2615,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 12418.132387,
+      "distanceMly": 12418.13239,
       "science": {}
     },
     {
@@ -2717,7 +2717,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 13306.535291,
+      "distanceMly": 13306.53529,
       "science": {}
     },
     {
@@ -3441,7 +3441,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 1656161.534052,
+      "distanceMly": 1656161.534,
       "science": {}
     },
     {
@@ -3475,7 +3475,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.00003,
+      "distanceMly": 0.00230592559,
       "science": {}
     },
     {
@@ -4302,7 +4302,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 24.9673,
+      "distanceMly": 72.40671585,
       "science": {}
     },
     {
@@ -5536,7 +5536,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.003,
+      "distanceMly": 0.01242003486,
       "science": {}
     },
     {
@@ -6465,7 +6465,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 800,
+      "distanceMly": 0.00129554548,
       "science": {}
     },
     {
@@ -7212,7 +7212,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 2111696.673324,
+      "distanceMly": 2111696.673,
       "science": {}
     },
     {
@@ -8537,7 +8537,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 30.5935,
+      "distanceMly": 83.49603269,
       "science": {}
     },
     {
@@ -9250,7 +9250,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 16.5035,
+      "distanceMly": 81.53909443,
       "science": {}
     },
     {
@@ -9284,7 +9284,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 15612.505381,
+      "distanceMly": 15612.50538,
       "science": {}
     },
     {
@@ -15442,7 +15442,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 23.1571,
+      "distanceMly": 53.52226158,
       "science": {}
     },
     {
@@ -15555,7 +15555,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 38.8126,
+      "distanceMly": 90.671473,
       "science": {}
     },
     {
@@ -16908,7 +16908,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 14.0573,
+      "distanceMly": 31.96332501,
       "science": {}
     },
     {
@@ -19107,7 +19107,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 31.5882,
+      "distanceMly": 126.3855964,
       "science": {}
     },
     {
@@ -20047,7 +20047,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 16.5035,
+      "distanceMly": 81.53909443,
       "science": {}
     },
     {
@@ -24532,7 +24532,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 116.764,
+      "distanceMly": 241.5187977,
       "science": {}
     },
     {
@@ -35170,7 +35170,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 29.191,
+      "distanceMly": 74.36365412,
       "science": {}
     },
     {
@@ -37379,7 +37379,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.003,
+      "distanceMly": 0.01242003486,
       "science": {}
     },
     {
@@ -37447,7 +37447,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 80.7237,
+      "distanceMly": 163.0781889,
       "science": {}
     },
     {
@@ -38073,7 +38073,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 12696.052727,
+      "distanceMly": 12696.05273,
       "science": {}
     },
     {
@@ -39002,7 +39002,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.13,
+      "distanceMly": 536.3641631,
       "science": {}
     },
     {
@@ -39070,7 +39070,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.01,
+      "distanceMly": 424.6556038,
       "science": {}
     },
     {
@@ -39716,7 +39716,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.016,
+      "distanceMly": 571.9152083,
       "science": {}
     },
     {
@@ -40599,7 +40599,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 298085.408042,
+      "distanceMly": 298085.408,
       "science": {}
     },
     {
@@ -41347,7 +41347,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 298085.408042,
+      "distanceMly": 298085.408,
       "science": {}
     },
     {
@@ -41381,7 +41381,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 402117.496497,
+      "distanceMly": 402117.4965,
       "science": {}
     },
     {
@@ -41517,7 +41517,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 83895.651573,
+      "distanceMly": 83895.65157,
       "science": {}
     },
     {
@@ -41551,7 +41551,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 29392.687508,
+      "distanceMly": 29392.68751,
       "science": {}
     },
     {
@@ -41619,7 +41619,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 47577.021096,
+      "distanceMly": 47577.0211,
       "science": {}
     },
     {
@@ -41687,7 +41687,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 39745.832359,
+      "distanceMly": 39745.83236,
       "science": {}
     },
     {
@@ -41993,7 +41993,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 1363043.095085,
+      "distanceMly": 1363043.095,
       "science": {}
     },
     {
@@ -42027,7 +42027,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 640773.882075,
+      "distanceMly": 640773.8821,
       "science": {}
     },
     {
@@ -42061,7 +42061,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 1655261.085976,
+      "distanceMly": 1655261.086,
       "science": {}
     },
     {
@@ -42586,7 +42586,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0001,
+      "distanceMly": 0.005088039492,
       "science": {}
     },
     {
@@ -42654,7 +42654,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.003,
+      "distanceMly": 0.006250668421,
       "science": {}
     },
     {
@@ -42892,7 +42892,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.002,
+      "distanceMly": 0.005054337101,
       "science": {}
     },
     {
@@ -44218,7 +44218,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 547083.032473,
+      "distanceMly": 547083.0325,
       "science": {}
     },
     {
@@ -44875,7 +44875,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 977.099932,
+      "distanceMly": 0.007703813641,
       "science": {}
     },
     {
@@ -44909,7 +44909,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0033,
+      "distanceMly": 0.01273966811,
       "science": {}
     },
     {
@@ -44943,7 +44943,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0025,
+      "distanceMly": 0.006099124263,
       "science": {}
     },
     {
@@ -44977,7 +44977,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0025,
+      "distanceMly": 0.006099124263,
       "science": {}
     },
     {
@@ -45011,7 +45011,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0018,
+      "distanceMly": 0.003610551101,
       "science": {}
     },
     {
@@ -45079,7 +45079,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0022,
+      "distanceMly": 0.00516191277,
       "science": {}
     },
     {
@@ -45147,7 +45147,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0014,
+      "distanceMly": 0.004321572005,
       "science": {}
     },
     {
@@ -45521,7 +45521,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.002,
+      "distanceMly": 0.004634648696,
       "science": {}
     },
     {
@@ -46138,7 +46138,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.003,
+      "distanceMly": 0.01171716787,
       "science": {}
     },
     {
@@ -46172,7 +46172,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 977.099932,
+      "distanceMly": 0.007703813641,
       "science": {}
     },
     {
@@ -46206,7 +46206,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.00006,
+      "distanceMly": 0.004148709124,
       "science": {}
     },
     {
@@ -46410,7 +46410,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.005219,
+      "distanceMly": 0.01800872439,
       "science": {}
     },
     {
@@ -46614,7 +46614,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 308716.98717,
+      "distanceMly": 308716.9872,
       "science": {}
     },
     {
@@ -46750,7 +46750,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0005,
+      "distanceMly": 0.001239394235,
       "science": {}
     },
     {
@@ -46852,7 +46852,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 424998.403801,
+      "distanceMly": 424998.4038,
       "science": {}
     },
     {
@@ -49789,7 +49789,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 14.0573,
+      "distanceMly": 31.96332501,
       "science": {}
     },
     {
@@ -50076,7 +50076,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 11999.384377,
+      "distanceMly": 11999.38438,
       "science": {}
     },
     {
@@ -50110,7 +50110,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 14.0573,
+      "distanceMly": 31.96332501,
       "science": {}
     },
     {
@@ -50212,7 +50212,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 28078.163183,
+      "distanceMly": 28078.16318,
       "science": {}
     },
     {
@@ -51662,7 +51662,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 23860.751243,
+      "distanceMly": 23860.75124,
       "science": {}
     },
     {
@@ -51764,7 +51764,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 7.7299,
+      "distanceMly": 29.84330856,
       "science": {}
     },
     {
@@ -51832,7 +51832,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 50,
+      "distanceMly": 343.9319003,
       "science": {}
     },
     {
@@ -51968,7 +51968,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 11.5492,
+      "distanceMly": 31.63716864,
       "science": {}
     },
     {
@@ -52387,7 +52387,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.15,
+      "distanceMly": 137.311835,
       "science": {}
     },
     {
@@ -54955,7 +54955,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 7.7299,
+      "distanceMly": 29.84330856,
       "science": {}
     },
     {
@@ -55306,7 +55306,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0015,
+      "distanceMly": 0.005998421851,
       "science": {}
     },
     {
@@ -55691,7 +55691,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.7943,
+      "distanceMly": 122.9152925,
       "science": {}
     },
     {
@@ -55827,7 +55827,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.003,
+      "distanceMly": 0.006250668421,
       "science": {}
     },
     {
@@ -57310,7 +57310,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 21848.046857,
+      "distanceMly": 21848.04686,
       "science": {}
     },
     {
@@ -58442,7 +58442,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 29.191,
+      "distanceMly": 74.36365412,
       "science": {}
     },
     {
@@ -60121,7 +60121,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0005,
+      "distanceMly": 0.002955551796,
       "science": {}
     },
     {
@@ -60223,7 +60223,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 56.4251,
+      "distanceMly": 315.3932172,
       "science": {}
     },
     {
@@ -62663,7 +62663,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 50,
+      "distanceMly": 343.9319003,
       "science": {}
     },
     {
@@ -62697,7 +62697,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 50,
+      "distanceMly": 343.9319003,
       "science": {}
     },
     {
@@ -64297,7 +64297,13 @@
   "distancePolicy": {
     "canonicalField": "records[].distanceMly",
     "unit": "Mly",
-    "source": "avm-runtime-distance-map-0004.csv, mapped by catalog record number and validated against providerKey and archiveId",
-    "duplicateDistanceFieldsRemoved": true
-  }
+    "source": "Galaxy_Viewer_v0004a_Distance_Review_Workbook.csv column 'AVN RUNTIME 0004 distance (Mly)'",
+    "duplicateDistanceFieldsRemoved": true,
+    "mappedBy": "providerKey + archiveId",
+    "distanceValuesUpdated": 1846,
+    "blankDistanceRowsPreserved": 1,
+    "buildNumber": 51
+  },
+  "buildNumber": 51,
+  "buildLabel": "BUILD 0051"
 }
