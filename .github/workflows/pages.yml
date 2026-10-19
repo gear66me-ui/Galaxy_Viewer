@@ -103,11 +103,11 @@ jobs:
           assert avm.get('sourceBranch')=='release'
           assert 'Galaxy_Viewer@release/' not in rc
           assert 'gv-galaxy-navigator-013.js' in rc
-          assert 'gv-destination-presentation-0058.js' in rc
+          assert 'gv-destination-presentation-0059.js' in rc
           assert "host.addEventListener('touchmove',userChangedView,capturePassive)" in rc, 'Earth-distance must observe Android touchmove in capture phase'
           assert 'gvEarthDistanceSyncPending=true;' in rc, 'Earth-distance refreshes must queue while catalog lookup is busy'
           assert f"const GV200001_BUILD='{viewer.get('build')}';" in rc, 'runtime cache-busting build identity must match pointer'
-          assert "GalaxyDestinationPresentation?.VERSION!=='0058'" in rc
+          assert "GalaxyDestinationPresentation?.VERSION!=='0059'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0128 search regression gate: renderer helpers and visible failure reporting.
           assert 'function gvSearchDisplayName(record)' in rc, 'search result sort/display helper missing'
@@ -150,7 +150,7 @@ jobs:
 
           required=[
               'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
-              'viewer/modules/destination-presentation/gv-destination-presentation-0058.js',
+              'viewer/modules/destination-presentation/gv-destination-presentation-0059.js',
               'viewer/artwork/startup/galaxy-viewer-startup.png',
               'viewer/Web-Browser/Web-Browser-0026/config.json',
               'viewer/Web-Browser/Web-Browser-0026/top.html',
@@ -204,8 +204,8 @@ jobs:
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
           assert 'gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()' in rc, 'Aladin pan must switch from arrival distance to live-center matching'
           assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
-          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0058.js').read_text()
-          assert "const VERSION='0058'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
+          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0059.js').read_text()
+          assert "const VERSION='0059'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
           assert 'FOV (ARC MIN)' in module and 'function imageFovArcmin(d)' in module and 'const x=finite(d?.fovXDegrees),y=finite(d?.fovYDegrees)' in module and 'hydrateAvmFov(d,generation)' in module and 'AVM runtime catalog' in module, 'HD destination card must use hydrated AVM FOVX/FOVY metadata without fabricating missing axes'
           assert 'const distanceMly=finite(record?.distanceMly),redshift=finite(record?.redshift)' in module and 'destination={...requested,distanceMly,redshift,fovXDegrees:x,fovYDegrees:y,runtimeMetadataState' in module, 'HD card distance and redshift must both come from runtime catalog 0004'
           assert "destination={...d,distanceMly:null,redshift:null" in module and 'const record=byUrl||byId' in module, 'HD card must clear provider distances while runtime record loads and never fall back'
@@ -236,7 +236,7 @@ jobs:
           if(a<0||b<a)throw new Error('VIEWER JAVASCRIPT EXTRACTION FAILED');
           const js=py.slice(a+start.length,b);
           new Function(js);
-          const modulePath='viewer/modules/destination-presentation/gv-destination-presentation-0058.js';
+          const modulePath='viewer/modules/destination-presentation/gv-destination-presentation-0059.js';
           const moduleSource=fs.readFileSync(modulePath,'utf8');
           new Function(moduleSource);
           console.log('VIEWER JAVASCRIPT SYNTAX PASSED:',viewer.viewer);
