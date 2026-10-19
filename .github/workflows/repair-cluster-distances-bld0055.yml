@@ -80,7 +80,8 @@ jobs:
                       "heic1506c": 298085.408042,
                       "potw1319a": 308716.98717,
                   }[archive_id]
-                  if abs(float(science.get("distanceMly", -1)) - expected) > 0.01:
+                  current_distance = float(science.get("distanceMly", -1))
+                  if abs(current_distance - expected) > 0.01 and abs(current_distance - distance) > 0.01:
                       raise RuntimeError(f"Unexpected source distance for {archive_id}: {science.get('distanceMly')}")
                   science["distanceMly"] = distance
                   science["distanceMethod"] = f"FLRW_comoving_radial_distance_flat_lcdm_H0_67.6_Om_0.315_from_z_{z:.3f}"
@@ -111,7 +112,11 @@ jobs:
               def update(record):
                   if record.get("archiveId") != archive_id:
                       raise RuntimeError("Archive ID mismatch in runtime record")
-                  if abs(float(record.get("distanceMly", -1)) - old_distance) > 0.01 or float(record.get("redshift", -1)) != 100:
+                  current_distance = float(record.get("distanceMly", -1))
+                  current_z = float(record.get("redshift", -1))
+                  old_record = abs(current_distance - old_distance) <= 0.01 and current_z == 100
+                  already_correct = abs(current_distance - new_distance) <= 0.01 and current_z == z
+                  if not (old_record or already_correct):
                       raise RuntimeError(f"Unexpected runtime values for {archive_id}: {record.get('distanceMly')}, z={record.get('redshift')}")
                   record["distanceMly"] = new_distance
                   record["redshift"] = z
@@ -140,9 +145,10 @@ jobs:
               if len(matches) != 1:
                   raise RuntimeError(f"Expected one distance-map row for {archive_id}; found {len(matches)}")
               i = matches[0]
-              if not lines[i].endswith("," + old_value):
-                  raise RuntimeError(f"Unexpected distance-map value for {archive_id}: {lines[i]}")
-              lines[i] = lines[i][:-len(old_value)] + new_value
+              if lines[i].endswith("," + old_value):
+                  lines[i] = lines[i][:-len(old_value)] + new_value
+              elif not lines[i].endswith("," + new_value):
+                  raise RuntimeError(f"Unexpected distance-map value for {archive_id}: {lines[i]")
           map_path.write_text("\r\n".join(lines) + "\r\n", encoding="utf-8")
 
           print("Verified 1847 runtime records; corrected Abell 2744 heic1111a/heic1506c and Abell S1077 potw1319a.")
