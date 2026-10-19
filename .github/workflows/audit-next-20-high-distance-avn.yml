@@ -1,0 +1,120 @@
+name: Audit Next 20 High-Distance AVN Records
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/audit-next-20-high-distance-avn.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: audit-next-20-high-distance-avn
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      - name: Select next 20 high-distance records (read-only catalog audit)
+        env:
+          RUNTIME_PATH: viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          from datetime import datetime, timezone
+
+          path = pathlib.Path(os.environ["RUNTIME_PATH"])
+          raw = json.loads(path.read_text(encoding="utf-8"))
+          records = raw if isinstance(raw, list) else raw.get("records")
+          if not isinstance(records, list):
+              raise SystemExit("Unexpected runtime JSON schema: expected list or object with records[]")
+
+          # Exclude the 19 archive IDs already reviewed in the prior repair pass.
+          reviewed = {
+            "eso2304a","eso0847a","heic1702e","heic1702c","heic1702d",
+            "opo1208b","potw1506a","heic1506d","heic1507b","heic1507g",
+            "heic1507e","eso0755a","heic1507d","heic1507h","heic1507c",
+            "gemini0302a","iotw2342c","potw2024a","noao-n4935mandel"
+          }
+
+          def first(r, *keys):
+              for k in keys:
+                  v = r.get(k)
+                  if v is not None and v != "":
+                      return v
+              return None
+
+          rows = []
+          for i, r in enumerate(records):
+              if not isinstance(r, dict):
+                  continue
+              aid = str(first(r,"archiveId","archive_id","id") or "")
+              if aid in reviewed:
+                  continue
+              dist = first(r,"distanceMly")
+              z = first(r,"redshift")
+              sci = r.get("science") if isinstance(r.get("science"),dict) else {}
+              if dist is None:
+                  dist = first(sci,"distanceMly")
+              if z is None:
+                  z = first(sci,"redshift")
+              try:
+                  dist = float(dist)
+              except (TypeError,ValueError):
+                  continue
+              if dist < 20000:
+                  continue
+              try: z = float(z) if z is not None else None
+              except (TypeError,ValueError): pass
+              rows.append({
+                "recordIndex": i,
+                "provider": first(r,"provider","catalog","source"),
+                "archiveId": aid,
+                "name": first(r,"name","objectName","title"),
+                "distanceMly": dist,
+                "redshift": z,
+                "distanceBly": round(dist/1000, 6),
+                "scienceDistanceMly": first(sci,"distanceMly"),
+                "scienceRedshift": first(sci,"redshift")
+              })
+
+          rows.sort(key=lambda x: x["distanceMly"], reverse=True)
+          selected = rows[:20]
+          report = {
+            "generatedUtc": datetime.now(timezone.utc).isoformat(),
+            "catalog": str(path),
+            "branch": "release",
+            "catalogIsReadOnlyForThisAudit": True,
+            "selection": "Top 20 records with distanceMly >= 20000, excluding the 19 archive IDs reviewed in the prior pass, sorted by distance descending.",
+            "totalRecords": len(records),
+            "eligibleUnreviewedHighDistanceCount": len(rows),
+            "selectedCount": len(selected),
+            "records": selected
+          }
+          pathlib.Path("avn-next-20-high-distance-audit.json").write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+          print(json.dumps(report,indent=2,ensure_ascii=False))
+          PY
+
+      - name: Validate audit report
+        run: python -m json.tool avn-next-20-high-distance-audit.json >/dev/null
+
+      - name: Commit audit report only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add avn-next-20-high-distance-audit.json
+          if git diff --cached --quiet; then
+            echo "No report changes required."
+          else
+            git commit -m "Audit next 20 high-distance AVN records"
+            git push origin HEAD:release
+          fi
