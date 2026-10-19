@@ -42648,7 +42648,7 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 29392.68751,
       "science": {},
-      "redshift": 7.696257
+      "redshift": 7.696252
     },
     {
       "providerKey": "hubble",
@@ -42788,7 +42788,7 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 39745.83236,
       "science": {},
-      "redshift": 51.56449
+      "redshift": 51.38918
     },
     {
       "providerKey": "hubble",
@@ -51553,7 +51553,7 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 28078.16318,
       "science": {},
-      "redshift": 6.520068
+      "redshift": 6.520066
     },
     {
       "providerKey": "noirlab",
@@ -66018,8 +66018,8 @@
     "buildNumber": 51,
     "displayPrecisionDecimalPlaces": 2
   },
-  "buildNumber": 52,
-  "buildLabel": "BUILD 0052",
+  "buildNumber": 53,
+  "buildLabel": "BUILD 0053",
   "redshiftPolicy": {
     "field": "records[].redshift",
     "derivedFrom": "records[].distanceMly only",
@@ -66030,7 +66030,7 @@
       "OmegaLambda": 0.685
     },
     "method": "invert Dc(z)=(c/H0)*integral_0^z dz'/sqrt(OmegaM*(1+z')^3+OmegaLambda)",
-    "precision": "six decimal places",
+    "precision": "six decimal places; display with toFixed(6)",
     "recordsComputed": 1847
   }
 }
