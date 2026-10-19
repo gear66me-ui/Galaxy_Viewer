@@ -1,0 +1,88 @@
+name: Repair IC 10 Runtime Distance
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/repair-ic10-runtime-distance.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-ic10-runtime-distance
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Correct only IC 10 and validate runtime catalog
+        run: |
+          python - <<'PY'
+          import json, math, pathlib, subprocess
+          p = pathlib.Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          raw = json.loads(p.read_text(encoding="utf-8"))
+          records = raw if isinstance(raw, list) else raw.get("records")
+          if not isinstance(records, list):
+              raise SystemExit("Unexpected runtime schema: expected list or records[]")
+          def ident(r):
+              return " ".join(str(r.get(k, "")) for k in ("archiveId","archive_id","id","name","displayName","objectName","title")).casefold()
+          matches = [r for r in records if "ic 10" in ident(r) or "ic10" in ident(r) or "chandra-2017-ic10" in ident(r)]
+          if not matches:
+              raise SystemExit("IC 10 not found in runtime catalog; refusing to change unrelated records")
+          # Flat Lambda-CDM, H0=67.6 km/s/Mpc, Omega_m=0.315.
+          # Invert the comoving radial-distance integral to find z for D_C=2.2 Mly.
+          c, H0, om, ol = 299792.458, 67.6, 0.315, 0.685
+          mly_per_mpc = 3.261563777
+          target_mpc = 2.2 / mly_per_mpc
+          def dc_mpc(z):
+              n=2000; h=z/n
+              s=1/math.sqrt(om+ol)+1/math.sqrt(om*(1+z)**3+ol)
+              for i in range(1,n):
+                  x=i*h; f=1/math.sqrt(om*(1+x)**3+ol)
+                  s+=(4 if i%2 else 2)*f
+              return (c/H0)*(h/3)*s
+          lo, hi = 0.0, 0.01
+          for _ in range(80):
+              mid=(lo+hi)/2
+              if dc_mpc(mid)<target_mpc: lo=mid
+              else: hi=mid
+          z=(lo+hi)/2
+          changed=[]
+          for r in matches:
+              r["distanceMly"] = 2.2
+              r["redshift"] = round(z, 9)
+              r["distanceMethod"] = "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation"
+              r["redshiftMethod"] = "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
+              if isinstance(r.get("science"), dict):
+                  r["science"]["distanceMly"] = 2.2
+                  r["science"]["redshift"] = round(z, 9)
+                  r["science"]["distanceMethod"] = r["distanceMethod"]
+                  r["science"]["redshiftMethod"] = r["redshiftMethod"]
+              changed.append({"archiveId":r.get("archiveId"),"name":r.get("name") or r.get("displayName"),"distanceMly":r["distanceMly"],"redshift":r["redshift"]})
+          p.write_text(json.dumps(raw, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+          # Re-read and verify every matching record persisted with the expected values.
+          check=json.loads(p.read_text(encoding="utf-8"))
+          rr=check if isinstance(check,list) else check.get("records")
+          verify=[r for r in rr if "ic 10" in ident(r) or "ic10" in ident(r) or "chandra-2017-ic10" in ident(r)]
+          if len(verify)!=len(matches) or any(abs(float(r.get("distanceMly",0))-2.2)>1e-9 or abs(float(r.get("redshift",0))-z)>1e-8 for r in verify):
+              raise SystemExit("Post-write verification failed")
+          print(json.dumps({"verified":True,"recordsChanged":changed,"cosmology":{"model":"flat Lambda-CDM","H0_km_s_Mpc":H0,"Omega_m":om,"Omega_Lambda":ol},"distanceConvention":"comoving radial distance"},indent=2))
+          PY
+      - name: Commit corrected runtime catalog
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          if git diff --cached --quiet; then
+            echo "Runtime catalog already contains the verified correction."
+          else
+            git commit -m "Correct IC 10 distance and FLRW redshift in runtime catalog"
+            git push origin HEAD:release
+          fi
