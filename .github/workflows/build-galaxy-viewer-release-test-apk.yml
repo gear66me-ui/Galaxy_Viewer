@@ -1,7 +1,10 @@
 name: Build Galaxy Viewer Release Test APK
 on:
-  # PRODUCTION FROZEN: no automatic test-APK builds. Manual dispatch only.
   workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - 'viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv'
 permissions: { contents: write }
 jobs:
   build:
@@ -15,6 +18,70 @@ jobs:
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: '8.9' }
+      - name: Generate canonical runtime catalog 0004 and pointer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import csv, json, math
+          from pathlib import Path
+          base = Path('viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json')
+          mapping = Path('viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv')
+          target = Path('viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json')
+          with mapping.open(newline='', encoding='utf-8') as f:
+              rows = list(csv.DictReader(f))
+          if len(rows) != 1847:
+              raise SystemExit(f'Expected 1847 distance rows, got {len(rows)}')
+          catalog = json.loads(base.read_text(encoding='utf-8'))
+          records = catalog.get('records')
+          if not isinstance(records, list) or len(records) != 1847:
+              raise SystemExit(f'Expected 1847 source records, got {len(records) if isinstance(records,list) else None}')
+          for i, (row, record) in enumerate(zip(rows, records), start=1):
+              if int(row['catalog_record_number']) != i:
+                  raise SystemExit(f'Out-of-order distance row at {i}: {row.get("catalog_record_number")}')
+              if str(row['providerKey']).strip().lower() != str(record.get('providerKey','')).strip().lower():
+                  raise SystemExit(f'Provider mismatch at record {i}: {row.get("providerKey")} != {record.get("providerKey")}')
+              if str(row['archiveId']).strip() != str(record.get('archiveId','')).strip():
+                  raise SystemExit(f'Archive ID mismatch at record {i}: {row.get("archiveId")} != {record.get("archiveId")}')
+              distance = float(row['distanceMly'])
+              if not math.isfinite(distance) or distance < 0:
+                  raise SystemExit(f'Invalid distance at record {i}: {row.get("distanceMly")}')
+              record['distanceMly'] = distance
+              for key in list(record):
+                  if 'distance' in key.lower() and key != 'distanceMly':
+                      del record[key]
+              science = record.get('science')
+              if isinstance(science, dict):
+                  for key in list(science):
+                      if 'distance' in key.lower():
+                          del science[key]
+          catalog['version'] = '0004'
+          catalog['sourceBranch'] = 'release'
+          catalog['sourceMasterCatalog'] = str(base)
+          catalog['distancePolicy'] = {
+              'canonicalField': 'records[].distanceMly',
+              'unit': 'Mly',
+              'source': 'avm-runtime-distance-map-0004.csv, mapped by catalog record number and validated against providerKey and archiveId',
+              'duplicateDistanceFieldsRemoved': True
+          }
+          catalog['recordCount'] = len(records)
+          target.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\\n', encoding='utf-8')
+          pointer = {'version': 'RC-V1.0.0.8', 'viewer': 'RC-V1.0.0.8-BLD-0050.py', 'build': '0050'}
+          Path('viewer/gv-current-viewer.json').write_text(json.dumps(pointer, indent=2) + '\\n', encoding='utf-8')
+          for i, record in enumerate(records, start=1):
+              distance_keys = [k for k in record if 'distance' in k.lower()]
+              science_keys = [k for k in (record.get('science') or {}) if 'distance' in k.lower()]
+              if distance_keys != ['distanceMly'] or science_keys:
+                  raise SystemExit(f'Duplicate distance fields remain on record {i}: {distance_keys}, science={science_keys}')
+          print(f'Validated {len(records)} records; exactly one distance field per record; pointer rolled to build 0050')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json viewer/gv-current-viewer.json
+          if ! git diff --cached --quiet; then
+            git commit -m 'Generate canonical AVN runtime catalog 0004 and roll build 0050'
+            git push origin HEAD:release
+          fi
       - name: Build isolated release APK
         shell: bash
         run: |
@@ -35,7 +102,7 @@ jobs:
           package com.gear66me.galaxyviewerrelease; import android.app.*;import android.os.*;import android.graphics.*;import android.view.*;import android.webkit.*; public final class MainActivity extends Activity{WebView w;public void onCreate(Bundle b){super.onCreate(b);getWindow().getDecorView().setSystemUiVisibility(5894);w=new WebView(this);w.setBackgroundColor(Color.BLACK);WebSettings s=w.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setAllowFileAccess(true);s.setAllowContentAccess(true);s.setAllowFileAccessFromFileURLs(true);s.setAllowUniversalAccessFromFileURLs(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);w.setWebViewClient(new WebViewClient());w.setWebChromeClient(new WebChromeClient());setContentView(w);w.loadUrl("file:///android_asset/index.html");}}
           EOF
           cat > "$R/app/src/main/assets/index.html" <<'EOF'
-          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#9be5ff}#b,#e{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}#b img{width:220px;height:220px}#e{display:none;padding:24px;white-space:pre-wrap;font:12px monospace}</style></head><body><div id="b"><img src="target-icon.svg"><div>GALAXY VIEWER 1.0.0 — RELEASE TEST</div></div><div id="e"></div><script>(async()=>{const B='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';const r=async u=>{let x=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!x.ok)throw Error('HTTP '+x.status+' '+u);return x.text()};try{let p=JSON.parse(await r(B+'gv-current-viewer.json'));if(p.version!=='RC-V1.0.0.5'||p.viewer!=='RC-V1.0.0.5.py'||p.build!=='0058')throw Error('BAD RELEASE POINTER '+JSON.stringify(p));let s=await r(B+p.viewer),h=[...s.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...s.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw Error('EXTRACTION FAILED');document.body.insertAdjacentHTML('beforeend',h[0][1]);let q=document.createElement('script');q.textContent=j[0][1];document.body.appendChild(q);document.getElementById('b').remove()}catch(x){document.getElementById('b').remove();let e=document.getElementById('e');e.style.display='flex';e.textContent=String(x.stack||x)}})()</script></body></html>
+          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#9be5ff}#b,#e{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}#b img{width:220px;height:220px}#e{display:none;padding:24px;white-space:pre-wrap;font:12px monospace}</style></head><body><div id="b"><img src="target-icon.svg"><div>GALAXY VIEWER 1.0.0 — RELEASE TEST</div></div><div id="e"></div><script>(async()=>{const B='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';const r=async u=>{let x=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!x.ok)throw Error('HTTP '+x.status+' '+u);return x.text()};try{let p=JSON.parse(await r(B+'gv-current-viewer.json'));if(p.version!=='RC-V1.0.0.8'||p.viewer!=='RC-V1.0.0.8-BLD-0050.py'||p.build!=='0050')throw Error('BAD RELEASE POINTER '+JSON.stringify(p));let s=await r(B+p.viewer),h=[...s.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...s.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw Error('EXTRACTION FAILED');document.body.insertAdjacentHTML('beforeend',h[0][1]);let q=document.createElement('script');q.textContent=j[0][1];document.body.appendChild(q);document.getElementById('b').remove()}catch(x){document.getElementById('b').remove();let e=document.getElementById('e');e.style.display='flex';e.textContent=String(x.stack||x)}})()</script></body></html>
           EOF
           gradle --no-daemon -p "$R" :app:assembleDebug
           cp "$R/app/build/outputs/apk/debug/app-debug.apk" Galaxy-Viewer-Release-1.0.0-Test.apk
