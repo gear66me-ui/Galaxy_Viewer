@@ -143,7 +143,7 @@ jobs:
               if not lines[i].endswith("," + old_value):
                   raise RuntimeError(f"Unexpected distance-map value for {archive_id}: {lines[i]}")
               lines[i] = lines[i][:-len(old_value)] + new_value
-          map_path.write_text("\\r\\n".join(lines) + "\\r\\n", encoding="utf-8")
+          map_path.write_text("\r\n".join(lines) + "\r\n", encoding="utf-8")
 
           print("Verified 1847 runtime records; corrected Abell 2744 heic1111a/heic1506c and Abell S1077 potw1319a.")
           PY
