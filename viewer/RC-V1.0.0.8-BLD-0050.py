@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.8"
-BUILD_NUMBER = "0049"
+BUILD_NUMBER = "0050"
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
@@ -87,7 +87,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.8';
-const GV200001_BUILD='0049';
+const GV200001_BUILD='0050';
 const GV_RUNTIME='0133';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.8-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
