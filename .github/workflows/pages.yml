@@ -150,7 +150,7 @@ jobs:
 
           required=[
               'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
-              'viewer/modules/destination-presentation/gv-destination-presentation-0059.js',
+              'viewer/modules/destination-presentation/gv-destination-presentation-0060.js',
               'viewer/artwork/startup/galaxy-viewer-startup.png',
               'viewer/Web-Browser/Web-Browser-0026/config.json',
               'viewer/Web-Browser/Web-Browser-0026/top.html',
@@ -204,13 +204,14 @@ jobs:
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
           assert 'gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()' in rc, 'Aladin pan must switch from arrival distance to live-center matching'
           assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
-          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0059.js').read_text()
-          assert "const VERSION='0059'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
+          module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0060.js').read_text()
+          assert "const VERSION='0060'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
           assert 'FOV (ARC MIN)' in module and 'function imageFovArcmin(d)' in module and 'const x=finite(d?.fovXDegrees),y=finite(d?.fovYDegrees)' in module and 'hydrateAvmFov(d,generation)' in module and 'AVM runtime catalog' in module, 'HD destination card must use hydrated AVM FOVX/FOVY metadata without fabricating missing axes'
           assert 'const distanceMly=finite(record?.distanceMly),redshift=finite(record?.redshift)' in module and 'destination={...requested,distanceMly,redshift,fovXDegrees:x,fovYDegrees:y,runtimeMetadataState' in module, 'HD card distance and redshift must both come from runtime catalog 0004'
           assert "destination={...d,distanceMly:null,redshift:null" in module and 'const record=byUrl||byId' in module, 'HD card must clear provider distances while runtime record loads and never fall back'
           assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
+          assert 'const maxBarPx=Math.max(1,Math.min(144,viewport.clientWidth-160))' in module and 'fraction<.55' not in module, 'HD ruler must remain in the free central gap and must not disappear due to full-image fraction checks'
           assert '2*(distanceMly*1e6)*Math.sin(theta/2)/width' in rc, 'Live physical scale must use spherical chord equation'
           print(f"PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD {viewer.get('build')} — LIVE EARTH-DISTANCE MATCHING AND HD TRANSFORM HELPERS, ZOOM-RESPONSIVE SCALE, AND EARTH-DISTANCE DISPLAY")
           print('DEPENDENCY SNAPSHOT:', pins[0])
@@ -236,7 +237,7 @@ jobs:
           if(a<0||b<a)throw new Error('VIEWER JAVASCRIPT EXTRACTION FAILED');
           const js=py.slice(a+start.length,b);
           new Function(js);
-          const modulePath='viewer/modules/destination-presentation/gv-destination-presentation-0059.js';
+          const modulePath='viewer/modules/destination-presentation/gv-destination-presentation-0060.js';
           const moduleSource=fs.readFileSync(modulePath,'utf8');
           new Function(moduleSource);
           console.log('VIEWER JAVASCRIPT SYNTAX PASSED:',viewer.viewer);
