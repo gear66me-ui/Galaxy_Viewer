@@ -521,7 +521,7 @@ window.addEventListener('focus',gvRecoverViewerAfterNativeReturn);
 window.addEventListener('pageshow',gvRecoverViewerAfterNativeReturn);
 
 function gvFormatEarthDistance(destination){
-    // Sole source: AVM runtime catalog 0004 records[].distanceMly.
+    // BUILD 0053 — sole distance source: AVM runtime catalog 0004 records[].distanceMly.
     const v=Number(destination?.distanceMly);
     if(!(v>0)||!Number.isFinite(v))throw new Error('AVM runtime distanceMly missing or invalid');
     if(v>=1000)return (v/1000).toFixed(2)+' BLY';
