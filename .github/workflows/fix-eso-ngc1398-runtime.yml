@@ -1,0 +1,89 @@
+name: Fix ESO NGC 1398 Runtime Image
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - ".github/workflows/fix-eso-ngc1398-runtime.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  repair-runtime-record:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      - name: Repair the NGC 1398 runtime record in place
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          records = data.get("records", [])
+
+          broken = [
+              r for r in records
+              if r.get("providerKey") == "eso"
+              and r.get("archiveId") == "header-science-galaxies"
+              and r.get("name") == "NGC 1398"
+          ]
+          good = [
+              r for r in records
+              if r.get("providerKey") == "eso"
+              and r.get("archiveId") == "potw1801a"
+              and r.get("name") == "NGC 1398"
+          ]
+
+          if len(broken) != 1:
+              raise SystemExit(f"Expected exactly one broken target, found {len(broken)}")
+          if len(good) != 1:
+              raise SystemExit(f"Expected exactly one valid potw1801a reference, found {len(good)}")
+
+          target, reference = broken[0], good[0]
+          fields = (
+              "imageUrl",
+              "ra", "dec",
+              "fovDegrees", "fovXDegrees", "fovYDegrees", "fovPolicy",
+              "spatialRotationDeg", "aladinRotation",
+              "referencePixel", "referenceDimension", "scale", "cdMatrix",
+              "projection", "coordinateFrame",
+          )
+          before = target.get("imageUrl")
+          for field in fields:
+              if field in reference:
+                  target[field] = reference[field]
+              else:
+                  target.pop(field, None)
+
+          if target.get("imageUrl") != "https://www.eso.org/public/archives/images/screen/potw1801a.jpg":
+              raise SystemExit("Image URL verification failed")
+          if len(records) != 1847:
+              raise SystemExit(f"Record count changed unexpectedly: {len(records)}")
+
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          print(f"Target: {target.get('name')} ({target.get('archiveId')})")
+          print(f"Old image: {before}")
+          print(f"New image: {target['imageUrl']}")
+          print(f"Geometry copied from: {reference.get('archiveId')}")
+          print(f"Record count preserved: {len(records)}")
+          PY
+
+      - name: Commit the catalog correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          if git diff --cached --quiet; then
+            echo "No catalog changes were needed."
+          else
+            git commit -m "Fix ESO NGC 1398 image in runtime catalog 0004"
+            git push origin HEAD:release
+          fi
