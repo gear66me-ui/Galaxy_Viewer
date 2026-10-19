@@ -74,14 +74,15 @@ const id=clean(requested?.archiveId||requested?.id||requested?.providerId).toLow
 const imageUrl=clean(requested?.imageUrl||requested?.hdUrl||'').toLowerCase();
 const record=imageUrl?records.find(r=>clean(r?.imageUrl||r?.hdUrl||'').toLowerCase()===imageUrl):(id?records.find(r=>clean(r?.archiveId||r?.id||r?.providerId).toLowerCase()===id):null);
 if(!record)throw new Error('No AVM runtime record for '+(id||imageUrl||'destination'));
-const distanceMly=finite(record?.distanceMly),x=finite(record?.fovXDegrees),y=finite(record?.fovYDegrees);
+const distanceMly=finite(record?.distanceMly),redshift=finite(record?.redshift),x=finite(record?.fovXDegrees),y=finite(record?.fovYDegrees);
 if(!(distanceMly>0))throw new Error('Runtime distanceMly missing or invalid');
+if(redshift===null||redshift<0)throw new Error('Runtime redshift missing or invalid');
 if(!(x>0&&x<360&&y>0&&y<360))throw new Error('Runtime FOVX/FOVY missing or invalid');
 if(destination!==requested)return;
-destination={...requested,distanceMly,distanceMly:distanceMly,fovXDegrees:x,fovYDegrees:y};
+destination={...requested,distanceMly,redshift,fovXDegrees:x,fovYDegrees:y};
 populate(destination);scaleValue=null;
 if(hd.classList.contains('gvdp-open')){updateScale(true);scheduleScale()}
-console.info('GV DESTINATION DISTANCE/FOV HYDRATED',{archiveId:record.archiveId,imageUrl:record.imageUrl,distanceMly,fovXDegrees:x,fovYDegrees:y,source:'AVM runtime catalog'});
+console.info('GV DESTINATION DISTANCE/REDSHIFT/FOV HYDRATED',{archiveId:record.archiveId,imageUrl:record.imageUrl,distanceMly,redshift,fovXDegrees:x,fovYDegrees:y,source:'AVM runtime catalog 0004'});
 }catch(error){console.error('GV DESTINATION DISTANCE/FOV HYDRATION FAILED',error)}
 };const zoomGeometry=()=>{const g=scaleGeometry(destination,viewport.clientWidth,hdImg.naturalWidth,hdImg.naturalHeight,viewport.clientHeight);return g?{lyPerPx:g.lyPerPx/hdScale,width:g.width}:null};const updateScale=(selectNew=false)=>{if(!hdImg.naturalWidth||!viewport.clientWidth||!viewport.clientHeight){scale.style.display='none';return false}const g=zoomGeometry();if(!g){scale.style.display='none';return false}if(selectNew||!(scaleValue>0))scaleValue=niceScale(g);if(!(scaleValue>0)){scale.style.display='none';return false}let px=scaleValue/g.lyPerPx,fraction=px/g.width;if(!selectNew&&(fraction<.30||fraction>.60)){scaleValue=niceScale(g);px=scaleValue/g.lyPerPx;fraction=px/g.width}if(!(px>0)||!Number.isFinite(px)||fraction>1){scale.style.display='none';return false}scale.style.width=(px+14)+'px';scaleLine.style.width=px+'px';scaleLabel.textContent=compact(scaleValue);scale.style.display='flex';return true};const ensureScale=(attempt=0)=>{if(updateScale(false))return true;if(attempt<24&&hd.classList.contains('gvdp-open')){scaleRetryFrame=requestAnimationFrame(()=>ensureScale(attempt+1));return false}return false};const scheduleScale=()=>{clearTimeout(scaleTimer);scaleTimer=setTimeout(()=>{if(!updateScale(false))ensureScale()},200)}
 const cancelNativeProviderHandoff=()=>{try{if(window.GVNative&&typeof window.GVNative.cancelProviderHandoff==='function')window.GVNative.cancelProviderHandoff();else if(window.GVNative&&typeof window.GVNative.cancelProvider==='function')window.GVNative.cancelProvider()}catch(error){console.warn('GV PROVIDER HANDOFF CANCEL SKIPPED',error)}};
