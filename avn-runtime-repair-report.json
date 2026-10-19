@@ -1,0 +1,185 @@
+{
+  "generatedUtc": "2026-10-19T13:59:37.839204+00:00",
+  "catalog": "viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json",
+  "cosmology": {
+    "model": "flat Lambda-CDM",
+    "H0_km_s_Mpc": 67.6,
+    "Omega_m": 0.315,
+    "Omega_Lambda": 0.685
+  },
+  "distanceConvention": "comoving radial distance",
+  "foregroundRule": "For lens systems, store foreground lens/cluster redshift and distance, never the background lensed source redshift.",
+  "changedCount": 18,
+  "changed": [
+    {
+      "archiveId": "eso0755a",
+      "name": "ESO 593-IG 008",
+      "oldRedshift": 100,
+      "newRedshift": 0.048834,
+      "oldDistanceMly": 47128.52065,
+      "newDistanceMly": 698.1322,
+      "sourceNote": "published spectroscopic redshift"
+    },
+    {
+      "archiveId": "eso0847a",
+      "name": "Einstein Cross",
+      "oldRedshift": 100,
+      "newRedshift": 0.0394,
+      "oldDistanceMly": 1656161.534,
+      "newDistanceMly": 564.5535,
+      "sourceNote": "foreground lens galaxy redshift; not background quasar"
+    },
+    {
+      "archiveId": "eso2304a",
+      "name": "Spiderweb Galaxy",
+      "oldRedshift": 100,
+      "newRedshift": 2.156,
+      "oldDistanceMly": 2111696.673,
+      "newDistanceMly": 17992.8534,
+      "sourceNote": "published Spiderweb Galaxy redshift"
+    },
+    {
+      "archiveId": "potw2024a",
+      "name": "PLCK G045.1+61.1",
+      "oldRedshift": 3.436761,
+      "newRedshift": 3.436761,
+      "oldDistanceMly": 22439.9,
+      "newDistanceMly": 22439.901,
+      "sourceNote": "published high-redshift cluster redshift"
+    },
+    {
+      "archiveId": "heic1506d",
+      "name": "MACS J0152.5-2852",
+      "oldRedshift": 100,
+      "newRedshift": 0.413,
+      "oldDistanceMly": 402117.4965,
+      "newDistanceMly": 5368.4487,
+      "sourceNote": "foreground galaxy-cluster redshift"
+    },
+    {
+      "archiveId": "heic1507b",
+      "name": "2MASX J14302986+1339117 / Teacup Galaxy",
+      "oldRedshift": 100,
+      "newRedshift": 0.0852,
+      "oldDistanceMly": 83895.65157,
+      "newDistanceMly": 1207.1964,
+      "sourceNote": "NASA/ESA Hubble object redshift"
+    },
+    {
+      "archiveId": "heic1507c",
+      "name": "NGC 5972",
+      "oldRedshift": 7.696252,
+      "newRedshift": 0.0297,
+      "oldDistanceMly": 29392.68751,
+      "newDistanceMly": 426.5612,
+      "sourceNote": "NASA/ESA Hubble object redshift"
+    },
+    {
+      "archiveId": "heic1507d",
+      "name": "2MASX J15100402+0740370",
+      "oldRedshift": 100,
+      "newRedshift": 0.04584,
+      "oldDistanceMly": 45406.38133,
+      "newDistanceMly": 655.8067,
+      "sourceNote": "NASA/ESA Hubble object redshift"
+    },
+    {
+      "archiveId": "heic1507e",
+      "name": "UGC 7342",
+      "oldRedshift": 100,
+      "newRedshift": 0.0477,
+      "oldDistanceMly": 47577.0211,
+      "newDistanceMly": 682.1085,
+      "sourceNote": "NASA/ESA Hubble object redshift"
+    },
+    {
+      "archiveId": "heic1507g",
+      "name": "Mrk 1498",
+      "oldRedshift": 100,
+      "newRedshift": 0.0547,
+      "oldDistanceMly": 53511.40372,
+      "newDistanceMly": 780.8765,
+      "sourceNote": "NASA/ESA Hubble object redshift"
+    },
+    {
+      "archiveId": "heic1507h",
+      "name": "UGC 11185",
+      "oldRedshift": 51.38918,
+      "newRedshift": 0.0412,
+      "oldDistanceMly": 39745.83236,
+      "newDistanceMly": 590.0882,
+      "sourceNote": "NASA/ESA Hubble object redshift"
+    },
+    {
+      "archiveId": "heic1702c",
+      "name": "CLASS B1608+656",
+      "oldRedshift": 100,
+      "newRedshift": 0.6304,
+      "oldDistanceMly": 1363043.095,
+      "newDistanceMly": 7717.009,
+      "sourceNote": "foreground lens-system redshift"
+    },
+    {
+      "archiveId": "heic1702d",
+      "name": "2MASX J11315154-1231587 / RX J1131-1231",
+      "oldRedshift": 100,
+      "newRedshift": 0.295,
+      "oldDistanceMly": 640773.8821,
+      "newDistanceMly": 3959.0911,
+      "sourceNote": "foreground lens galaxy redshift; not background quasar"
+    },
+    {
+      "archiveId": "heic1702e",
+      "name": "HE0435-1223",
+      "oldRedshift": 100,
+      "newRedshift": 0.4546,
+      "oldDistanceMly": 1655261.086,
+      "newDistanceMly": 5842.1648,
+      "sourceNote": "foreground lens galaxy redshift; not background quasar"
+    },
+    {
+      "archiveId": "opo1208b",
+      "name": "RCS2 032727-132623",
+      "oldRedshift": 0.5637,
+      "newRedshift": 0.564,
+      "oldDistanceMly": 7029.261,
+      "newDistanceMly": 7032.418,
+      "sourceNote": "foreground galaxy cluster redshift; not lensed background galaxy"
+    },
+    {
+      "archiveId": "potw1506a",
+      "name": "SDSSCGB 8842.3",
+      "oldRedshift": 100,
+      "newRedshift": 0.4256,
+      "oldDistanceMly": 424998.4038,
+      "newDistanceMly": 5513.1838,
+      "sourceNote": "foreground lens redshift for SDSS J1038+4849; not background arc"
+    },
+    {
+      "archiveId": "iotw2342c",
+      "name": "NGC 6240",
+      "oldRedshift": 4.007033,
+      "newRedshift": 0.02448,
+      "oldDistanceMly": 23860.75124,
+      "newDistanceMly": 352.0308,
+      "sourceNote": "published nearby-galaxy redshift; foreground galaxy"
+    },
+    {
+      "archiveId": "noao-n4935mandel",
+      "name": "NGC 4935",
+      "oldRedshift": 3.227026,
+      "newRedshift": 0.021329,
+      "oldDistanceMly": 21848.04686,
+      "newDistanceMly": 306.95,
+      "sourceNote": "published galaxy redshift"
+    }
+  ],
+  "unresolved": [
+    {
+      "archiveId": "gemini0302a",
+      "name": "HCG 87",
+      "reason": "requires component-specific redshift verification"
+    }
+  ],
+  "targetArchiveIdsNotFound": []
+}

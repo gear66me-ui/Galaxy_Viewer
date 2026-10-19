@@ -3302,9 +3302,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 47128.52065,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 698.1322,
+      "science": {
+        "redshift": 0.048834,
+        "distanceMly": 698.1322
+      },
+      "redshift": 0.048834
     },
     {
       "providerKey": "eso",
@@ -3512,9 +3515,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 1656161.534,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 564.5535,
+      "science": {
+        "redshift": 0.0394,
+        "distanceMly": 564.5535
+      },
+      "redshift": 0.0394
     },
     {
       "providerKey": "eso",
@@ -7382,9 +7388,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 2111696.673,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 17992.8534,
+      "science": {
+        "redshift": 2.156,
+        "distanceMly": 17992.8534
+      },
+      "redshift": 2.156
     },
     {
       "providerKey": "eso",
@@ -20991,8 +21000,11 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 22439.9,
-      "science": {},
+      "distanceMly": 22439.901,
+      "science": {
+        "redshift": 3.436761,
+        "distanceMly": 22439.901
+      },
       "redshift": 3.436761
     },
     {
@@ -42471,9 +42483,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 402117.4965,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 5368.4487,
+      "science": {
+        "redshift": 0.413,
+        "distanceMly": 5368.4487
+      },
+      "redshift": 0.413
     },
     {
       "providerKey": "hubble",
@@ -42611,9 +42626,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 83895.65157,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 1207.1964,
+      "science": {
+        "redshift": 0.0852,
+        "distanceMly": 1207.1964
+      },
+      "redshift": 0.0852
     },
     {
       "providerKey": "hubble",
@@ -42646,9 +42664,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 29392.68751,
-      "science": {},
-      "redshift": 7.696252
+      "distanceMly": 426.5612,
+      "science": {
+        "redshift": 0.0297,
+        "distanceMly": 426.5612
+      },
+      "redshift": 0.0297
     },
     {
       "providerKey": "hubble",
@@ -42681,9 +42702,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 45406.38133,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 655.8067,
+      "science": {
+        "redshift": 0.04584,
+        "distanceMly": 655.8067
+      },
+      "redshift": 0.04584
     },
     {
       "providerKey": "hubble",
@@ -42716,9 +42740,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 47577.0211,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 682.1085,
+      "science": {
+        "redshift": 0.0477,
+        "distanceMly": 682.1085
+      },
+      "redshift": 0.0477
     },
     {
       "providerKey": "hubble",
@@ -42751,9 +42778,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 53511.40372,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 780.8765,
+      "science": {
+        "redshift": 0.0547,
+        "distanceMly": 780.8765
+      },
+      "redshift": 0.0547
     },
     {
       "providerKey": "hubble",
@@ -42786,9 +42816,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 39745.83236,
-      "science": {},
-      "redshift": 51.38918
+      "distanceMly": 590.0882,
+      "science": {
+        "redshift": 0.0412,
+        "distanceMly": 590.0882
+      },
+      "redshift": 0.0412
     },
     {
       "providerKey": "hubble",
@@ -43101,9 +43134,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 1363043.095,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 7717.009,
+      "science": {
+        "redshift": 0.6304,
+        "distanceMly": 7717.009
+      },
+      "redshift": 0.6304
     },
     {
       "providerKey": "hubble",
@@ -43136,9 +43172,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 640773.8821,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 3959.0911,
+      "science": {
+        "redshift": 0.295,
+        "distanceMly": 3959.0911
+      },
+      "redshift": 0.295
     },
     {
       "providerKey": "hubble",
@@ -43171,9 +43210,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 1655261.086,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 5842.1648,
+      "science": {
+        "redshift": 0.4546,
+        "distanceMly": 5842.1648
+      },
+      "redshift": 0.4546
     },
     {
       "providerKey": "hubble",
@@ -45391,9 +45433,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 7029.261,
-      "science": {},
-      "redshift": 0.5637
+      "distanceMly": 7032.418,
+      "science": {
+        "redshift": 0.564,
+        "distanceMly": 7032.418
+      },
+      "redshift": 0.564
     },
     {
       "providerKey": "hubble",
@@ -48101,9 +48146,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 424998.4038,
-      "science": {},
-      "redshift": 100
+      "distanceMly": 5513.1838,
+      "science": {
+        "redshift": 0.4256,
+        "distanceMly": 5513.1838
+      },
+      "redshift": 0.4256
     },
     {
       "providerKey": "hubble",
@@ -53041,9 +53089,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 23860.75124,
-      "science": {},
-      "redshift": 4.007033
+      "distanceMly": 352.0308,
+      "science": {
+        "redshift": 0.02448,
+        "distanceMly": 352.0308
+      },
+      "redshift": 0.02448
     },
     {
       "providerKey": "noirlab",
@@ -58831,9 +58882,12 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 21848.04686,
-      "science": {},
-      "redshift": 3.227026
+      "distanceMly": 306.95,
+      "science": {
+        "redshift": 0.021329,
+        "distanceMly": 306.95
+      },
+      "redshift": 0.021329
     },
     {
       "providerKey": "noirlab",
