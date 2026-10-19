@@ -1,0 +1,140 @@
+name: Correct NOIRLab NGC 6946 Distance — AVM Runtime 0004
+
+on:
+  push:
+    branches:
+      - release
+    paths:
+      - ".github/workflows/fix-noirlab-ngc6946-distance-0004.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: avm-runtime-0004-ngc6946-distance
+  cancel-in-progress: false
+
+jobs:
+  correct-distance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      - name: Set NGC 6946 distance to 22 Mly in runtime catalog and distance map
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv
+          import json
+          from pathlib import Path
+
+          catalog_path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          map_path = Path("viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv")
+          if not catalog_path.exists():
+              raise SystemExit(f"Missing runtime catalog: {catalog_path}")
+          if not map_path.exists():
+              raise SystemExit(f"Missing distance map: {map_path}")
+
+          data = json.loads(catalog_path.read_text(encoding="utf-8"))
+          def children(node):
+              if isinstance(node, dict):
+                  yield node
+                  for value in node.values():
+                      yield from children(value)
+              elif isinstance(node, list):
+                  for value in node:
+                      yield from children(value)
+
+          matches = []
+          for record in children(data):
+              values = " ".join(str(record.get(k, "")) for k in (
+                  "provider", "providerKey", "archiveId", "archive_id", "id",
+                  "name", "objectName", "designation", "title"
+              )).lower()
+              if "noirlab" in values and ("noao-ngc6946" in values or "ngc 6946" in values or "ngc6946" in values):
+                  matches.append(record)
+
+          # If provider is represented on a parent wrapper, use a strict NGC 6946
+          # identifier match as a fallback, while refusing ambiguous matches.
+          if not matches:
+              for record in children(data):
+                  values = " ".join(str(record.get(k, "")) for k in (
+                      "archiveId", "archive_id", "id", "name", "objectName",
+                      "designation", "title"
+                  )).lower()
+                  if "noao-ngc6946" in values:
+                      matches.append(record)
+
+          unique = {id(record): record for record in matches}
+          matches = list(unique.values())
+          if len(matches) != 1:
+              raise SystemExit(f"Expected exactly one NOIRLab NGC 6946 record, found {len(matches)}; refusing to guess.")
+
+          record = matches[0]
+          changed_fields = []
+          for key in ("distanceMly", "distance_mly"):
+              if key in record:
+                  record[key] = 22.0
+                  changed_fields.append(key)
+          science = record.get("science")
+          if isinstance(science, dict):
+              for key in ("distanceMly", "distance_mly"):
+                  if key in science:
+                      science[key] = 22.0
+                      changed_fields.append("science." + key)
+          if not changed_fields:
+              raise SystemExit("Matched record has no recognized distanceMly field; refusing to change an unknown schema.")
+
+          catalog_path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print("Updated runtime record:", ", ".join(changed_fields), "=> 22.0 Mly")
+
+          # Update only the NOIRLab NGC 6946 row in the matching v0004 distance map.
+          with map_path.open("r", encoding="utf-8", newline="") as f:
+              reader = csv.DictReader(f)
+              fieldnames = reader.fieldnames
+              rows = list(reader)
+          required = {"providerKey", "archiveId", "distanceMly"}
+          if not fieldnames or not required.issubset(fieldnames):
+              raise SystemExit(f"Unexpected distance-map columns: {fieldnames}")
+          map_matches = [row for row in rows
+                         if row["providerKey"].strip().lower() == "noirlab"
+                         and row["archiveId"].strip().lower() == "noao-ngc6946"]
+          if len(map_matches) != 1:
+              raise SystemExit(f"Expected exactly one NOIRLab noao-ngc6946 distance-map row, found {len(map_matches)}.")
+          map_matches[0]["distanceMly"] = "22"
+          with map_path.open("w", encoding="utf-8", newline="") as f:
+              writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator="\n")
+              writer.writeheader()
+              writer.writerows(rows)
+          print("Updated distance-map row noirlab/noao-ngc6946 => 22 Mly")
+          PY
+
+      - name: Validate JSON and distance-map result
+        shell: bash
+        run: |
+          python - <<'PY'
+          import csv, json
+          from pathlib import Path
+          catalog = json.loads(Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json").read_text(encoding="utf-8"))
+          rows = list(csv.DictReader(Path("viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv").open(encoding="utf-8", newline="")))
+          found = [r for r in rows if r["providerKey"].strip().lower() == "noirlab" and r["archiveId"].strip().lower() == "noao-ngc6946"]
+          assert len(found) == 1 and float(found[0]["distanceMly"]) == 22.0, found
+          print("PASS: JSON parses; distance map confirms NOIRLab NGC 6946 = 22 Mly.")
+          PY
+
+      - name: Commit corrected catalog and distance map
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv
+          if git diff --cached --quiet; then
+            echo "No changes needed; distance already equals 22 Mly."
+            exit 0
+          fi
+          git commit -m "Correct NOIRLab NGC 6946 distance to 22 Mly in AVM runtime 0004"
+          git push origin HEAD:release
