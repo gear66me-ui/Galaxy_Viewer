@@ -1,0 +1,11 @@
+{
+  "generatedUtc": "2026-10-19T14:08:42.406204+00:00",
+  "catalog": "viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json",
+  "branch": "release",
+  "catalogIsReadOnlyForThisAudit": true,
+  "selection": "Top 20 records with distanceMly >= 20000, excluding the 19 archive IDs reviewed in the prior pass, sorted by distance descending.",
+  "totalRecords": 1847,
+  "eligibleUnreviewedHighDistanceCount": 0,
+  "selectedCount": 0,
+  "records": []
+}
