@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "26438b903de0bcfc4b3dd008505c71f9f834486b",
-  "build": "0052",
+  "sourceCommit": "faac4b2796b760c3dae674483d7eaba05d7745e7",
+  "build": "0053",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.8-BLD-0052.py",
+    "viewer/RC-V1.0.0.8-BLD-0053.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -158,7 +158,8 @@
     "e38bfcc36a2f156517f9a77865da0c1c13d49175",
     "d85d91201ea52aa6524a62394fc81b450b15ac23",
     "e197403c8525b90f21c95967f11ab0bd01c3d0c4",
-    "f7740afe20a1dccd0e58644e8c154f4e6396ed83"
+    "f7740afe20a1dccd0e58644e8c154f4e6396ed83",
+    "faac4b2796b760c3dae674483d7eaba05d7745e7"
   ],
   "validationProfile": "production-release-gate-1.0.0.8-build-0048-manual-zoom-suspends-hips-fetch-350ms-settle"
 }
