@@ -5,6 +5,7 @@ on:
     branches: [release]
     paths:
       - 'viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv'
+      - '.github/workflows/build-galaxy-viewer-release-test-apk.yml'
 permissions: { contents: write }
 jobs:
   build:
@@ -12,12 +13,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { ref: release }
-      - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: '17' }
-      - uses: android-actions/setup-android@v3
-      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
-      - uses: gradle/actions/setup-gradle@v4
-        with: { gradle-version: '8.9' }
       - name: Generate canonical runtime catalog 0004 and pointer
         shell: bash
         run: |
@@ -82,6 +77,14 @@ jobs:
             git commit -m 'Generate canonical AVN runtime catalog 0004 and roll build 0050'
             git push origin HEAD:release
           fi
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: 'platforms;android-35,build-tools;35.0.0'
+      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+        with: { gradle-version: '8.9' }
       - name: Build isolated release APK
         shell: bash
         run: |
