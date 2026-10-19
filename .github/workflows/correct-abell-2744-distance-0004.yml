@@ -38,6 +38,7 @@ jobs:
               raise SystemExit(f'Identity check failed: name={record.get("name")!r}, title={record.get("title")!r}')
           old = record.get('distanceMly')
           record['distanceMly'] = expected_mly
+          record['redshift'] = 0.308  # Hubble/ESA published value
           catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\\n', encoding='utf-8')
 
           with map_path.open(newline='', encoding='utf-8') as f:
