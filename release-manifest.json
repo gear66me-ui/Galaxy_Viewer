@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "3246cd94441f0fdc020d911836100de0d6644a0c",
-  "build": "0049",
+  "sourceCommit": "6fb0f38215cfc3f0317d1e0f61963dfb8cabe318",
+  "build": "0050",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.8-BLD-0049.py",
+    "viewer/RC-V1.0.0.8-BLD-0050.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -21,7 +21,7 @@
   ],
   "catalogs": [
     "viewer/image-databases/master-database/gv-master-catalog.json",
-    "viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json",
+    "viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json",
     "viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json",
     "viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json",
     "viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json",

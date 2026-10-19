@@ -84,7 +84,7 @@ jobs:
           viewer=json.loads((root/'viewer/gv-current-viewer.json').read_text())
           pointer=json.loads((root/'viewer/Web-Browser/web-browser-current.json').read_text())
           manifest=json.loads((root/'release-manifest.json').read_text())
-          avm=json.loads((root/'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json').read_text())
+          avm=json.loads((root/'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json').read_text())
           rc_path=root/'viewer'/str(viewer.get('viewer',''))
           rc=rc_path.read_text()
           active_build=str(viewer.get('build',''))
@@ -125,7 +125,7 @@ jobs:
           assert 'onZoomOutComplete:startTravelWork' not in rc, 'destination work must not begin at T-11.9'
           assert 'GV DIRECT HD T-MINUS-EIGHT STAGE FAILED' in rc, 'T-8 staging fallback must be logged'
           # BUILD 0028 release contract: validate the active runtime catalog.
-          assert 'gv-avm-runtime-catalog-0003.json' in rc
+          assert 'gv-avm-runtime-catalog-0004.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
           assert pins==sorted(['10ae327ec7ab126627cc1e482e27828075bbf4f4','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','42620e479e7fa719ca168dd1fbf96e924e23eb9d','f7740afe20a1dccd0e58644e8c154f4e6396ed83','e38bfcc36a2f156517f9a77865da0c1c13d49175','fceee6a4b7ba1cacb5632e09c00c4f3ad4e05b51']), pins
@@ -184,7 +184,7 @@ jobs:
           assert "aladin.on('positionChanged'" in rc and "aladin.on('zoomChanged'" in rc, 'Earth-distance banner must refresh on pan and zoom events'
           assert 'if(window.GV_NAV_BACKGROUND_SUSPENDED||gvEarthDistanceSyncBusy)return;' not in rc, 'Earth-distance refresh must not be blocked by background suspension'
           assert 'gvShowEarthDistance(nearest);' in rc, 'Earth-distance banner must refresh from live center selection'
-          assert "String(Math.round(v/10)/100)+' BLY'" in rc and "String(Math.round(v))+' MLY'" in rc and "Number((v*1000).toFixed(1)).toString()+' KLY'" in rc and 'destination?.science?.distanceMly' in rc, 'Earth banner must use travel-card rounding and support science.distanceMly catalog records'
+          assert "String(Math.round(v/10)/100)+' BLY'" in rc and "String(Math.round(v))+' MLY'" in rc and "Number((v*1000).toFixed(1)).toString()+' KLY'" in rc and 'destination?.distanceMly' in rc, 'Earth banner must use travel-card rounding and the canonical top-level distanceMly field'
           assert ('setInterval(()=>{gvInstallEarthDistanceInteractionListeners();gvSyncEarthDistanceToCenter()},100)' in rc or 'setInterval(()=>{gvInstallEarthDistanceInteractionListeners();if(!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},100)' in rc), 'Earth distance must resync every 100 ms while respecting active zoom/travel guards'
           assert 'const distanceSource=gvEarthDistanceTarget;' in rc and 'const distanceSource=gvEarthDistanceTarget||activeDestination;' not in rc, 'physical scale must avoid the activeDestination temporal-dead-zone and use the live Earth-distance target'
           assert 'GV0007 EARTH DISTANCE NO CATALOG MATCH — RETAINED LAST VALID DISTANCE' in rc and 'const catalog=await gvLoadAvmRuntimeCatalog();' in rc and 'if(gvNavigationTravelActive)return;' in rc, 'Earth banner must retain last valid distance without unauthorized status text when current FOV has no catalog match'
