@@ -66013,9 +66013,9 @@
     "source": "Galaxy_Viewer_v0004a_Distance_Review_Workbook.csv column 'AVN RUNTIME 0004 distance (Mly)'",
     "duplicateDistanceFieldsRemoved": true,
     "mappedBy": "providerKey + archiveId",
-    "distanceValuesUpdated": 1846,
-    "blankDistanceRowsPreserved": 1,
-    "buildNumber": 51,
+    "distanceValuesUpdated": 1847,
+    "blankDistanceRowsPreserved": 0,
+    "buildNumber": 53,
     "displayPrecisionDecimalPlaces": 2
   },
   "buildNumber": 53,
@@ -66031,6 +66031,8 @@
     },
     "method": "invert Dc(z)=(c/H0)*integral_0^z dz'/sqrt(OmegaM*(1+z')^3+OmegaLambda)",
     "precision": "six decimal places; display with toFixed(6)",
-    "recordsComputed": 1847
+    "recordsComputed": 1847,
+    "displayPrecisionDecimalPlaces": 6,
+    "buildNumber": 53
   }
 }
