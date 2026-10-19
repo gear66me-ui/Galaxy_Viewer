@@ -1,6 +1,7 @@
 name: Correct Abell 2744 FLRW Distance — AVM Runtime 0004
 on:
   workflow_dispatch:
+  # Trigger this workflow when its guarded definition is updated on release.
   push:
     branches: [release]
     paths:
