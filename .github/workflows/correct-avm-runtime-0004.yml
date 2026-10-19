@@ -28,7 +28,7 @@ jobs:
           path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
           data = json.loads(path.read_text(encoding="utf-8"))
           corrections = [
-              {"id":"potw2401a","names":["hers j020941.1+001557"],"distanceMly":2778.361,"redshift":0.202},
+              {"id":"potw2401a","names":["hers j020941.1+001557"],"distanceMly":19500.0,"redshift":2.522536},
               {"id":"potw1619a","provider":"eso","names":["eso 316-33"],"distanceMly":203.841,"redshift":0.014140},
               {"id":"opo1353b","names":["himiko"],"distanceMly":28170.883,"redshift":6.595},
               {"id":"eso0413a","names":["ngc 6769"],"distanceMly":183.131,"redshift":0.012699},
