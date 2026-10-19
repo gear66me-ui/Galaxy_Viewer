@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "ca37c38ec857b08b7eb68d66b1bb422836e6aaf3",
-  "build": "0054",
+  "sourceCommit": "723b849c5205d78d9b06df003db0e477ba4762f2",
+  "build": "0055",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.8-BLD-0054.py",
+    "viewer/RC-V1.0.0.8-BLD-0055.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -149,7 +149,7 @@
     "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"
   ],
   "dependencySnapshot": "373de63d264588f524aed2b999e61f7da7558b42",
-  "catalogSnapshot": "4b4d7e740aa172c510fd06ae59d75a8590e8ef43",
+  "catalogSnapshot": "204acf761689239cc7f35eeb3b8a573d89907969",
   "dependencyPins": [
     "10ae327ec7ab126627cc1e482e27828075bbf4f4",
     "d4c95ace9c0ec81e948b2440ead7b06c269b344d",
