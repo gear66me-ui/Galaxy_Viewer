@@ -55,19 +55,9 @@ jobs:
                   "provider", "providerKey", "archiveId", "archive_id", "id",
                   "name", "objectName", "designation", "title"
               )).lower()
-              if "noirlab" in values and ("noao-ngc6946" in values or "ngc 6946" in values or "ngc6946" in values):
+              if record.get("providerKey", "").strip().lower() == "noirlab" and str(record.get("archiveId", "")).strip().lower() == "noao-ngc6946":
                   matches.append(record)
 
-          # If provider is represented on a parent wrapper, use a strict NGC 6946
-          # identifier match as a fallback, while refusing ambiguous matches.
-          if not matches:
-              for record in children(data):
-                  values = " ".join(str(record.get(k, "")) for k in (
-                      "archiveId", "archive_id", "id", "name", "objectName",
-                      "designation", "title"
-                  )).lower()
-                  if "noao-ngc6946" in values:
-                      matches.append(record)
 
           unique = {id(record): record for record in matches}
           matches = list(unique.values())
