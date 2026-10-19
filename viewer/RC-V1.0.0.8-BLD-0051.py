@@ -2784,13 +2784,11 @@ async function gvPresentationDestination(destination){
         // Keep the special 3C 321 exception only for its cosmic-age convention.
         const is3C321=[source?.archiveId,source?.id,source?.name,source?.designation,source?.displayName,source?.title,destination?.archiveId,destination?.id,destination?.name,destination?.designation,destination?.displayName,destination?.title]
             .some(value=>/3c\s*[- ]?321/i.test(String(value||'')));
-        // BUILD 0051 distance-source fix: display distance must prefer runtime catalog 0004.
-        // Provider/route records may carry stale legacy values (NGC 6090 was showing ~10,000 ly).
-        const runtimeDistanceCatalog=await gvLoadAvmRuntimeCatalog().catch(()=>null);
-        const runtimeDistanceId=String(source?.archiveId||source?.id||id).trim().toLowerCase();
-        const runtimeDistanceUrl=String(source?.imageUrl||url||'').trim().toLowerCase();
-        const runtimeDistanceRecord=(runtimeDistanceId&&runtimeDistanceCatalog?.byId.get(runtimeDistanceId))||(runtimeDistanceUrl&&runtimeDistanceCatalog?.byUrl.get(runtimeDistanceUrl));
-        const canonicalDistanceMly=validNumber(runtimeDistanceRecord?.distanceMly)?Number(runtimeDistanceRecord.distanceMly):(validNumber(enriched?.distanceMly)?Number(enriched.distanceMly):null);
+        // Single source of truth: the matched record in runtime catalog 0004, field distanceMly.
+        // Never fall back to provider, route, or legacy distance values.
+        const runtimeDistanceRecord=await gvRuntimeAvmRecord(destination);
+        if(!validNumber(runtimeDistanceRecord?.distanceMly))throw new Error('GV AVM RUNTIME DISTANCE MISSING: '+String(destination?.archiveId||destination?.id||destination?.name||''));
+        const canonicalDistanceMly=Number(runtimeDistanceRecord.distanceMly);
         // Canonical convention for all six provider catalogs:
         // science.ageGyr means cosmic age at emission, never lookback time or stellar age.
         // Legacy rows are normalized by their explicit ageMethod; never guess from the number.
