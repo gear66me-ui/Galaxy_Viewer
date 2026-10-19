@@ -27,7 +27,7 @@ jobs:
           map_path = Path('viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv')
           expected_mly = 4119.1906  # flat LCDM: z=0.308, H0=67.6, Omega_m=0.315; present-day comoving radial distance
           raw_json = catalog_path.read_text(encoding='utf-8')
-          if raw_json.endswith(r'\\n'):
+          if raw_json.endswith(r'\n'):
               raw_json = raw_json[:-2]
           catalog = json.loads(raw_json)
           records = catalog.get('records')
@@ -46,8 +46,8 @@ jobs:
 
           raw_map = map_path.read_text(encoding='utf-8')
           # Recover safely if an earlier run wrote literal backslash-n separators.
-          if '\\n' not in raw_map and r'\\n' in raw_map:
-              raw_map = raw_map.replace(r'\\n', '\\n')
+          if '\n' not in raw_map and r'\n' in raw_map:
+              raw_map = raw_map.replace(r'\n', '\n')
           reader = csv.DictReader(io.StringIO(raw_map))
           fieldnames = reader.fieldnames
           rows = list(reader)
