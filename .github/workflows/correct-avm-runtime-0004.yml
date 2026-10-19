@@ -30,7 +30,7 @@ jobs:
           corrections = [
               {"id":"potw2401a","names":["hers j020941.1+001557"],"distanceMly":19500.0,"redshift":2.522536},
               {"id":"potw1619a","provider":"eso","names":["eso 316-33"],"distanceMly":203.841,"redshift":0.014140},
-              {"id":"opo1353b","names":["himiko"],"distanceMly":28170.883,"redshift":6.595},
+              {"id":"opo1353b","names":["himiko"],"distanceMly":13000.0,"redshift":1.25848},
               {"id":"eso0413a","names":["ngc 6769"],"distanceMly":183.131,"redshift":0.012699},
               {"id":"chandra-2012-gb1428","names":["gb 1428+4217"],"distanceMly":25333.590,"redshift":4.72},
               {"id":"chandra-2026-redpotato","names":["red potato galaxy"],"distanceMly":21914.951,"redshift":3.25},
