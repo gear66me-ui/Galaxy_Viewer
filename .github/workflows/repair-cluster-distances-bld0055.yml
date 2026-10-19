@@ -7,7 +7,7 @@ permissions:
   contents: write
 jobs:
   repair:
-    if: contains(github.event.head_commit.message, 'Activate BLD-0055 catalog repair')
+    if: contains(github.event.head_commit.message, 'Activate build 0055')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -157,5 +157,6 @@ jobs:
             echo "No catalog changes were needed."
           else
             git commit -m "Correct Abell 2744 and Abell S1077 distances [skip ci]"
+            git pull --rebase origin release
             git push origin HEAD:release
           fi
