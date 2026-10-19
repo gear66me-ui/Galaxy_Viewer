@@ -220,9 +220,16 @@
       "cdMatrix": null,
       "projection": null,
       "coordinateFrame": "ICRS",
-      "distanceMly": 2.6027,
-      "science": {},
-      "redshift": 0.00018
+      "distanceMly": 2.2,
+      "science": {
+        "distanceMly": 2.2,
+        "redshift": 0.000152103,
+        "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+        "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
+      },
+      "redshift": 0.000152103,
+      "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+      "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
     },
     {
       "providerKey": "chandra",
@@ -11936,9 +11943,16 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 2.6027,
-      "science": {},
-      "redshift": 0.00018
+      "distanceMly": 2.2,
+      "science": {
+        "distanceMly": 2.2,
+        "redshift": 0.000152103,
+        "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+        "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
+      },
+      "redshift": 0.000152103,
+      "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+      "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
     },
     {
       "providerKey": "hubble",
@@ -26849,9 +26863,16 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 120.0255,
-      "science": {},
-      "redshift": 0.008314
+      "distanceMly": 2.2,
+      "science": {
+        "distanceMly": 2.2,
+        "redshift": 0.000152103,
+        "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+        "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
+      },
+      "redshift": 0.000152103,
+      "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+      "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
     },
     {
       "providerKey": "hubble",
@@ -32044,9 +32065,16 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 500,
-      "science": {},
-      "redshift": 0.034857
+      "distanceMly": 2.2,
+      "science": {
+        "distanceMly": 2.2,
+        "redshift": 0.000152103,
+        "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+        "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
+      },
+      "redshift": 0.000152103,
+      "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+      "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
     },
     {
       "providerKey": "hubble",
@@ -41538,9 +41566,16 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.02,
-      "science": {},
-      "redshift": 1e-06
+      "distanceMly": 2.2,
+      "science": {
+        "distanceMly": 2.2,
+        "redshift": 0.000152103,
+        "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+        "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
+      },
+      "redshift": 0.000152103,
+      "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+      "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
     },
     {
       "providerKey": "hubble",
@@ -41573,9 +41608,16 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.013,
-      "science": {},
-      "redshift": 1e-06
+      "distanceMly": 2.2,
+      "science": {
+        "distanceMly": 2.2,
+        "redshift": 0.000152103,
+        "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+        "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
+      },
+      "redshift": 0.000152103,
+      "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+      "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
     },
     {
       "providerKey": "hubble",
@@ -41608,9 +41650,16 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.16,
-      "science": {},
-      "redshift": 1.1e-05
+      "distanceMly": 2.2,
+      "science": {
+        "distanceMly": 2.2,
+        "redshift": 0.000152103,
+        "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+        "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
+      },
+      "redshift": 0.000152103,
+      "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+      "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
     },
     {
       "providerKey": "hubble",
@@ -63048,9 +63097,16 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 2.6027,
-      "science": {},
-      "redshift": 0.00018
+      "distanceMly": 2.2,
+      "science": {
+        "distanceMly": 2.2,
+        "redshift": 0.000152103,
+        "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+        "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
+      },
+      "redshift": 0.000152103,
+      "distanceMethod": "Chandra published estimate ~2.2 million light-years; flat Lambda-CDM consistency calculation",
+      "redshiftMethod": "Approximate redshift inferred by inverting comoving distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315); not a spectroscopic measurement"
     },
     {
       "providerKey": "noirlab",
