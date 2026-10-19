@@ -60,9 +60,9 @@ jobs:
               'duplicateDistanceFieldsRemoved': True
           }
           catalog['recordCount'] = len(records)
-          target.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\\n', encoding='utf-8')
+          target.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           pointer = {'version': 'RC-V1.0.0.8', 'viewer': 'RC-V1.0.0.8-BLD-0050.py', 'build': '0050'}
-          Path('viewer/gv-current-viewer.json').write_text(json.dumps(pointer, indent=2) + '\\n', encoding='utf-8')
+          Path('viewer/gv-current-viewer.json').write_text(json.dumps(pointer, indent=2) + '\n', encoding='utf-8')
           for i, record in enumerate(records, start=1):
               distance_keys = [k for k in record if 'distance' in k.lower()]
               science_keys = [k for k in (record.get('science') or {}) if 'distance' in k.lower()]
