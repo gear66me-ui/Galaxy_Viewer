@@ -39,7 +39,7 @@ jobs:
           old = record.get('distanceMly')
           record['distanceMly'] = expected_mly
           record['redshift'] = 0.308  # Hubble/ESA published value
-          catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\\n', encoding='utf-8')
+          catalog_path.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
           with map_path.open(newline='', encoding='utf-8') as f:
               reader = csv.DictReader(f)
@@ -53,7 +53,7 @@ jobs:
           map_old = map_matches[0]['distanceMly']
           map_matches[0]['distanceMly'] = f'{expected_mly:.4f}'
           with map_path.open('w', newline='', encoding='utf-8') as f:
-              writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator='\\n')
+              writer = csv.DictWriter(f, fieldnames=fieldnames, lineterminator='\r\n')
               writer.writeheader()
               writer.writerows(rows)
           print(json.dumps({
