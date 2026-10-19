@@ -1142,7 +1142,7 @@ function gvSurveyProviderKey(record){
     if(/ESO|EUROPEAN SOUTHERN OBSERVATORY/.test(provider))return 'ESO';
     return provider;
 }
-const gvSurveyRuntimePayload=await fetch(fresh(GV_SURVEY_RUNTIME_CATALOG_URL),{cache:'force-cache'}).then(response=>{
+const gvSurveyRuntimePayload=await fetch(fresh(GV_SURVEY_RUNTIME_CATALOG_URL)+'&gv-json-integrity=20261019-0001',{cache:'no-store'}).then(response=>{
     if(!response.ok)throw new Error('GV SURVEY RUNTIME CATALOG HTTP '+response.status);
     return response.json();
 });
@@ -1974,7 +1974,7 @@ const GV_AVM_RUNTIME_CATALOG_URL='https://raw.githubusercontent.com/gear66me-ui/
 let gvAvmRuntimePromise=null;
 async function gvLoadAvmRuntimeCatalog(){
     if(!gvAvmRuntimePromise){
-        gvAvmRuntimePromise=fetch(fresh(GV_AVM_RUNTIME_CATALOG_URL),{cache:'force-cache'})
+        gvAvmRuntimePromise=fetch(fresh(GV_AVM_RUNTIME_CATALOG_URL)+'&gv-json-integrity=20261019-0001',{cache:'no-store'})
             .then(response=>{if(!response.ok)throw new Error('GV AVM RUNTIME CATALOG HTTP '+response.status);return response.json()})
             .then(payload=>{
                 const records=Array.isArray(payload)?payload:payload?.records;
