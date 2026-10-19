@@ -25203,9 +25203,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 9968.653,
+      "distanceMly": 10000,
       "science": {},
-      "redshift": 0.87
+      "redshift": 0.873594
     },
     {
       "providerKey": "hubble",
@@ -48789,9 +48789,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 9968.653,
+      "distanceMly": 10000,
       "science": {},
-      "redshift": 0.87
+      "redshift": 0.873594
     },
     {
       "providerKey": "hubble",
@@ -66064,7 +66064,7 @@
     },
     "validatedAgainst": "https://chandra.harvard.edu/photo/2012/m101/",
     "highDistanceAuditUpdatedAt": "2026-10-19",
-    "highDistanceAuditMethod": "Targeted web verification of 20 high-distance catalog candidates; corrected only uniquely identifiable objects with a published redshift. distanceMly recomputed as comoving radial distance using flat Lambda-CDM H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685. Ambiguous deep-field records retained unchanged.",
+    "highDistanceAuditMethod": "Targeted web verification of 20 high-distance catalog candidates; corrected only uniquely identifiable objects with a published redshift. distanceMly recomputed as comoving radial distance using flat Lambda-CDM H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685. Ambiguous deep-field records retained unchanged. Applied 5% tolerance: restored original El Gordo values because the published-value differences are below 5%.",
     "highDistanceAuditCorrections": [
       {
         "providerKey": "hubble",
@@ -66201,10 +66201,11 @@
           "redshift": 0.873594
         },
         "new": {
-          "distanceMly": 9968.653,
-          "redshift": 0.87
+          "distanceMly": 10000,
+          "redshift": 0.873594
         },
-        "reason": "Published El Gordo cluster redshift."
+        "reason": "Published El Gordo redshift z≈0.870 gives a comoving distance within 5% of the catalog values; retain original values under the agreed tolerance.",
+        "status": "retained_original_within_5_percent"
       },
       {
         "providerKey": "hubble",
@@ -66215,10 +66216,11 @@
           "redshift": 0.873594
         },
         "new": {
-          "distanceMly": 9968.653,
-          "redshift": 0.87
+          "distanceMly": 10000,
+          "redshift": 0.873594
         },
-        "reason": "Published El Gordo cluster redshift."
+        "reason": "Published El Gordo redshift z≈0.870 gives a comoving distance within 5% of the catalog values; retain original values under the agreed tolerance.",
+        "status": "retained_original_within_5_percent"
       }
     ]
   },
