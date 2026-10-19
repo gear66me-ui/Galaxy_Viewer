@@ -109,7 +109,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@10ae327ec7ab126627cc1e482e27828075bbf4f4/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@faac4b2796b760c3dae674483d7eaba05d7745e7/viewer/modules/destination-presentation/gv-destination-presentation-0056.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@2db93ae105acf86eba9e59f26f821f4a99bef04c/viewer/modules/destination-presentation/gv-destination-presentation-0056.js'
 });
 
 
@@ -521,12 +521,18 @@ window.addEventListener('focus',gvRecoverViewerAfterNativeReturn);
 window.addEventListener('pageshow',gvRecoverViewerAfterNativeReturn);
 
 function gvFormatEarthDistance(destination){
-    // All distance labels use only the canonical runtime record field distanceMly.
+    // Sole source: AVM runtime catalog 0004 records[].distanceMly.
     const v=Number(destination?.distanceMly);
-    if(!(v>0)||!Number.isFinite(v))return '';
+    if(!(v>0)||!Number.isFinite(v))throw new Error('AVM runtime distanceMly missing or invalid');
     if(v>=1000)return (v/1000).toFixed(2)+' BLY';
     if(v>=1)return v.toFixed(2)+' MLY';
     return (v*1000).toFixed(2)+' KLY';
+}
+function gvFormatEarthRedshift(destination){
+    // Sole source: AVM runtime catalog 0004 records[].redshift, FLRW-derived upstream.
+    const z=Number(destination?.redshift);
+    if(!Number.isFinite(z)||z<0)throw new Error('AVM runtime redshift missing or invalid');
+    return 'Z='+z.toFixed(6);
 }
 function gvInstallEarthDistanceBanner(){
     if(document.getElementById('gv-earth-distance-banner')&&document.getElementById('gv-live-physical-scale'))return;
@@ -597,26 +603,43 @@ function gvUpdateLivePhysicalScale(){
  console.info('GV0118 AVM FOV PHYSICAL SCALE',{fovXDegrees:fovX,viewportWidth:width,distanceMly,lyPerPx,scaleValueLy:gvLiveScaleValueLy,widthPx:barPx,method:'catalog distance × spherical chord 2D sin(FOV/2)'});
 }
 function gvHideEarthDistance(){document.getElementById('gv-earth-distance-banner')?.classList.remove('gv-visible');document.getElementById('gv-live-physical-scale')?.classList.remove('gv-visible');gvLiveScaleValueLy=null;gvEarthDistanceTarget=null;gvEarthDistanceTargetKey=''}
-function gvShowEarthDistance(destination){
+let gvEarthDistanceDisplayGeneration=0;
+async function gvShowEarthDistance(destination){
     gvInstallEarthDistanceBanner();
-    const b=document.getElementById('gv-earth-distance-banner'),text=gvFormatEarthDistance(destination);
-    if(!b||!text||gvNavigationTravelActive)return;
-    const key=gvEarthDistanceIdentity(destination);
-    const previousDistance=gvFormatEarthDistance(gvEarthDistanceTarget);
-    const selectionChanged=key!==gvEarthDistanceTargetKey||text!==previousDistance;
-    gvEarthDistanceTarget=destination;
-    gvEarthDistanceTargetKey=key;
-    // Keep the existing DOM stable. Only replace the text when the centered
-    // galaxy really changes, so the banner cannot blink on every poll.
-    if(selectionChanged||!b.querySelector('.gv-earth-distance-icon')){
-        b.innerHTML=`<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>${text}</span><span class="gv-earth-distance-tick" aria-hidden="true"></span>`;
-        gvLiveScaleValueLy=null;
-        console.info('GV0008 EARTH DISTANCE SELECTION UPDATED',{key,distance:text});
+    const b=document.getElementById('gv-earth-distance-banner');
+    if(!b||gvNavigationTravelActive)return;
+    const generation=++gvEarthDistanceDisplayGeneration;
+    try{
+        // Resolve every destination against runtime catalog 0004; never trust route/provider distances.
+        const record=await gvRuntimeAvmRecord(destination);
+        const distanceMly=Number(record?.distanceMly),redshift=Number(record?.redshift);
+        if(!(distanceMly>0)||!Number.isFinite(distanceMly))throw new Error('AVM runtime distanceMly missing or invalid');
+        if(!Number.isFinite(redshift)||redshift<0)throw new Error('AVM runtime redshift missing or invalid');
+        if(generation!==gvEarthDistanceDisplayGeneration||gvNavigationTravelActive)return;
+        const runtimeDestination={...record,distanceMly,redshift};
+        const text=gvFormatEarthDistance(runtimeDestination)+' · '+gvFormatEarthRedshift(runtimeDestination);
+        const key=gvEarthDistanceIdentity(runtimeDestination);
+        const previousText=gvEarthDistanceTarget
+            ?gvFormatEarthDistance(gvEarthDistanceTarget)+' · '+gvFormatEarthRedshift(gvEarthDistanceTarget)
+            :'';
+        const selectionChanged=key!==gvEarthDistanceTargetKey||text!==previousText;
+        gvEarthDistanceTarget=runtimeDestination;
+        gvEarthDistanceTargetKey=key;
+        if(selectionChanged||!b.querySelector('.gv-earth-distance-icon')){
+            b.innerHTML=`<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>${text}</span><span class="gv-earth-distance-tick" aria-hidden="true"></span>`;
+            gvLiveScaleValueLy=null;
+            console.info('GV0008 AVM RUNTIME DISTANCE/REDSHIFT UPDATED',{key,distanceMly,redshift,display:text,source:'gv-avm-runtime-catalog-0004.json'});
+        }
+        const card=document.querySelector('.gvdp-card');
+        const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`;gvUpdateLivePhysicalScale()};
+        place();
+        if(!b.classList.contains('gv-visible'))b.classList.add('gv-visible');
+    }catch(error){
+        if(generation!==gvEarthDistanceDisplayGeneration)return;
+        b.classList.remove('gv-visible');
+        gvEarthDistanceTarget=null;gvEarthDistanceTargetKey='';gvLiveScaleValueLy=null;
+        console.error('GV AVM RUNTIME DISTANCE/REDSHIFT DISPLAY FAILED — NO FALLBACK',error);
     }
-    const card=document.querySelector('.gvdp-card');
-    const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`;gvUpdateLivePhysicalScale()};
-    place();
-    if(!b.classList.contains('gv-visible'))b.classList.add('gv-visible');
 }
 gvInstallEarthDistanceBanner();
 // BUILD 0036 STUTTER FIX: skip repeated ruler layout/scale work while the zoom slider is driving setFov.
