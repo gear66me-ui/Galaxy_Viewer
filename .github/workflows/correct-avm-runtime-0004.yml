@@ -1,0 +1,108 @@
+name: Correct AVM Runtime Catalog 0004
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/correct-avm-runtime-0004.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: correct-avm-runtime-catalog-0004
+  cancel-in-progress: false
+jobs:
+  correct-catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply nine reviewed distance/redshift corrections
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          corrections = [
+              {"id": "potw2401a", "name": "HerS J020941.1+001557", "distanceMly": 2778.361, "redshift": 0.202},
+              {"id": "potw1619a", "provider": "eso", "name": "ESO 316-33", "distanceMly": 203.841, "redshift": 0.014140},
+              {"id": "opo1353b", "name": "Himiko", "distanceMly": 28170.883, "redshift": 6.595},
+              {"id": "eso0413a", "name": "NGC 6769", "distanceMly": 183.131, "redshift": 0.012699},
+              {"id": "chandra-2012-gb1428", "name": "GB 1428+4217", "distanceMly": 25333.590, "redshift": 4.72},
+              {"id": "chandra-2026-redpotato", "name": "Red Potato Galaxy", "distanceMly": 21914.951, "redshift": 3.25},
+              {"id": "potw1151a", "name": "LRG 3-757", "distanceMly": 5722.583, "redshift": 0.444},
+              {"id": "weic2428a", "name": "MRC 1138-262", "distanceMly": 17992.853, "redshift": 2.156},
+              {"id": "ann1105a", "name": "CL J1449+0856", "distanceMly": 17603.089, "redshift": 2.07},
+          ]
+
+          records = []
+          def walk(node, path="$"):
+              if isinstance(node, dict):
+                  # Catalog entries are objects with at least one identity-like field.
+                  records.append((node, path))
+                  for k, v in node.items():
+                      if isinstance(v, (dict, list)):
+                          walk(v, f"{path}.{k}")
+              elif isinstance(node, list):
+                  for i, v in enumerate(node):
+                      walk(v, f"{path}[{i}]")
+          walk(data)
+
+          def scalar_texts(obj):
+              vals = []
+              for k, v in obj.items():
+                  if isinstance(v, (str, int, float)) and not isinstance(v, bool):
+                      vals.append((str(k).lower(), str(v).lower()))
+              return vals
+
+          changed = []
+          for c in corrections:
+              candidates = []
+              for obj, p in records:
+                  vals = scalar_texts(obj)
+                  id_hits = [(k, v) for k, v in vals if v == c["id"].lower() or v.endswith("/" + c["id"].lower())]
+                  if not id_hits:
+                      continue
+                  if c.get("provider"):
+                      provider_hits = [v for k, v in vals if "provider" in k or "catalog" in k or k == "source"]
+                      if not any(c["provider"] in v for v in provider_hits):
+                          continue
+                  candidates.append((obj, p))
+              # Remove nested duplicate candidates when a parent record already matches.
+              unique = []
+              for obj, p in candidates:
+                  if not any(p.startswith(q + ".") or p.startswith(q + "[") for _, q in candidates if q != p):
+                      unique.append((obj, p))
+              if len(unique) != 1:
+                  raise SystemExit(f"STOP: {c['name']} ({c['id']}) matched {len(unique)} records; no catalog changes committed.")
+              obj, p = unique[0]
+              # Preserve the catalog's established field names; only update distance/redshift.
+              distance_key = next((k for k in obj if k.lower() in ("distancemly", "distance_mly")), None)
+              redshift_key = next((k for k in obj if k.lower() in ("redshift", "z", "redshiftz")), None)
+              if distance_key is None or redshift_key is None:
+                  raise SystemExit(f"STOP: {c['name']} at {p} lacks an existing distanceMly/redshift field; no catalog changes committed.")
+              old = (obj[distance_key], obj[redshift_key])
+              obj[distance_key] = c["distanceMly"]
+              obj[redshift_key] = c["redshift"]
+              changed.append((c["name"], p, old, (obj[distance_key], obj[redshift_key])))
+
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          print(f"Validated and updated {len(changed)} records:")
+          for name, p, old, new in changed:
+              print(f"- {name}: {old} -> {new} ({p})")
+          PY
+      - name: Commit catalog changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          if git diff --cached --quiet; then
+            echo "Catalog already contains the proposed values; no commit needed."
+          else
+            git commit -m "Correct nine distance and redshift records in AVM runtime catalog 0004"
+            git push origin HEAD:release
+          fi
