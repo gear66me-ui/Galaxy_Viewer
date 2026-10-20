@@ -128,7 +128,13 @@ jobs:
           assert 'gv-avm-runtime-catalog-0004.json' in rc
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
-          assert pins==sorted(['10ae327ec7ab126627cc1e482e27828075bbf4f4','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','42620e479e7fa719ca168dd1fbf96e924e23eb9d','f7740afe20a1dccd0e58644e8c154f4e6396ed83','e38bfcc36a2f156517f9a77865da0c1c13d49175','6106d0762f22d3bb7cfad84f54a20acf0528f453']), pins
+          # Keep stable dependency pins exact, but allow the destination presentation module to advance.
+          # Its hard-coded old SHA caused every follow-up release deployment to fail before publishing.
+          stable_pins={'10ae327ec7ab126627cc1e482e27828075bbf4f4','d85d91201ea52aa6524a62394fc81b450b15ac23','e197403c8525b90f21c95967f11ab0bd01c3d0c4','9ad02b64b0c10e09938ad8276109f2a61a0229cc','42620e479e7fa719ca168dd1fbf96e924e23eb9d','f7740afe20a1dccd0e58644e8c154f4e6396ed83','e38bfcc36a2f156517f9a77865da0c1c13d49175'}
+          assert stable_pins.issubset(set(pins)), f'missing stable immutable production dependency pins: {stable_pins-set(pins)}'
+          destination_pin=re.search(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})/viewer/modules/destination-presentation/gv-destination-presentation-0060\.js',rc)
+          assert destination_pin, 'active destination presentation module must use an immutable full-commit CDN pin'
+          assert len(pins)==8, f'unexpected number of immutable production dependency pins: {pins}'
           assert 'Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
           assert 'Galaxy_Viewer@42620e479e7fa719ca168dd1fbf96e924e23eb9d/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
           assert "GalaxyViewerConstellationOverlay?.VERSION!=='0018'" in rc
@@ -206,6 +212,8 @@ jobs:
           assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
           module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0060.js').read_text()
           assert "const VERSION='0060'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
+          assert "if(v>=1000)return['DISTANCE (BLY)',(v/1000).toFixed(3)]" in module and "if(v>=1)return['DISTANCE (MLY)',v.toFixed(3)]" in module and "return['DISTANCE (KLY)',(v*1000).toFixed(3)]" in module, 'destination and HD distance displays must use three decimals for BLY/MLY/KLY'
+          assert '.gvdp-hd-science .gvdp-value{font-size:10.5px' in module and '.gvdp-hd-science .gvdp-span-cell .gvdp-fov-value{font-size:10.5px' in module and '.gvdp-hd-science .gvdp-span-cell .gvdp-fov-key{font-size:11px' in module, 'HD FOV label/value typography must match image-span label/value typography'
           assert 'FOV (ARC MIN)' in module and 'function imageFovArcmin(d)' in module and 'const x=finite(d?.fovXDegrees),y=finite(d?.fovYDegrees)' in module and 'hydrateAvmFov(d,generation)' in module and 'AVM runtime catalog' in module, 'HD destination card must use hydrated AVM FOVX/FOVY metadata without fabricating missing axes'
           assert 'const distanceMly=finite(record?.distanceMly),redshift=finite(record?.redshift)' in module and 'destination={...requested,distanceMly,redshift,fovXDegrees:x,fovYDegrees:y,runtimeMetadataState' in module, 'HD card distance and redshift must both come from runtime catalog 0004'
           assert "destination={...d,distanceMly:null,redshift:null" in module and 'const record=byUrl||byId' in module, 'HD card must clear provider distances while runtime record loads and never fall back'
