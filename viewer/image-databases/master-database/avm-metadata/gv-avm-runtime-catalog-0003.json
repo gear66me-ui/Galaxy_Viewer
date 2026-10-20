@@ -10268,11 +10268,14 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 16.503513,
       "science": {
-        "distanceMly": 16.5035,
-        "distanceMethod": "median_of_published_NED_SIMBAD_measurements",
+        "distanceMly": 56.0,
+        "distanceMethod": "NASA/ESA Hubble NGC 986 distance (56 million light-years); redshift back-calculated with flat FLRW cosmology H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685",
         "distanceEvidence": "[{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1985A&AS...59...43B\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1986A&A...156..157B\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1985A&AS...59...43B\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1985A&AS...59...43B\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"2002ApJ...565..681R\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1988cng..book.....T\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"}]",
         "distanceEstimated": false,
-        "distanceDisplay": "16.5 million light-years"
+        "distanceDisplay": "56.0000 million light-years",
+        "redshift": 0.00387513,
+        "redshiftDisplay": "z 0.00387513",
+        "redshiftMethod": "FLRW distance-redshift inversion from 56.0000 Mly; six significant figures; not a spectroscopic measurement"
       },
       "distance": "16.5 million light-years"
     },
@@ -22427,11 +22430,14 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 16.503493600000002,
       "science": {
-        "distanceMly": 16.5035,
-        "distanceMethod": "median_of_published_NED_SIMBAD_measurements",
+        "distanceMly": 56.0,
+        "distanceMethod": "NASA/ESA Hubble NGC 986 distance (56 million light-years); redshift back-calculated with flat FLRW cosmology H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685",
         "distanceEvidence": "[{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1985A&AS...59...43B\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1986A&A...156..157B\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1985A&AS...59...43B\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1985A&AS...59...43B\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"2002ApJ...565..681R\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"},{\"source\":\"NED\",\"method\":\"Tully-Fisher\",\"reference\":\"1988cng..book.....T\",\"query\":\"https://ned.ipac.caltech.edu/NED::API/DistancesOfObject?TARGET=NGC+986&MAXREC=1000\"}]",
         "distanceEstimated": false,
-        "distanceDisplay": "16.5 million light-years"
+        "distanceDisplay": "56.0000 million light-years",
+        "redshift": 0.00387513,
+        "redshiftDisplay": "z 0.00387513",
+        "redshiftMethod": "FLRW distance-redshift inversion from 56.0000 Mly; six significant figures; not a spectroscopic measurement"
       },
       "distance": "16.5 million light-years"
     },
