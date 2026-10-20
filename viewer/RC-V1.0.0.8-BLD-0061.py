@@ -588,7 +588,7 @@ function gvUpdateLivePhysicalScale(){
  // Use catalog distance and live angular FOV only. The angular-distance relation
  // remains finite as the view zooms toward 180 degrees.
  const theta=Math.min(180,fovX)*Math.PI/180;
- const lyPerPx=(fovX<=180?2*Math.sin(theta/2):theta)/(width*Math.PI/180)*(distanceMly*1e6);
+ const lyPerPx=2*(distanceMly*1e6)*Math.sin(theta/2)/width;
  if(!(lyPerPx>0)||!Number.isFinite(lyPerPx)){
   s.classList.remove('gv-visible');console.error('GV0118 AVM FOV scale unavailable',{fovX,width,distanceMly});return;
  }
