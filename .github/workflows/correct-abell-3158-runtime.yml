@@ -1,0 +1,55 @@
+name: Correct Abell 3158 AVM runtime metadata
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/correct-abell-3158-runtime.yml
+      - .github/scripts/correct_abell_3158_runtime.py
+  workflow_dispatch:
+    inputs:
+      apply:
+        description: "Apply the reviewed Abell 3158 correction"
+        required: true
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+
+jobs:
+  correct-abell-3158:
+    if: ${{ github.event_name == 'push' || inputs.apply }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Apply correction and run algorithmic assertions
+        run: python .github/scripts/correct_abell_3158_runtime.py
+      - name: Validate complete runtime JSON
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json")
+          doc = json.loads(p.read_text(encoding="utf-8"))
+          assert isinstance(doc, (dict, list)), "Runtime root must be object or list"
+          print(f"PASS: full runtime catalog parses; bytes={p.stat().st_size}")
+          PY
+      - name: Commit in-place runtime catalog correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
+          if git diff --cached --quiet; then
+            echo "ERROR: correction produced no catalog change"
+            exit 1
+          fi
+          git commit -m "Correct Abell 3158 redshift and distance"
+          git push origin HEAD:release
