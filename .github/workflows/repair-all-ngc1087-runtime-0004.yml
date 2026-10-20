@@ -1,0 +1,82 @@
+name: Repair all NGC 1087 runtime records 0004
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/repair-all-ngc1087-runtime-0004.yml"
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Update all five exact NGC 1087 records
+        run: |
+          python3 - <<'PY'
+          import json, re
+          from pathlib import Path
+          p = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          raw = json.loads(p.read_text(encoding="utf-8"))
+          records = raw if isinstance(raw, list) else raw.get("records")
+          if not isinstance(records, list):
+              raise SystemExit("STOP: expected a records list; no write.")
+          def norm(v):
+              return re.sub(r"[^a-z0-9]+", "", str(v).casefold())
+          matches = []
+          for i, r in enumerate(records):
+              if not isinstance(r, dict):
+                  continue
+              name = r.get("name")
+              if norm(name) == "ngc1087":
+                  matches.append((i, r))
+          expected_ids = {"eso2110e", "eso2110j", "ngc1087_muse-cc", "ngc1087_muse-ha", "weic2403d"}
+          found_ids = {str(r.get("archiveId")) for _, r in matches}
+          if len(matches) != 5 or found_ids != expected_ids:
+              print("STOP: expected exactly five known NGC 1087 image records.")
+              print(json.dumps([{"index":i,"archiveId":r.get("archiveId"),"name":r.get("name"),
+                                 "distanceMly":r.get("distanceMly"),"redshift":r.get("redshift")}
+                                for i,r in matches], indent=2))
+              raise SystemExit(f"Found {len(matches)} matches; IDs={sorted(found_ids)}. No write.")
+          distance = 80.0
+          redshift = 0.005070
+          before = []
+          for i, r in matches:
+              before.append({"index":i,"archiveId":r["archiveId"],
+                             "distanceMly":r.get("distanceMly"),"redshift":r.get("redshift")})
+              r["distanceMly"] = distance
+              r["redshift"] = redshift
+              science = r.get("science")
+              if isinstance(science, dict):
+                  for k in list(science):
+                      if norm(k) == "distancemly":
+                          science[k] = distance
+                      elif norm(k) in ("redshift","redshiftz","z"):
+                          science[k] = redshift
+          p.write_text(json.dumps(raw, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          check = json.loads(p.read_text(encoding="utf-8"))
+          check_records = check if isinstance(check, list) else check.get("records")
+          verified = []
+          for i, r in enumerate(check_records):
+              if isinstance(r, dict) and norm(r.get("name")) == "ngc1087":
+                  if float(r.get("distanceMly")) != distance or float(r.get("redshift")) != redshift:
+                      raise SystemExit(f"Verification failed at index {i}")
+                  verified.append({"index":i,"archiveId":r.get("archiveId"),
+                                   "distanceMly":r["distanceMly"],"redshift":r["redshift"]})
+          if len(verified) != 5 or {x["archiveId"] for x in verified} != expected_ids:
+              raise SystemExit("Post-write verification failed; not committing.")
+          print(json.dumps({"verified":True,"updated_count":len(verified),
+                            "distanceMly":distance,"redshift":redshift,
+                            "records":verified,"before":before}, ensure_ascii=False, indent=2))
+          PY
+      - name: Validate and commit catalog
+        run: |
+          python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json > /dev/null
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          git diff --cached --quiet && { echo "No catalog changes to commit"; exit 1; }
+          git commit -m "Repair all five NGC 1087 runtime records to 80 Mly and z 0.005070"
+          git push origin HEAD:release
