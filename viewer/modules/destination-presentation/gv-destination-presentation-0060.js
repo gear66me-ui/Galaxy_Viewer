@@ -34,6 +34,54 @@ const hd=document.createElement('div');hd.className='gvdp-hd';hd.innerHTML='<div
 const providerProgressHd=hd.querySelector('.gvdp-provider-progress-hd'),providerProgressHdFill=providerProgressHd.querySelector('i'),providerProgressHdLed=providerProgressHd.querySelector('b');const webProvider=hd.querySelector('.gvdp-web-provider');const hdScience=hd.querySelector('.gvdp-hd-science'),viewport=hd.querySelector('.gvdp-viewport'),hdImg=viewport.querySelector(':scope > img'),constellationIcon=viewport.querySelector('.gvdp-constellation-icon'),constellationImg=constellationIcon.querySelector('img'),scale=hd.querySelector('.gvdp-scale'),scaleLabel=hd.querySelector('.gvdp-scale-label'),scaleLine=hd.querySelector('.gvdp-scale-line'),archiveButton=hd.querySelector('.gvdp-archive-button'),archiveIcon=archiveButton.querySelector('img'),info=hd.querySelector('.gvdp-info-body'),back=hd.querySelector('.gvdp-back');
 const archive=document.createElement('div');archive.className='gvdp-archive';archive.innerHTML='<iframe title="GALAXY ARCHIVE SOURCE" scrolling="yes"></iframe><div class="gvdp-archive-loader" aria-label="LOADING PROVIDER WEBSITE"><div class="gvdp-archive-loading-mark"><img src="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/icon.svg" alt="GALAXY VIEWER"><span class="gvdp-archive-comet" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></div></div><button type="button" class="gvdp-button gvdp-archive-back"><span class="gvdp-return-vector" aria-hidden="true"></span><span>GALAXY VIEWER</span></button>';document.body.appendChild(archive);const frame=archive.querySelector('iframe'),archiveBack=archive.querySelector('.gvdp-archive-back');
 let destination=null,hdUrl='',hdFallbackUrl='',busy=false,hdScale=1,hdX=0,hdY=0,gesture=null,pointers=new Map(),scaleValue=null,scaleTimer=0,destinationHydrationGeneration=0;
+/* GV COSMOLOGY LONG-PRESS — catalog distance verification and emission distance. */
+let gvCosmoPopup=null,gvCosmoHoldTimer=0,gvCosmoHoldStart=null;
+function gvCosmoDcMly(z){
+ if(!Number.isFinite(z)||z<0)return null;
+ const H0=67.6,Om=0.315,Ol=1-Om,c=299792.458,N=1024,h=z/N;
+ let sum=1/Math.sqrt(Om+Ol);
+ for(let i=1;i<N;i++){const x=i*h;sum+=(i%2?4:2)/Math.sqrt(Om*Math.pow(1+x,3)+Ol)}
+ sum+=(1/Math.sqrt(Om*Math.pow(1+z,3)+Ol));
+ return (c/H0)*(h/3)*sum*3.26156;
+}
+function gvCosmoFormat(v,d=3){return Number.isFinite(v)?v.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d}):'UNAVAILABLE'}
+function gvCosmoClose(){if(gvCosmoPopup){gvCosmoPopup.remove();gvCosmoPopup=null}}
+function gvCosmoShow(anchor){
+ gvCosmoClose();
+ const z=finite(destination?.redshift),published=finite(destination?.distanceMly);
+ const dc=gvCosmoDcMly(z),dem=dc!==null?dc/(1+z):null;
+ // The 14.4 coefficient is in billions of light-years; convert its result to Mly.
+ const approx=z!==null?14400*z/(1+0.35*z):null;
+ const delta=dc!==null&&published!==null?dc-published:null;
+ const pct=delta!==null&&published>0?Math.abs(delta)/published*100:null;
+ const verified=pct!==null&&pct<=0.1;
+ const el=document.createElement('section');el.className='gv-cosmo-popup';el.setAttribute('role','dialog');el.setAttribute('aria-label','Cosmological distance calculator');
+ el.innerHTML='<header><strong>FLRW DISTANCE CHECK</strong><button type="button" aria-label="Close calculator">×</button></header>'+
+ '<div class="gv-cosmo-sub">FLAT ΛCDM · H₀ = 67.6 · Ωₘ = 0.315</div>'+
+ '<div class="gv-cosmo-row"><span>Redshift z</span><b>'+ (z===null?'UNAVAILABLE':String(z))+'</b></div>'+
+ '<div class="gv-cosmo-row"><span>14.4z / (1 + 0.35z) estimate</span><b>'+(approx===null?'UNAVAILABLE':gvCosmoFormat(approx)+' Mly')+'</b></div>'+
+ '<div class="gv-cosmo-row"><span>Comoving distance D₍c₎</span><b>'+(dc===null?'UNAVAILABLE':gvCosmoFormat(dc,6)+' Mly')+'</b></div>'+
+ '<div class="gv-cosmo-row"><span>Distance at emission D₍em₎ = D₍c₎/(1+z)</span><b>'+(dem===null?'UNAVAILABLE':gvCosmoFormat(dem,6)+' Mly')+'</b></div>'+
+ '<div class="gv-cosmo-row"><span>Catalog distance</span><b>'+(published===null?'UNAVAILABLE':gvCosmoFormat(published,6)+' Mly')+'</b></div>'+
+ '<div class="gv-cosmo-row"><span>FLRW − catalog</span><b>'+(delta===null?'UNAVAILABLE':(delta>=0?'+':'')+gvCosmoFormat(delta,6)+' Mly ('+gvCosmoFormat(pct,4)+'%)')+'</b></div>'+
+ '<footer class="'+(verified?'gv-cosmo-ok':'gv-cosmo-check')+'">'+(verified?'✓ DISTANCE CONFIRMED (within 0.1%)':'⚠ DISTANCE DIFFERS — CHECK DISTANCE DEFINITION')+'</footer>'+
+ '<div class="gv-cosmo-note">The 14.4z expression is an approximation. Verification uses numerical integration of the flat FLRW comoving-distance relation. D₍em₎ is proper distance at emission.</div>';
+ const cssId='gv-cosmo-popup-style';
+ if(!document.getElementById(cssId)){const s=document.createElement('style');s.id=cssId;s.textContent='.gv-cosmo-popup{position:fixed;z-index:12000;left:12px;right:12px;bottom:calc(env(safe-area-inset-bottom,0px) + 16px);max-height:72vh;overflow:auto;padding:13px;border:1px solid #43cfff;border-radius:12px;background:linear-gradient(160deg,#09294b,#020b1b 75%);color:#e8f8ff;box-shadow:0 0 20px #008bce55;font:12px/1.45 system-ui,sans-serif}.gv-cosmo-popup header{display:flex;align-items:center;justify-content:space-between;color:#68dcff;font-size:13px}.gv-cosmo-popup header button{border:1px solid #43cfff;border-radius:7px;background:#09294b;color:#fff;font-size:23px;line-height:1;padding:1px 8px}.gv-cosmo-sub{color:#a9cde3;font-size:10px;margin:5px 0 9px}.gv-cosmo-row{display:flex;justify-content:space-between;gap:12px;padding:7px 0;border-top:1px solid #6bbde52b}.gv-cosmo-row span{flex:1;color:#b5d7eb}.gv-cosmo-row b{max-width:58%;text-align:right;overflow-wrap:anywhere;color:#fff}.gv-cosmo-ok{margin-top:9px;padding:8px;border-radius:7px;background:#064a3a;color:#80ffd6;font-weight:700}.gv-cosmo-check{margin-top:9px;padding:8px;border-radius:7px;background:#533400;color:#ffe0a0;font-weight:700}.gv-cosmo-note{margin-top:8px;color:#9eb9cc;font-size:10px}';document.head.appendChild(s)}
+ document.body.appendChild(el);gvCosmoPopup=el;el.querySelector('header button').addEventListener('click',gvCosmoClose);
+ const r=anchor?.getBoundingClientRect();if(r&&r.top<innerHeight*.55){el.style.bottom='auto';el.style.top=Math.min(innerHeight*.55,Math.max(12,r.bottom+8))+'px';el.style.maxHeight='calc(100vh - '+(Math.min(innerHeight*.55,Math.max(12,r.bottom+8))+24)+'px)'}
+}
+card.addEventListener('pointerdown',e=>{
+ const cell=e.target.closest('.gvdp-cell');if(!cell)return;
+ const labels=[...cell.querySelectorAll('.gvdp-key')].map(x=>x.textContent.toUpperCase());
+ if(!labels.some(x=>x.includes('DISTANCE')||x.includes('REDSHIFT')))return;
+ clearTimeout(gvCosmoHoldTimer);gvCosmoHoldStart={x:e.clientX,y:e.clientY,cell};
+ gvCosmoHoldTimer=setTimeout(()=>{if(gvCosmoHoldStart?.cell===cell)gvCosmoShow(cell)},650);
+});
+card.addEventListener('pointermove',e=>{if(gvCosmoHoldStart&&Math.hypot(e.clientX-gvCosmoHoldStart.x,e.clientY-gvCosmoHoldStart.y)>12){clearTimeout(gvCosmoHoldTimer);gvCosmoHoldStart=null}});
+for(const ev of ['pointerup','pointercancel','pointerleave'])card.addEventListener(ev,()=>{clearTimeout(gvCosmoHoldTimer);gvCosmoHoldStart=null});
+card.addEventListener('contextmenu',e=>{if(e.target.closest('.gvdp-cell'))e.preventDefault()});
+
 const pointerPair=()=>{
  const points=[...pointers.values()];
  if(points.length<2)return null;
