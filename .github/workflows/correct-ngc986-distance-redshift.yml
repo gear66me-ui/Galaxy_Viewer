@@ -1,0 +1,127 @@
+name: Correct NGC 986 distance and FLRW redshift
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/correct-ngc986-distance-redshift.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: correct-ngc986-distance-redshift
+  cancel-in-progress: false
+
+jobs:
+  correct-runtime:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Correct guarded NGC 986 records in runtime catalog 0003
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          target_ids = {"potw1605a", "potw1446a"}
+          expected_distance = 56.0
+          expected_redshift = 0.00387513
+          matches = []
+
+          def walk(node, parent=None):
+              if isinstance(node, dict):
+                  archive_id = str(node.get("archiveId", node.get("archiveID", ""))).strip().lower()
+                  name = str(node.get("name", node.get("targetName", ""))).strip().lower()
+                  if archive_id in target_ids and ("ngc 986" in name or name == ""):
+                      matches.append((node, archive_id))
+                  for value in node.values():
+                      if isinstance(value, (dict, list)):
+                          walk(value, node)
+              elif isinstance(node, list):
+                  for value in node:
+                      if isinstance(value, (dict, list)):
+                          walk(value, parent)
+
+          walk(data)
+          # Also allow a catalog record to carry its archive ID in a URL/path field,
+          # but only when the record explicitly identifies NGC 986.
+          if not matches:
+              def walk_fallback(node):
+                  if isinstance(node, dict):
+                      scalars = {str(k).lower(): str(v).strip().lower() for k, v in node.items()
+                                 if isinstance(v, (str, int, float))}
+                      vals = list(scalars.values())
+                      has_id = any(any(t in v for t in target_ids) for v in vals)
+                      has_name = any("ngc 986" in v for v in vals)
+                      if has_id and has_name:
+                          matches.append((node, next(t for t in target_ids if any(t in v for v in vals)))
+                      for value in node.values():
+                          if isinstance(value, (dict, list)):
+                              walk_fallback(value)
+                  elif isinstance(node, list):
+                      for value in node:
+                          if isinstance(value, (dict, list)):
+                              walk_fallback(value)
+              walk_fallback(data)
+
+          # De-duplicate references to the same dictionary.
+          unique = []
+          seen = set()
+          for item in matches:
+              if id(item[0]) not in seen:
+                  unique.append(item)
+                  seen.add(id(item[0]))
+          matches = unique
+          if len(matches) < 1 or len(matches) > 4:
+              raise SystemExit(f"STOP: expected 1–4 uniquely matched NGC 986 records, found {len(matches)}; no changes written.")
+
+          changed = []
+          for record, archive_id in matches:
+              science = record.get("science")
+              if not isinstance(science, dict):
+                  raise SystemExit(f"STOP: matched record {archive_id} has no science object; no changes written.")
+              old_distance = science.get("distanceMly")
+              old_z = science.get("redshift")
+              science["distanceMly"] = expected_distance
+              science["distanceDisplay"] = "56.0000 million light-years"
+              science["redshift"] = expected_redshift
+              science["redshiftDisplay"] = "z 0.00387513"
+              science["distanceMethod"] = "NASA/ESA Hubble NGC 986 distance (56 million light-years); redshift back-calculated with flat FLRW cosmology H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685"
+              science["redshiftMethod"] = "FLRW distance-redshift inversion from 56.0000 Mly; six significant figures; not a spectroscopic measurement"
+              changed.append({"archiveId": archive_id, "name": record.get("name"), "oldDistanceMly": old_distance, "newDistanceMly": expected_distance, "oldRedshift": old_z, "newRedshift": expected_redshift})
+
+          encoded = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+          checked = json.loads(encoded)
+          path.write_text(encoded, encoding="utf-8")
+          Path("ngc986-correction-report.json").write_text(json.dumps({"catalog": str(path), "recordsChanged": changed}, indent=2) + "\n", encoding="utf-8")
+          print(json.dumps({"recordsChanged": changed}, indent=2))
+          PY
+      - name: Validate JSON and patch
+        run: |
+          python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json >/dev/null
+          git diff --check
+      - name: Commit catalog correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json
+          if git diff --cached --quiet; then
+            echo "No catalog changes detected."
+          else
+            git commit -m "Correct NGC 986 distance and FLRW redshift"
+            git push origin HEAD:release
+          fi
+      - name: Upload correction report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ngc986-distance-redshift-correction-report
+          path: ngc986-correction-report.json
+          if-no-files-found: warn
