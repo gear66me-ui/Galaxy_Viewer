@@ -1,4 +1,4 @@
-name: Repair all NGC 1087 runtime records 0004
+name: Correct NGC 1087 redshift-derived distance 0004
 on:
   workflow_dispatch:
   push:
@@ -13,10 +13,10 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: release
-      - name: Update all five exact NGC 1087 records
+      - name: Calculate and update every exact NGC 1087 runtime record
         run: |
           python3 - <<'PY'
-          import json, re
+          import json, re, math
           from pathlib import Path
           p = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
           raw = json.loads(p.read_text(encoding="utf-8"))
@@ -25,51 +25,52 @@ jobs:
               raise SystemExit("STOP: expected a records list; no write.")
           def norm(v):
               return re.sub(r"[^a-z0-9]+", "", str(v).casefold())
-          matches = []
-          for i, r in enumerate(records):
-              if not isinstance(r, dict):
-                  continue
-              name = r.get("name")
-              if norm(name) == "ngc1087":
-                  matches.append((i, r))
-          expected_ids = {"eso2110e", "eso2110j", "ngc1087_muse-cc", "ngc1087_muse-ha", "weic2403d"}
-          found_ids = {str(r.get("archiveId")) for _, r in matches}
+          matches = [(i,r) for i,r in enumerate(records)
+                     if isinstance(r,dict) and norm(r.get("name")) == "ngc1087"]
+          expected_ids = {"eso2110e","eso2110j","ngc1087_muse-cc","ngc1087_muse-ha","weic2403d"}
+          found_ids = {str(r.get("archiveId")) for _,r in matches}
           if len(matches) != 5 or found_ids != expected_ids:
-              print("STOP: expected exactly five known NGC 1087 image records.")
               print(json.dumps([{"index":i,"archiveId":r.get("archiveId"),"name":r.get("name"),
                                  "distanceMly":r.get("distanceMly"),"redshift":r.get("redshift")}
-                                for i,r in matches], indent=2))
-              raise SystemExit(f"Found {len(matches)} matches; IDs={sorted(found_ids)}. No write.")
-          distance = 80.0
-          redshift = 0.005070
-          before = []
-          for i, r in matches:
-              before.append({"index":i,"archiveId":r["archiveId"],
-                             "distanceMly":r.get("distanceMly"),"redshift":r.get("redshift")})
-              r["distanceMly"] = distance
-              r["redshift"] = redshift
-              science = r.get("science")
-              if isinstance(science, dict):
+                                for i,r in matches],indent=2))
+              raise SystemExit(f"STOP: expected exactly five known records; found {len(matches)}, IDs={sorted(found_ids)}. No write.")
+          # Flat LCDM: H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685.
+          z = 0.005070
+          c, H0, Om, Ol = 299792.458, 67.6, 0.315, 0.685
+          n = 10000
+          h = z/n
+          total = 0.5*(1/math.sqrt(Om+Ol) + 1/math.sqrt(Om*(1+z)**3+Ol))
+          for j in range(1,n):
+              zp=j*h
+              total += 1/math.sqrt(Om*(1+zp)**3+Ol)
+          distance_mpc = (c/H0)*h*total
+          distance_mly = distance_mpc*3.26156
+          before=[]
+          for i,r in matches:
+              before.append({"archiveId":r["archiveId"],"distanceMly":r.get("distanceMly"),"redshift":r.get("redshift")})
+              r["distanceMly"] = round(distance_mly, 6)
+              r["redshift"] = z
+              science=r.get("science")
+              if isinstance(science,dict):
                   for k in list(science):
-                      if norm(k) == "distancemly":
-                          science[k] = distance
+                      if norm(k)=="distancemly":
+                          science[k]=round(distance_mly,6)
                       elif norm(k) in ("redshift","redshiftz","z"):
-                          science[k] = redshift
-          p.write_text(json.dumps(raw, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-          check = json.loads(p.read_text(encoding="utf-8"))
-          check_records = check if isinstance(check, list) else check.get("records")
-          verified = []
-          for i, r in enumerate(check_records):
-              if isinstance(r, dict) and norm(r.get("name")) == "ngc1087":
-                  if float(r.get("distanceMly")) != distance or float(r.get("redshift")) != redshift:
+                          science[k]=z
+          p.write_text(json.dumps(raw,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+          check=json.loads(p.read_text(encoding="utf-8"))
+          cr=check if isinstance(check,list) else check.get("records")
+          verified=[]
+          for i,r in enumerate(cr):
+              if isinstance(r,dict) and norm(r.get("name"))=="ngc1087":
+                  if float(r.get("distanceMly")) != round(distance_mly,6) or float(r.get("redshift")) != z:
                       raise SystemExit(f"Verification failed at index {i}")
-                  verified.append({"index":i,"archiveId":r.get("archiveId"),
-                                   "distanceMly":r["distanceMly"],"redshift":r["redshift"]})
-          if len(verified) != 5 or {x["archiveId"] for x in verified} != expected_ids:
+                  verified.append({"archiveId":r.get("archiveId"),"distanceMly":r["distanceMly"],"redshift":r["redshift"]})
+          if len(verified)!=5 or {x["archiveId"] for x in verified}!=expected_ids:
               raise SystemExit("Post-write verification failed; not committing.")
-          print(json.dumps({"verified":True,"updated_count":len(verified),
-                            "distanceMly":distance,"redshift":redshift,
-                            "records":verified,"before":before}, ensure_ascii=False, indent=2))
+          print(json.dumps({"verified":True,"updated_count":len(verified),"cosmology":{"H0":H0,"Omega_m":Om,"Omega_Lambda":Ol},
+                            "redshift":z,"comovingDistanceMpc":round(distance_mpc,9),
+                            "distanceMly":round(distance_mly,6),"records":verified,"before":before},indent=2))
           PY
       - name: Validate and commit catalog
         run: |
@@ -78,5 +79,5 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
           git diff --cached --quiet && { echo "No catalog changes to commit"; exit 1; }
-          git commit -m "Repair all five NGC 1087 runtime records to 80 Mly and z 0.005070"
+          git commit -m "Set NGC 1087 distance to redshift-derived 73.246 Mly"
           git push origin HEAD:release
