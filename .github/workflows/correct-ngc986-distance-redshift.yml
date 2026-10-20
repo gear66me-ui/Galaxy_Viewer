@@ -61,7 +61,7 @@ jobs:
                       has_id = any(any(t in v for t in target_ids) for v in vals)
                       has_name = any("ngc 986" in v for v in vals)
                       if has_id and has_name:
-                          matches.append((node, next(t for t in target_ids if any(t in v for v in vals)))
+                          matches.append((node, next(t for t in target_ids if any(t in v for v in vals))))
                       for value in node.values():
                           if isinstance(value, (dict, list)):
                               walk_fallback(value)
