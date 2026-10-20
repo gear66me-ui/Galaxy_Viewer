@@ -1,0 +1,81 @@
+name: Correct NGC 2207 and IC 2163 redshift-derived distance
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - ".github/workflows/correct-ngc2207-runtime-distance.yml"
+permissions:
+  contents: write
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Calculate distance from SIMBAD redshift and update exact stale record(s)
+        run: |
+          python3 - <<'PY'
+          import json, re, math
+          from pathlib import Path
+          p=Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          raw=json.loads(p.read_text(encoding="utf-8"))
+          records=raw if isinstance(raw,list) else raw.get("records")
+          if not isinstance(records,list):
+              raise SystemExit("STOP: records list not found; no write.")
+          def norm(v):
+              return re.sub(r"[^a-z0-9]+","",str(v).casefold())
+          # Match the exact combined pair name and the stale values shown in the live viewer.
+          matches=[]
+          for i,r in enumerate(records):
+              if not isinstance(r,dict): continue
+              name=norm(r.get("name",""))
+              if name in ("ngc2207andic2163","ngc2207ic2163") and abs(float(r.get("distanceMly",0) or 0)-54.794)<0.01 and abs(float(r.get("redshift",0) or 0)-0.003792)<1e-6:
+                  matches.append((i,r))
+          if not matches:
+              print("No exact stale combined-pair record matched. Candidate records:")
+              print(json.dumps([{"index":i,"archiveId":r.get("archiveId"),"name":r.get("name"),
+                "distanceMly":r.get("distanceMly"),"redshift":r.get("redshift")}
+                for i,r in enumerate(records) if isinstance(r,dict) and any(x in norm(r.get("name","")) for x in ("ngc2207","ic2163"))],indent=2))
+              raise SystemExit("STOP: no exact stale record; no write.")
+          # Flat LCDM: H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685.
+          z=0.009292
+          c,H0,Om,Ol=299792.458,67.6,0.315,0.685
+          n=10000; h=z/n
+          def f(q): return 1/math.sqrt(Om*(1+q)**3+Ol)
+          total=0.5*(f(0)+f(z))
+          for j in range(1,n): total+=f(j*h)
+          d_mpc=(c/H0)*h*total
+          d_mly=d_mpc*3.26156
+          before=[]
+          for i,r in matches:
+              before.append({"index":i,"archiveId":r.get("archiveId"),"name":r.get("name"),
+                "distanceMly":r.get("distanceMly"),"redshift":r.get("redshift")})
+              r["distanceMly"]=round(d_mly,6)
+              r["redshift"]=z
+              science=r.get("science")
+              if isinstance(science,dict):
+                  for k in list(science):
+                      if norm(k)=="distancemly": science[k]=round(d_mly,6)
+                      elif norm(k) in ("redshift","redshiftz","z"): science[k]=z
+          p.write_text(json.dumps(raw,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+          check=json.loads(p.read_text(encoding="utf-8"))
+          cr=check if isinstance(check,list) else check.get("records")
+          verified=[]
+          for i,r in enumerate(cr):
+              if isinstance(r,dict) and norm(r.get("name","")) in ("ngc2207andic2163","ngc2207ic2163") and abs(float(r.get("distanceMly",0) or 0)-round(d_mly,6))<1e-6 and float(r.get("redshift",0) or 0)==z:
+                  verified.append({"index":i,"archiveId":r.get("archiveId"),"name":r.get("name"),"distanceMly":r["distanceMly"],"redshift":r["redshift"]})
+          if len(verified)<len(matches): raise SystemExit("Verification failed; not committing.")
+          print(json.dumps({"verified":True,"updated_count":len(verified),"redshift":z,
+            "comovingDistanceMpc":round(d_mpc,9),"distanceMly":round(d_mly,6),
+            "cosmology":{"H0":H0,"Omega_m":Om,"Omega_Lambda":Ol},"records":verified,"before":before},indent=2))
+          PY
+      - name: Validate and commit catalog
+        run: |
+          python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json > /dev/null
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          git diff --cached --quiet && { echo "No catalog changes to commit"; exit 1; }
+          git commit -m "Correct NGC 2207 pair distance from SIMBAD redshift"
+          git push origin HEAD:release
