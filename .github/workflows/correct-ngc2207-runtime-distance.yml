@@ -58,7 +58,7 @@ jobs:
                   for k in list(science):
                       if norm(k)=="distancemly": science[k]=round(d_mly,6)
                       elif norm(k) in ("redshift","redshiftz","z"): science[k]=z
-          p.write_text(json.dumps(raw,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+          p.write_text(json.dumps(raw,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
           check=json.loads(p.read_text(encoding="utf-8"))
           cr=check if isinstance(check,list) else check.get("records")
           verified=[]
