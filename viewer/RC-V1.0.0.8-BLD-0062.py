@@ -850,7 +850,7 @@ function installHomeEarthPointer(){
       '</div>';
     document.getElementById('aladin-cosmic-command-test').appendChild(home);
 }
-// Build 0062 correction: do not install the Earth home banner/pointer on the initial Mollweide loading screen.
+gvSpaceAgeReady.then(()=>installHomeEarthPointer()).catch(error=>console.error('GV HOME EARTH POINTER FAILURE',error));
 
 
 
