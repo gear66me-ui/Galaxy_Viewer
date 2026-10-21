@@ -43183,12 +43183,30 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 7717.009,
+      "distanceMly": 13909.301,
       "science": {
-        "redshift": 0.6304,
-        "distanceMly": 7717.009
+        "redshift": 1.394,
+        "distanceMly": 13909.301,
+        "redshiftDisplay": "z = 1.394000",
+        "redshiftEstimated": false,
+        "redshiftMethod": "published_source_spectroscopic_redshift_FLRW_comoving_radial_distance",
+        "redshiftSource": "Fassnacht et al. (1996) / SIMBAD",
+        "distanceMethod": "Flat Lambda-CDM radial comoving distance calculated from published source redshift z=1.394; H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685",
+        "lensRedshift": 0.6304,
+        "lensRedshiftDisplay": "z_l = 0.630400",
+        "sourceRedshift": 1.394,
+        "sourceRedshiftDisplay": "z_s = 1.394000"
       },
-      "redshift": 0.6304
+      "redshift": 1.394,
+      "redshiftDisplay": "z = 1.394000",
+      "redshiftEstimated": false,
+      "redshiftMethod": "published_source_spectroscopic_redshift_FLRW_comoving_radial_distance",
+      "redshiftSource": "Fassnacht et al. (1996) / SIMBAD",
+      "distanceMethod": "Flat Lambda-CDM radial comoving distance calculated from published source redshift z=1.394; H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685",
+      "lensRedshift": 0.6304,
+      "lensRedshiftDisplay": "z_l = 0.630400",
+      "sourceRedshift": 1.394,
+      "sourceRedshiftDisplay": "z_s = 1.394000"
     },
     {
       "providerKey": "hubble",
@@ -66278,7 +66296,26 @@
         "reason": "Published El Gordo redshift z≈0.870 gives a comoving distance within 5% of the catalog values; retain original values under the agreed tolerance.",
         "status": "retained_original_within_5_percent"
       }
-    ]
+    ],
+    "b1608Plus656UpdatedAt": "2026-10-21",
+    "b1608Plus656": {
+      "providerKey": "hubble",
+      "archiveId": "heic1702c",
+      "name": "CLASS B1608+656",
+      "publishedLensRedshift": 0.6304,
+      "publishedSourceRedshift": 1.394,
+      "selectedRedshift": 1.394,
+      "distanceInterpretation": "radial comoving distance",
+      "distanceMly": 13909.301,
+      "distanceMpc": 4264.611168966431,
+      "cosmology": {
+        "H0_km_s_Mpc": 67.6,
+        "OmegaM": 0.315,
+        "OmegaLambda": 0.685
+      },
+      "source": "Fassnacht et al. (1996), ApJ 460 L103; SIMBAD spectroscopic redshift",
+      "note": "The Hubble image is a gravitational-lens system. The catalog's primary redshift and distance now represent the background lensed source; the foreground lens redshift is retained separately."
+    }
   },
   "distancePolicy": {
     "canonicalField": "records[].distanceMly",
