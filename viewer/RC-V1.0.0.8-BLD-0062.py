@@ -25,7 +25,7 @@ ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201
 HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST"
 HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST"
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc36a2f156517f9a77865da0c1c13d49175/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js"
-TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@ee3100fe9d98ce1252dbe26931a4556221d12d4e/viewer/modules/target-simbad/gv-target-simbad-0007.js"
+TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@36ba45bf7cd3b8ecd528c363add6c5516e2c1a0f/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0002"
 GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
@@ -103,7 +103,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@42620e479e7fa719ca168dd1fbf96e924e23eb9d/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
     constellationOverlayFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/42620e479e7fa719ca168dd1fbf96e924e23eb9d/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc36a2f156517f9a77865da0c1c13d49175/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js',
-    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@ee3100fe9d98ce1252dbe26931a4556221d12d4e/viewer/modules/target-simbad/gv-target-simbad-0007.js',
+    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@36ba45bf7cd3b8ecd528c363add6c5516e2c1a0f/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
@@ -396,6 +396,7 @@ function gvInstallEarthBearingPointer(){
     reticle.appendChild(rotor);
 }
 let gvEarthPointerActive=false;
+let gvStartupMollweideScreen=true;
 let gvEarthPointerRa=HOME.ra,gvEarthPointerDec=HOME.dec;
 let gvEarthLastValidBearing=null;
 function gvSetEarthPointerPosition(ra,dec,activate=false){
@@ -577,7 +578,7 @@ function gvUpdateLivePhysicalScale(){
  // Keep the physical ruler live during travel too; other background polling remains suspended.
  const s=document.getElementById('gv-live-physical-scale'),line=s?.querySelector('.gv-live-scale-line'),label=s?.querySelector('.gv-live-scale-label'),banner=document.getElementById('gv-earth-distance-banner');
  if(!s||!line||!label)return;
- if(!gvEarthPointerActive){s.classList.remove('gv-visible');return;}
+ if(gvStartupMollweideScreen||!gvEarthPointerActive){s.classList.remove('gv-visible');return;}
  if(gvNavigationTravelActive){s.classList.remove('gv-visible');return;}
  const size=aladin.getSize?.(),width=Number(size?.[0]||document.getElementById('aladin-cosmic-command-test')?.clientWidth||innerWidth),fov=aladin.getFov?.();
  const fovX=Number(Array.isArray(fov)?fov[0]:fov?.x??fov?.fovX);
@@ -609,7 +610,7 @@ async function gvShowEarthDistance(destination){
     gvInstallEarthDistanceBanner();
     const b=document.getElementById('gv-earth-distance-banner');
     if(!b||gvNavigationTravelActive)return;
-    if(!gvEarthPointerActive){gvHideEarthDistance();return;}
+    if(gvStartupMollweideScreen||!gvEarthPointerActive){gvHideEarthDistance();return;}
     const generation=++gvEarthDistanceDisplayGeneration;
     try{
         // Resolve every destination against runtime catalog 0004; never trust route/provider distances.
@@ -849,7 +850,7 @@ function installHomeEarthPointer(){
       '</div>';
     document.getElementById('aladin-cosmic-command-test').appendChild(home);
 }
-gvSpaceAgeReady.then(()=>installHomeEarthPointer()).catch(error=>console.error('GV HOME EARTH POINTER FAILURE',error));
+// Build 0062 correction: do not install the Earth home banner/pointer on the initial Mollweide loading screen.
 
 
 
@@ -3074,7 +3075,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     const startTravelWork=()=>{
         if(presentationStarted)return;
         presentationStarted=true;
-        gvHideEarthDistance();gvEarthPointerActive=true;gvUpdateEarthBearingPointer();
+        gvStartupMollweideScreen=false;gvHideEarthDistance();gvEarthPointerActive=true;gvUpdateEarthBearingPointer();
         if(firstTrip)destinationPresentation.depart();
         if(directHdPresentationObjectUrl)gvReleaseCleanImageObjectUrl(directHdPresentationObjectUrl)
         destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
