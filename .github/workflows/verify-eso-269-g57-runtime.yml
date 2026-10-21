@@ -1,0 +1,48 @@
+name: Verify ESO 269-G57 Runtime Distance
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - 'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json'
+      - '.github/workflows/verify-eso-269-g57-runtime.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-record:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Validate ESO 269-G57 values and duplicate designations
+        run: |
+          python3 - <<'PY'
+          import json, math
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          records = data.get("records", [])
+          matches = []
+          for i, r in enumerate(records):
+              text = " ".join(str(r.get(k, "")) for k in ("name", "archiveId", "designation", "displayName")).lower()
+              if "269-g57" in text or "eso 269-57" in text or r.get("archiveId") == "eso0627b":
+                  matches.append((i, r))
+
+          assert len(matches) == 1, f"Expected exactly one ESO 269-G57 record; found {len(matches)}"
+          i, r = matches[0]
+          assert r.get("providerKey") == "eso", f"Unexpected provider: {r.get('providerKey')}"
+          assert r.get("archiveId") == "eso0627b", f"Unexpected archive ID: {r.get('archiveId')}"
+          assert math.isclose(float(r.get("distanceMly", -1)), 150.146, abs_tol=1e-9), f"distanceMly={r.get('distanceMly')}"
+          assert math.isclose(float(r.get("redshift", -1)), 0.010406, abs_tol=1e-12), f"top-level redshift={r.get('redshift')}"
+          assert math.isclose(float(r.get("science", {}).get("redshift", -1)), 0.010406, abs_tol=1e-12), f"science.redshift={r.get('science', {}).get('redshift')}"
+          assert r.get("redshiftDisplay") == "z = 0.010406", f"redshiftDisplay={r.get('redshiftDisplay')}"
+          assert r.get("science", {}).get("redshiftDisplay") == "z = 0.010406", f"science.redshiftDisplay={r.get('science', {}).get('redshiftDisplay')}"
+          print(f"PASS: {r['name']} ({r['archiveId']}) distance={r['distanceMly']} Mly redshift={r['redshift']}")
+          print(f"PASS: unique designation match count={len(matches)}; runtime records={len(records)}")
+          PY
