@@ -5,7 +5,6 @@ on:
     branches: [release]
     paths:
       - 'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json'
-      - '.github/workflows/verify-eso-269-g57-runtime.yml'
   workflow_dispatch:
 
 permissions:
