@@ -20,7 +20,7 @@ function installStyles(){
 @font-face{font-family:"GV Survey Space Age";src:url("${FONT_URL}") format("opentype");font-style:normal;font-weight:400;font-display:block}
 .gv-target-survey-root{position:relative;width:36px;height:36px;overflow:visible;font-family:"GV Survey Space Age","Space Age",sans-serif;text-transform:uppercase}
 .gv-target-survey-root *{box-sizing:border-box}
-.gv-target-survey-button{appearance:none;-webkit-appearance:none;position:relative;display:flex;align-items:center;justify-content:center;width:36px;height:36px;margin:0;padding:0;overflow:hidden;border:1px solid #7CCBFF;border-radius:6px;background:linear-gradient(145deg,#081B3A 0%,#0B3177 42%,#1484DB 76%,#296DBD 100%);box-shadow:inset 0 2px 2px rgba(225,251,255,.82),inset 0 -3px 5px rgba(0,0,0,.52),inset 0 0 13px rgba(41,153,255,.34),0 0 3px #DDF8FF,0 0 9px rgba(50,190,255,.72),0 0 18px rgba(20,116,219,.35);cursor:pointer;touch-action:manipulation;outline:none}
+.gv-target-survey-button{appearance:none;-webkit-appearance:none;position:relative;display:flex;align-items:center;justify-content:center;width:36px;height:36px;margin:0;padding:0;overflow:hidden;border:1px solid #7CCBFF;border-radius:6px;background:linear-gradient(145deg,#081B3A 0%,#0B3177 42%,#1484DB 76%,#296DBD 100%);box-shadow:inset 0 2px 2px rgba(225,251,255,.82),inset 0 -3px 5px rgba(0,0,0,.52),inset 0 0 13px rgba(41,153,255,.34),0 0 3px #DDF8FF,0 0 9px rgba(50,190,255,.72),0 0 18px rgba(20,116,219,.35);cursor:pointer;touch-action:none;-webkit-touch-callout:none;user-select:none;outline:none}
 .gv-target-survey-button::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.38) 0%,rgba(118,225,255,.08) 25%,transparent 43%);pointer-events:none}
 .gv-target-survey-button img{position:relative;z-index:2;width:34px;height:34px;display:block;object-fit:contain;pointer-events:none}
 .gv-target-survey-button.gv-open,.gv-target-survey-button.gv-selected{border-color:#78FFAB;background:linear-gradient(145deg,#062B1D 0%,#08783F 42%,#13B968 76%,#38E69A 100%);box-shadow:inset 0 0 8px rgba(120,255,171,.25),0 0 5px #78FFAB,0 0 13px rgba(56,230,154,.78)}
@@ -153,9 +153,11 @@ function createInstance(options={}){
     clearTimeout(calculatorHoldTimer);
     calculatorHoldTimer=setTimeout(()=>{calculatorLongPressed=true;calcOpen();},1000);
   },true);
-  for(const eventName of ['pointerup','pointercancel','pointerleave'])button.addEventListener(eventName,()=>{clearTimeout(calculatorHoldTimer);calculatorHoldTimer=0;calculatorDownPoint=null},true);
-  button.addEventListener('pointermove',event=>{if(calculatorDownPoint&&Math.hypot(event.clientX-calculatorDownPoint.x,event.clientY-calculatorDownPoint.y)>12){clearTimeout(calculatorHoldTimer);calculatorHoldTimer=0;calculatorDownPoint=null}},true);
-  button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();flashGreen(button);if(calculatorLongPressed){calculatorLongPressed=false;return;}if(calculatorOpen){calcClose();return;}toggle()});
+  for(const eventName of ['pointerup','pointercancel'])button.addEventListener(eventName,()=>{clearTimeout(calculatorHoldTimer);calculatorHoldTimer=0;calculatorDownPoint=null},true);
+  button.addEventListener('pointermove',event=>{if(calculatorDownPoint&&Math.hypot(event.clientX-calculatorDownPoint.x,event.clientY-calculatorDownPoint.y)>18){clearTimeout(calculatorHoldTimer);calculatorHoldTimer=0;calculatorDownPoint=null}},true);
+  // Android may emit contextmenu or pointercancel during a long touch; neither should open the survey menu.
+  button.addEventListener('contextmenu',event=>{event.preventDefault();event.stopPropagation();if(calculatorOpen)calcClose()},true);
+  button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();flashGreen(button);if(calculatorLongPressed){calculatorLongPressed=false;return;}if(calculatorOpen){calcClose();return;}toggle()});
 
   const api={
     version:VERSION,root,button,panel,
