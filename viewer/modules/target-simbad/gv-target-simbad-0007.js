@@ -40,7 +40,7 @@ function installStyles(){
 .gv-target-survey-all-icon{box-sizing:border-box;object-fit:contain;padding:2px;background:linear-gradient(180deg,#174E86 0%,#082C59 15%,#041B3E 56%,#0D5A98 100%);border:1px solid rgba(221,248,255,.56);box-shadow:inset 0 1px 2px rgba(225,251,255,.42),inset 0 -2px 4px rgba(0,0,0,.46),0 0 5px rgba(88,191,255,.52)}
 .gv-target-survey-index{position:absolute;right:46px;top:50%;z-index:3;transform:translateY(-50%);font:400 7px/1 "GV Survey Space Age",sans-serif;letter-spacing:.45px;color:#DFFFF0;text-shadow:0 0 4px rgba(120,255,171,.8);pointer-events:none}
 
-.gv-target-calculator{position:absolute;right:0;top:44px;z-index:9600;width:244px;padding:10px;border:1px solid #7CCBFF;border-radius:12px;background:linear-gradient(145deg,rgba(3,17,38,.99),rgba(7,43,93,.99) 58%,rgba(4,21,47,.99));box-shadow:inset 0 1px 2px rgba(225,251,255,.3),0 0 20px rgba(50,190,255,.55);display:none;pointer-events:auto;color:#EAFBFF;font-family:"GV Survey Space Age","Space Age",sans-serif}
+.gv-target-calculator{position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2147483000;width:min(66vw,420px);max-width:66vw;max-height:76dvh;overflow:auto;padding:12px;border:1px solid #7CCBFF;border-radius:14px;background:radial-gradient(ellipse at 50% 0%,rgba(20,78,134,.98),rgba(3,17,38,.99) 58%,rgba(2,9,24,.99));box-shadow:inset 0 1px 2px rgba(225,251,255,.3),0 0 20px rgba(50,190,255,.65),0 0 48px rgba(0,0,0,.85);display:none;pointer-events:auto;color:#EAFBFF;font-family:"GV Survey Space Age","Space Age",sans-serif;overscroll-behavior:contain}
 .gv-target-calculator.gv-open{display:block}
 .gv-target-calculator *{box-sizing:border-box}
 .gv-target-calculator-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:#DDF8FF;font-size:10px;letter-spacing:1px;text-shadow:0 0 5px rgba(88,191,255,.82)}
@@ -51,7 +51,8 @@ function installStyles(){
 .gv-target-calculator-key.gv-op{color:#9DFFDF;border-color:#78FFAB}
 .gv-target-calculator-key.gv-equals{background:linear-gradient(145deg,#08783F,#13B968 76%,#38E69A);border-color:#78FFAB;color:#031b10}
 .gv-target-calculator-key:active{filter:brightness(1.35);transform:translateY(1px)}
-@media(max-width:390px){.gv-target-calculator{width:232px}}
+.gv-target-cosmo-data{margin-top:10px;padding:9px;border:1px solid rgba(67,207,255,.62);border-radius:9px;background:linear-gradient(180deg,rgba(1,9,20,.92),rgba(5,28,53,.96));box-shadow:inset 0 0 12px rgba(0,0,0,.5)}.gv-target-cosmo-title{margin-bottom:5px;color:#7CCBFF;font-size:9px;letter-spacing:1.2px;text-align:center}.gv-target-cosmo-row{display:flex;justify-content:space-between;align-items:flex-start;gap:7px;padding:5px 0;border-top:1px solid rgba(124,203,255,.18);font-size:8px;line-height:1.35}.gv-target-cosmo-row span{flex:1;color:#B8DDF4}.gv-target-cosmo-row b{max-width:56%;color:#9DFFDF;text-align:right;overflow-wrap:anywhere;font-size:8px}.gv-target-cosmo-note{margin-top:6px;color:#8FB8D5;font-size:7px;line-height:1.4;text-align:center}
+@media(max-width:390px){.gv-target-calculator{width:66vw;max-width:66vw;padding:9px}.gv-target-calculator-key{min-height:35px}}
 
 @media(max-width:390px){.gv-target-survey-panel{width:214px}}
 `;
@@ -87,8 +88,10 @@ function createInstance(options={}){
   '<button class="gv-target-calculator-key" data-action="digit" data-value="7">7</button><button class="gv-target-calculator-key" data-action="digit" data-value="8">8</button><button class="gv-target-calculator-key" data-action="digit" data-value="9">9</button><button class="gv-target-calculator-key gv-op" data-action="operator" data-value="*">×</button>'+
   '<button class="gv-target-calculator-key" data-action="digit" data-value="4">4</button><button class="gv-target-calculator-key" data-action="digit" data-value="5">5</button><button class="gv-target-calculator-key" data-action="digit" data-value="6">6</button><button class="gv-target-calculator-key gv-op" data-action="operator" data-value="-">−</button>'+
   '<button class="gv-target-calculator-key" data-action="digit" data-value="1">1</button><button class="gv-target-calculator-key" data-action="digit" data-value="2">2</button><button class="gv-target-calculator-key" data-action="digit" data-value="3">3</button><button class="gv-target-calculator-key gv-op" data-action="operator" data-value="+">+</button>'+
-  '<button class="gv-target-calculator-key" data-action="sign">±</button><button class="gv-target-calculator-key" data-action="digit" data-value="0">0</button><button class="gv-target-calculator-key" data-action="decimal">.</button><button class="gv-target-calculator-key gv-equals" data-action="equals">=</button></div>';
-  const calculatorDisplay=calculator.querySelector('.gv-target-calculator-display');
+  '<button class="gv-target-calculator-key" data-action="sign">±</button><button class="gv-target-calculator-key" data-action="digit" data-value="0">0</button><button class="gv-target-calculator-key" data-action="decimal">.</button><button class="gv-target-calculator-key gv-equals" data-action="equals">=</button></div>'+
+  '<section class="gv-target-cosmo-data" aria-label="Live cosmology data"><div class="gv-target-cosmo-title">LIVE COSMOLOGY</div><div class="gv-target-cosmo-row"><span>REDSHIFT Z</span><b data-cosmo="z">LOADING…</b></div><div class="gv-target-cosmo-row"><span>FOV X × Y</span><b data-cosmo="fov">LOADING…</b></div><div class="gv-target-cosmo-row"><span>PRESENT-DAY COMOVING</span><b data-cosmo="dc">LOADING…</b></div><div class="gv-target-cosmo-row"><span>DISTANCE AT EMISSION</span><b data-cosmo="dem">LOADING…</b></div><div class="gv-target-cosmo-note">FLAT ΛCDM · H₀ 67.6 · Ωₘ 0.315 · DISTANCES IN MLY</div></section>';
+  calculator.addEventListener('gv-cosmo-data',event=>{const d=event.detail||{};const put=(key,value)=>{const el=calculator.querySelector('[data-cosmo="'+key+'"]');if(el)el.textContent=value??'UNAVAILABLE'};put('z',d.z??'UNAVAILABLE');put('fov',d.fov??'UNAVAILABLE');put('dc',d.dc??'UNAVAILABLE');put('dem',d.dem??'UNAVAILABLE')});
+   const calculatorDisplay=calculator.querySelector('.gv-target-calculator-display');
   const calculatorClose=calculator.querySelector('.gv-target-calculator-close');
   const calculatorKeys=calculator.querySelector('.gv-target-calculator-keys');
   const list=panel.querySelector('.gv-target-survey-list');
@@ -101,7 +104,7 @@ function createInstance(options={}){
   let calcCurrent='0',calcStored=null,calcOperator=null,calcFresh=false;
   const calcRender=()=>{calculatorDisplay.textContent=calcCurrent;};
   const calcClose=()=>{calculatorOpen=false;calculator.classList.remove('gv-open');};
-  const calcOpen=()=>{close();calculatorOpen=true;calculator.classList.add('gv-open');calcRender();};
+  const calcOpen=()=>{close();calculatorOpen=true;calculator.classList.add('gv-open');calcRender();calculator.querySelectorAll('[data-cosmo]').forEach(e=>e.textContent='LOADING…');window.dispatchEvent(new CustomEvent('gv-request-cosmo-calculator'));};
   const calcReset=()=>{calcCurrent='0';calcStored=null;calcOperator=null;calcFresh=false;calcRender();};
   const calcNumber=value=>{if(calcFresh){calcCurrent='0';calcFresh=false;}if(value==='.' ){if(!calcCurrent.includes('.'))calcCurrent+='.';}else if(calcCurrent==='0')calcCurrent=value;else if(calcCurrent.length<16)calcCurrent+=value;calcRender();};
   const calcOperate=op=>{const v=Number(calcCurrent);if(!Number.isFinite(v))return;if(calcStored!==null&&calcOperator&&!calcFresh){const result=calcApply(calcStored,v,calcOperator);if(result===null){calcCurrent='ERROR';calcStored=null;calcOperator=null;calcFresh=true;calcRender();return;}calcCurrent=calcFormat(result);}calcStored=Number(calcCurrent);calcOperator=op;calcFresh=true;calcRender();};
