@@ -96,8 +96,9 @@ function createInstance(options={}){
   const calculatorKeys=calculator.querySelector('.gv-target-calculator-keys');
   const list=panel.querySelector('.gv-target-survey-list');
 
-  root.append(button,panel,calculator);
+  root.append(button,panel);
   host.replaceChildren(root);
+  document.body.appendChild(calculator);
 
   let destroyed=false,open=false,providers=[],activeProvider='',activeIndex=0,activeTotal=0,pressTimer=0;
   let calculatorOpen=false,calculatorHoldTimer=0,calculatorLongPressed=false,calculatorDownPoint=null;
@@ -176,7 +177,7 @@ function createInstance(options={}){
       activeProvider=String(provider||'').toUpperCase();activeIndex=Number(index)||0;activeTotal=Number(total)||0;render();
     },
     open:openPanel,close,toggle,
-    destroy(){if(destroyed)return;destroyed=true;host.replaceChildren()}
+    destroy(){if(destroyed)return;destroyed=true;calculator.remove();host.replaceChildren()}
   };
   root.__gvTargetSimbad=api;
   render();
