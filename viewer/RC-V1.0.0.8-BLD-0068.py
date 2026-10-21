@@ -538,6 +538,7 @@ function gvFormatEarthRedshift(destination){
 function gvInstallEarthDistanceBanner(){
     if(document.getElementById('gv-earth-distance-banner')&&document.getElementById('gv-live-physical-scale'))return;
     const style=document.createElement('style');style.textContent=`
+#gv-earth-distance-banner,#gv-live-physical-scale{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 #gv-earth-distance-banner{position:fixed;left:50%;z-index:7362;transform:translateX(-50%);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;gap:4px;width:max-content;max-width:calc(100vw - 24px);min-width:0;min-height:0;padding:3px 5px;border:1px solid #58BFFF;border-radius:5px;background:linear-gradient(145deg,rgba(4,20,48,.94),rgba(12,52,116,.94));box-shadow:0 0 5px rgba(88,191,255,.48);font:400 11px/1 "GV Space Age",sans-serif;letter-spacing:1px;white-space:nowrap;color:#FFD84A;text-align:center;text-shadow:0 0 3px rgba(255,216,74,.78);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .12s linear}
 #gv-earth-distance-banner .gv-earth-distance-icon{display:inline-block;font:11px/1 system-ui,sans-serif;letter-spacing:0;filter:drop-shadow(0 0 2px rgba(88,191,255,.55))}
 #gv-earth-distance-banner.gv-visible{opacity:1;visibility:visible}
@@ -3075,7 +3076,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     const startTravelWork=()=>{
         if(presentationStarted)return;
         presentationStarted=true;
-        gvStartupMollweideScreen=false;gvHideEarthDistance();gvEarthPointerActive=true;gvUpdateEarthBearingPointer();
+        gvStartupMollweideScreen=false;gvHideEarthDistance();gvEarthPointerActive=false;gvUpdateEarthBearingPointer();
         if(firstTrip)destinationPresentation.depart();
         if(directHdPresentationObjectUrl)gvReleaseCleanImageObjectUrl(directHdPresentationObjectUrl)
         destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
