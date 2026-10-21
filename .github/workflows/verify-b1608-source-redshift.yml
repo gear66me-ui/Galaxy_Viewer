@@ -5,6 +5,7 @@ on:
     branches: [release]
     paths:
       - "viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json"
+      - ".github/workflows/verify-b1608-source-redshift.yml"
   workflow_dispatch:
 
 permissions:
