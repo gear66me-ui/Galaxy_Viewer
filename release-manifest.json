@@ -1,7 +1,7 @@
 {
   "release": "RC-V1.0.0.8",
   "sourceBranch": "release",
-  "sourceCommit": "21283ddfa7114ca3b3b26d211f5344c8572729b9",
+  "sourceCommit": "053548cb6cce3dd17b6ddb2d6cc4e8181731d75d",
   "build": "0062",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
