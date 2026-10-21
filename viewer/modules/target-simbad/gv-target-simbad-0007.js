@@ -151,14 +151,13 @@ function createInstance(options={}){
     button.classList.toggle('gv-selected',Boolean(activeProvider));
   }
 
-  button.addEventListener('pointerdown',event=>{
-    if(event.button!==undefined&&event.button!==0)return;
-    flashGreen(button);calculatorLongPressed=false;calculatorDownPoint={x:event.clientX,y:event.clientY};
-    clearTimeout(calculatorHoldTimer);
-    calculatorHoldTimer=setTimeout(()=>{calculatorLongPressed=true;calcOpen();},1000);
-  },true);
-  for(const eventName of ['pointerup','pointercancel'])button.addEventListener(eventName,()=>{clearTimeout(calculatorHoldTimer);calculatorHoldTimer=0;calculatorDownPoint=null},true);
-  button.addEventListener('pointermove',event=>{if(calculatorDownPoint&&Math.hypot(event.clientX-calculatorDownPoint.x,event.clientY-calculatorDownPoint.y)>18){clearTimeout(calculatorHoldTimer);calculatorHoldTimer=0;calculatorDownPoint=null}},true);
+  const startCalculatorHold=(x,y)=>{flashGreen(button);calculatorLongPressed=false;calculatorDownPoint={x:Number(x)||0,y:Number(y)||0};clearTimeout(calculatorHoldTimer);calculatorHoldTimer=setTimeout(()=>{calculatorLongPressed=true;calcOpen();},650);};
+  const cancelCalculatorHold=()=>{clearTimeout(calculatorHoldTimer);calculatorHoldTimer=0;calculatorDownPoint=null;};
+  button.addEventListener('pointerdown',event=>{if(event.button!==undefined&&event.button!==0)return;startCalculatorHold(event.clientX,event.clientY);},true);
+  button.addEventListener('touchstart',event=>{const t=event.changedTouches&&event.changedTouches[0];if(t)startCalculatorHold(t.clientX,t.clientY);},{capture:true,passive:true});
+  for(const eventName of ['pointerup','pointercancel','touchend','touchcancel','mouseleave'])button.addEventListener(eventName,cancelCalculatorHold,true);
+  button.addEventListener('pointermove',event=>{if(calculatorDownPoint&&Math.hypot(event.clientX-calculatorDownPoint.x,event.clientY-calculatorDownPoint.y)>24)cancelCalculatorHold()},true);
+  button.addEventListener('touchmove',event=>{const t=event.changedTouches&&event.changedTouches[0];if(t&&calculatorDownPoint&&Math.hypot(t.clientX-calculatorDownPoint.x,t.clientY-calculatorDownPoint.y)>24)cancelCalculatorHold()},{capture:true,passive:true});
   // Android may emit contextmenu or pointercancel during a long touch; neither should open the survey menu.
   button.addEventListener('contextmenu',event=>{event.preventDefault();event.stopPropagation();if(calculatorOpen)calcClose()},true);
   button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();event.stopImmediatePropagation();flashGreen(button);if(calculatorLongPressed){calculatorLongPressed=false;return;}if(calculatorOpen){calcClose();return;}toggle()});
