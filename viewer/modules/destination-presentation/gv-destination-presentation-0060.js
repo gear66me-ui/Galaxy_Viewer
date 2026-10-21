@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const VERSION='0060';
+const VERSION='0061';
 const FONT='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
 const CONSTELLATIONS=ART+'Constellations/';
@@ -81,6 +81,7 @@ card.addEventListener('pointerdown',e=>{
 card.addEventListener('pointermove',e=>{if(gvCosmoHoldStart&&Math.hypot(e.clientX-gvCosmoHoldStart.x,e.clientY-gvCosmoHoldStart.y)>12){clearTimeout(gvCosmoHoldTimer);gvCosmoHoldStart=null}});
 for(const ev of ['pointerup','pointercancel','pointerleave'])card.addEventListener(ev,()=>{clearTimeout(gvCosmoHoldTimer);gvCosmoHoldStart=null});
 card.addEventListener('contextmenu',e=>{if(e.target.closest('.gvdp-cell'))e.preventDefault()});
+window.addEventListener('gv-request-cosmo-calculator',()=>{const z=finite(destination?.redshift),fx=finite(destination?.fovXDegrees),fy=finite(destination?.fovYDegrees),dc=gvCosmoDcMly(z),dem=dc!==null&&z!==null?dc/(1+z):null;const fmt=v=>Number.isFinite(v)?Number(v).toPrecision(6):'UNAVAILABLE';const fov=fx!==null&&fy!==null?`${fmt(fx)}° × ${fmt(fy)}° (${fmt(fx*60)}′ × ${fmt(fy*60)}′)`:'UNAVAILABLE';const detail={z:z===null?'UNAVAILABLE':fmt(z),fov,dc:dc===null?'UNAVAILABLE':fmt(dc)+' Mly',dem:dem===null?'UNAVAILABLE':fmt(dem)+' Mly'};const calculator=document.querySelector('.gv-target-calculator');if(calculator)calculator.dispatchEvent(new CustomEvent('gv-cosmo-data',{detail}));});
 
 const pointerPair=()=>{
  const points=[...pointers.values()];
