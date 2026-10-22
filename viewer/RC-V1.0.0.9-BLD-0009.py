@@ -3258,7 +3258,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         gvEarthDistanceTarget=presentationDestination;
         gvEarthDistanceTargetKey=gvEarthDistanceIdentity(presentationDestination);
         headsUpDisplay.render();
-        gvShowEarthDistance(presentationDestination);
+        gvShowEarthDistance(presentationAvmRecord,true);
         gvPrewarmProviderWebsite(v.destination);
         gvStartNextTripPrewarm();
     }));
