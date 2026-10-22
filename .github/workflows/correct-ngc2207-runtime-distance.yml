@@ -1,81 +1,159 @@
-name: Correct NGC 2207 and IC 2163 redshift-derived distance
+name: Correct NGC 2207 and IC 2163 distance and FLRW redshift
 on:
   workflow_dispatch:
   push:
+    branches: [release]
     paths:
       - ".github/workflows/correct-ngc2207-runtime-distance.yml"
 permissions:
   contents: write
+concurrency:
+  group: correct-ngc2207-ic2163-runtime-0004
+  cancel-in-progress: false
 jobs:
   repair:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
         with:
           ref: release
-      - name: Calculate distance from SIMBAD redshift and update exact stale record(s)
+      - name: Update every verified NGC 2207 / IC 2163 runtime record
         run: |
           python3 - <<'PY'
-          import json, re, math
+          import json
           from pathlib import Path
-          p=Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
-          raw=json.loads(p.read_text(encoding="utf-8"))
-          records=raw if isinstance(raw,list) else raw.get("records")
-          if not isinstance(records,list):
-              raise SystemExit("STOP: records list not found; no write.")
-          def norm(v):
-              return re.sub(r"[^a-z0-9]+","",str(v).casefold())
-          # Match the exact combined pair name and the stale values shown in the live viewer.
-          matches=[]
-          for i,r in enumerate(records):
-              if not isinstance(r,dict): continue
-              name=norm(r.get("name",""))
-              if name in ("ngc2207andic2163","ngc2207ic2163") and abs(float(r.get("distanceMly",0) or 0)-54.794)<0.01 and abs(float(r.get("redshift",0) or 0)-0.003792)<1e-6:
-                  matches.append((i,r))
-          if not matches:
-              print("No exact stale combined-pair record matched. Candidate records:")
-              print(json.dumps([{"index":i,"archiveId":r.get("archiveId"),"name":r.get("name"),
-                "distanceMly":r.get("distanceMly"),"redshift":r.get("redshift")}
-                for i,r in enumerate(records) if isinstance(r,dict) and any(x in norm(r.get("name","")) for x in ("ngc2207","ic2163"))],indent=2))
-              raise SystemExit("STOP: no exact stale record; no write.")
-          # Flat LCDM: H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685.
-          z=0.009292
-          c,H0,Om,Ol=299792.458,67.6,0.315,0.685
-          n=10000; h=z/n
-          def f(q): return 1/math.sqrt(Om*(1+q)**3+Ol)
-          total=0.5*(f(0)+f(z))
-          for j in range(1,n): total+=f(j*h)
-          d_mpc=(c/H0)*h*total
-          d_mly=d_mpc*3.26156
-          before=[]
-          for i,r in matches:
-              before.append({"index":i,"archiveId":r.get("archiveId"),"name":r.get("name"),
-                "distanceMly":r.get("distanceMly"),"redshift":r.get("redshift")})
-              r["distanceMly"]=round(d_mly,6)
-              r["redshift"]=z
-              science=r.get("science")
-              if isinstance(science,dict):
-                  for k in list(science):
-                      if norm(k)=="distancemly": science[k]=round(d_mly,6)
-                      elif norm(k) in ("redshift","redshiftz","z"): science[k]=z
-          p.write_text(json.dumps(raw,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
-          check=json.loads(p.read_text(encoding="utf-8"))
-          cr=check if isinstance(check,list) else check.get("records")
-          verified=[]
-          for i,r in enumerate(cr):
-              if isinstance(r,dict) and norm(r.get("name","")) in ("ngc2207andic2163","ngc2207ic2163") and abs(float(r.get("distanceMly",0) or 0)-round(d_mly,6))<1e-6 and float(r.get("redshift",0) or 0)==z:
-                  verified.append({"index":i,"archiveId":r.get("archiveId"),"name":r.get("name"),"distanceMly":r["distanceMly"],"redshift":r["redshift"]})
-          if len(verified)<len(matches): raise SystemExit("Verification failed; not committing.")
-          print(json.dumps({"verified":True,"updated_count":len(verified),"redshift":z,
-            "comovingDistanceMpc":round(d_mpc,9),"distanceMly":round(d_mly,6),
-            "cosmology":{"H0":H0,"Omega_m":Om,"Omega_Lambda":Ol},"records":verified,"before":before},indent=2))
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          raw = json.loads(path.read_text(encoding="utf-8"))
+          records = raw if isinstance(raw, list) else raw.get("records")
+          if not isinstance(records, list):
+              raise SystemExit("STOP: runtime catalog has no records[] list; no changes written.")
+
+          # Exact identities independently audited in release runtime catalog 0004.
+          expected = {
+              "chandra-2014-ngc2207": "chandra",
+              "opo9941a": "hubble",
+              "heic2414a": "hubble",
+              "heic2414b": "hubble",
+              "weic2426b": "jwst",
+              "noao-n2207terrell": "noirlab",
+              "ssc2006-11a1": "spitzer",
+              "ssc2006-11b1": "spitzer",
+          }
+          distance_mly = 114.0
+          redshift = 0.00789618
+          distance_method = (
+              "Adopted published NASA/Webb distance of 114 million light-years; "
+              "stored as 114.0 Mly. Distance convention is inherited from the published source."
+          )
+          redshift_method = (
+              "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using "
+              "flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; "
+              "calculated value, not a spectroscopic measurement. Assumes the input distance "
+              "is comoving distance."
+          )
+          distance_source = "NASA/Webb published image page: 114 million light-years"
+          redshift_source = "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
+
+          found = {}
+          for index, record in enumerate(records):
+              if not isinstance(record, dict):
+                  continue
+              archive_id = str(record.get("archiveId", ""))
+              if archive_id in expected:
+                  if record.get("providerKey") != expected[archive_id]:
+                      raise SystemExit(
+                          f"STOP: archiveId {archive_id} has unexpected provider "
+                          f"{record.get('providerKey')!r}; no changes written."
+                      )
+                  if archive_id in found:
+                      raise SystemExit(f"STOP: duplicate archiveId {archive_id}; no changes written.")
+                  found[archive_id] = (index, record)
+
+          missing = sorted(set(expected) - set(found))
+          if missing:
+              raise SystemExit(f"STOP: expected target archive IDs missing: {missing}; no changes written.")
+          if len(found) != 8:
+              raise SystemExit(f"STOP: expected exactly 8 target records, found {len(found)}.")
+
+          before = []
+          for archive_id, (index, record) in found.items():
+              before.append({
+                  "index": index,
+                  "providerKey": record.get("providerKey"),
+                  "archiveId": archive_id,
+                  "name": record.get("name"),
+                  "distanceMly": record.get("distanceMly"),
+                  "redshift": record.get("redshift"),
+              })
+              record["distanceMly"] = distance_mly
+              record["redshift"] = redshift
+              record["distanceMethod"] = distance_method
+              record["distanceSource"] = distance_source
+              record["redshiftMethod"] = redshift_method
+              record["redshiftSource"] = redshift_source
+
+              science = record.get("science")
+              if not isinstance(science, dict):
+                  science = {}
+                  record["science"] = science
+              science["distanceMly"] = distance_mly
+              science["redshift"] = redshift
+              science["distanceMethod"] = distance_method
+              science["distanceSource"] = distance_source
+              science["redshiftMethod"] = redshift_method
+              science["redshiftSource"] = redshift_source
+
+          path.write_text(json.dumps(raw, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          check = json.loads(path.read_text(encoding="utf-8"))
+          check_records = check if isinstance(check, list) else check.get("records")
+          verified = []
+          for record in check_records:
+              if not isinstance(record, dict) or record.get("archiveId") not in expected:
+                  continue
+              science = record.get("science")
+              if (
+                  record.get("providerKey") != expected[record["archiveId"]]
+                  or float(record.get("distanceMly", -1)) != distance_mly
+                  or float(record.get("redshift", -1)) != redshift
+                  or not isinstance(science, dict)
+                  or float(science.get("distanceMly", -1)) != distance_mly
+                  or float(science.get("redshift", -1)) != redshift
+              ):
+                  raise SystemExit(
+                      f"STOP: post-write verification failed for {record.get('archiveId')}; no commit."
+                  )
+              verified.append({
+                  "providerKey": record["providerKey"],
+                  "archiveId": record["archiveId"],
+                  "name": record.get("name"),
+                  "distanceMly": record["distanceMly"],
+                  "redshift": record["redshift"],
+              })
+
+          if len(verified) != 8:
+              raise SystemExit(f"STOP: post-write verification found {len(verified)} records, expected 8.")
+
+          print(json.dumps({
+              "verified": True,
+              "updatedCount": len(verified),
+              "target": {"distanceMly": distance_mly, "redshift": redshift},
+              "cosmology": {"H0_km_s_Mpc": 67.6, "Omega_m": 0.315, "Omega_Lambda": 0.685},
+              "records": verified,
+              "before": before,
+          }, ensure_ascii=False, indent=2))
           PY
-      - name: Validate and commit catalog
+      - name: Validate JSON and commit catalog
         run: |
           python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json > /dev/null
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
-          git diff --cached --quiet && { echo "No catalog changes to commit"; exit 1; }
-          git commit -m "Correct NGC 2207 pair distance from SIMBAD redshift"
-          git push origin HEAD:release
+          if git diff --cached --quiet; then
+            echo "Catalog already contains the target values; no commit required."
+          else
+            git commit -m "Set NGC 2207 pair distance to 114 Mly and FLRW z 0.00789618"
+            git push origin HEAD:release
+          fi
