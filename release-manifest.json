@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
-  "sourceCommit": "ddd2206c93b6f221ff524381a4479a78125ca572",
-  "build": "0008",
+  "sourceCommit": "ed52ed380c428dc9372391ed73bceac590560c03",
+  "build": "0009",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.9-BLD-0008.py",
+    "viewer/RC-V1.0.0.9-BLD-0009.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -164,5 +164,5 @@
     "378083be0554066caacf362afd7a3e1153b3ec8d",
     "f5b26bd7a317a57a76a4b68adc05b50ec3f0567e"
   ],
-  "validationProfile": "production-release-gate-1.0.0.8-build-0048-manual-zoom-suspends-hips-fetch-350ms-settle"
+  "validationProfile": "production-release-gate-1.0.0.9-build-0009-exact-arrival-avm-distance"
 }
