@@ -218,7 +218,7 @@ jobs:
           assert "if(fieldX>1||fieldY>1)continue;" in rc, 'Earth-distance matcher must reject records outside the live FOV'
           assert rc.count('gvEarthDistanceArrivalDestination=presentationDestination;')>=2, 'every destination arrival must reset the live distance source'
           assert "window.addEventListener('gv-hd-viewport-changed'" not in rc, 'HD gestures must not be routed through Aladin sky-center matching'
-          assert 'gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()' in rc, 'Aladin pan must switch from arrival distance to live-center matching'
+          assert 'gvEarthDistanceUserAdjustedView=true;' in rc and 'gvSyncEarthDistanceToCenter();' in rc and 'const userChangedView=event=>' in rc, 'Explicit sky gestures must switch from arrival distance to live-center matching'
           assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
           module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0060.js').read_text()
           assert "const VERSION='0060'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
