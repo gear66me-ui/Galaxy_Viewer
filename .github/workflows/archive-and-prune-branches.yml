@@ -1,0 +1,91 @@
+name: Archive and Prune Unused Branches
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm_delete:
+        description: 'Type DELETE UNUSED BRANCHES to archive then delete every branch except main, release, and beta'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+concurrency:
+  group: branch-cleanup
+  cancel-in-progress: false
+
+jobs:
+  archive-and-prune:
+    if: ${{ inputs.confirm_delete == 'DELETE UNUSED BRANCHES' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Archive every non-protected branch, verify backups, then delete originals
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          ARCHIVE_PREFIX: archive/branch-cleanup-20261022
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Never touch the three branches the user chose to keep.
+          protected='main release beta'
+          echo "Repository: $REPO"
+          echo "Protected branches: $protected"
+          echo "Archive root: $ARCHIVE_PREFIX"
+
+          # Snapshot branch names and SHAs before changing anything.
+          gh api --paginate "repos/$REPO/branches?per_page=100" --jq '.[] | [.name, .commit.sha] | @tsv' > /tmp/branches.tsv
+          test -s /tmp/branches.tsv
+
+          # Build an explicit plan; never prune archive refs or protected branches.
+          : > /tmp/prune-plan.tsv
+          while IFS=$'\t' read -r name sha; do
+            case " $protected " in *" $name "*) continue ;; esac
+            case "$name" in archive/*) echo "Refusing to re-archive existing archive branch: $name" >&2; exit 1 ;; esac
+            backup="$ARCHIVE_PREFIX/$name"
+            printf '%s\t%s\t%s\n' "$name" "$sha" "$backup" >> /tmp/prune-plan.tsv
+          done < /tmp/branches.tsv
+
+          if [[ ! -s /tmp/prune-plan.tsv ]]; then
+            echo "No non-protected branches to prune."
+            exit 0
+          fi
+
+          echo "Branches planned for archival and deletion:"
+          cut -f1 /tmp/prune-plan.tsv
+
+          # Phase 1: create all backup branches. Existing names are a hard stop;
+          # no existing backup is overwritten.
+          while IFS=$'\t' read -r name sha backup; do
+            if gh api "repos/$REPO/branches/$backup" >/dev/null 2>&1; then
+              echo "Backup already exists; refusing to overwrite: $backup" >&2
+              exit 1
+            fi
+            gh api --method POST "repos/$REPO/git/refs" -f "ref=refs/heads/$backup" -f "sha=$sha" >/dev/null
+          done < /tmp/prune-plan.tsv
+
+          # Phase 2: verify every backup points to the exact original SHA.
+          while IFS=$'\t' read -r name sha backup; do
+            encoded="${backup//\//%2F}"
+            actual="$(gh api "repos/$REPO/git/ref/heads/$encoded" --jq '.object.sha')"
+            if [[ "$actual" != "$sha" ]]; then
+              echo "Backup verification failed for $name: expected $sha, got $actual" >&2
+              exit 1
+            fi
+            printf 'VERIFIED\t%s\t%s\n' "$name" "$sha"
+          done < /tmp/prune-plan.tsv
+
+          # Phase 3: only after every backup is verified, delete source branches.
+          while IFS=$'\t' read -r name sha backup; do
+            encoded="${name//\//%2F}"
+            gh api --method DELETE "repos/$REPO/git/refs/heads/$encoded" >/dev/null
+            printf 'DELETED\t%s\tARCHIVED AS\t%s\tSHA\t%s\n' "$name" "$backup" "$sha"
+          done < /tmp/prune-plan.tsv
+
+          # Final assertion: main, release, beta exist and every deleted source has an archive.
+          for name in main release beta; do
+            gh api "repos/$REPO/branches/$name" >/dev/null
+          done
+          echo "Branch cleanup complete. main, release, and beta were preserved."
