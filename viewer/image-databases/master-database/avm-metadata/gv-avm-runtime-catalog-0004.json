@@ -44872,7 +44872,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 1.4e-05,
+      "distanceMly": 0.013,
       "science": {},
       "redshift": 0
     },
