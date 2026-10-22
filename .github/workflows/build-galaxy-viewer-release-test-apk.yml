@@ -36,6 +36,25 @@ jobs:
           js = source.count('display(Javascript(r"""')
           if html != 1 or js != 1:
               raise SystemExit(f'Viewer extraction markers invalid: html={html}, js={js}')
+          contracts = {
+              'two tracked HD object URLs': 'const GV_HD_RESOURCE_WINDOW=2;' in source,
+              'abortable next-destination prewarm': 'gvPrepareDirectHd(presentation,Promise.resolve(record),controller.signal)' in source,
+              'bounded constellation artwork cache': 'GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=2' in source,
+              'two provider origins': 'GV_PROVIDER_PORTAL_WINDOW=2' in source,
+              'decoded bitmap closure': 'bitmap.close?.()' in source,
+              'temporary canvas release': 'tempCanvas.width=0;tempCanvas.height=0' in source,
+              'lazy thumbnail mode': 'GV SURVEY THUMBNAILS LAZY MODE' in source,
+              'post-handoff resource snapshot': "gvMemoryDiagnosticSnapshot('hd-layer-handoff')" in source,
+          }
+          failed = [name for name, ok in contracts.items() if not ok]
+          if failed:
+              raise SystemExit('Resource contract checks failed: ' + ', '.join(failed))
+          java = Path('android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java').read_text(encoding='utf-8')
+          if 'releaseProviderPortalOnMainThread' not in java or 'old.destroy()' not in java:
+              raise SystemExit('Native provider WebView release lifecycle is incomplete')
+          if 'old.clearCache(true)' in java:
+              raise SystemExit('Provider retirement must not purge the shared HTTP cache')
+          print('RESOURCE CONTRACTS PASSED:', ', '.join(contracts))
           print(f'Validated Build 0004 pointer and viewer extraction markers: {viewer}')
           html_start = source.index('display(HTML("""') + len('display(HTML("""')
           html_end = source.index('"""))', html_start)
