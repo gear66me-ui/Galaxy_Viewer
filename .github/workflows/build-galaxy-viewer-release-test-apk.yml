@@ -20,7 +20,7 @@ jobs:
           python - <<'PY'
           import csv, json, math
           from pathlib import Path
-          base = Path('viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0003.json')
+          base = Path('viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json')
           mapping = Path('viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv')
           target = Path('viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json')
           with mapping.open(newline='', encoding='utf-8') as f:
