@@ -1332,7 +1332,8 @@ async function gvEnsureFullSearchIndex(){
                 });
                 const allText=(JSON.stringify(entry)+' '+JSON.stringify(record||{}))
                     .normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
-                return Object.freeze({record:navigable,displayRecord:entry,provider,text:allText,matchRecords:Object.freeze([entry,...(record&&record!==entry?[record]:[])])});
+                const thumbnailRecord=Object.freeze({...navigable,provider,providerKey:provider,catalogKey:key,catalogIndex:index});
+                return Object.freeze({record:navigable,thumbnailRecord,displayRecord:entry,provider,text:allText,matchRecords:Object.freeze([entry,...(record&&record!==entry?[record]:[])])});
             });
         }));
         const full=[],failed=[];
@@ -1456,7 +1457,8 @@ async function gvSearchRender(query){
             const thumbWrap=document.createElement('span');thumbWrap.className='gv-search-result-thumb';
             const thumb=document.createElement('img');
             thumb.alt='';thumb.draggable=false;thumb.loading='lazy';thumb.decoding='async';thumb.fetchPriority='low';
-            const candidates=gvSurveyThumbnailCandidates(record,provider);
+            const searchItem=visibleMatches.find(item=>item.record===record);
+            const candidates=gvSurveyThumbnailCandidates(searchItem?.thumbnailRecord||record,provider);
             let thumbIndex=0;
             const loadThumb=()=>{
                 if(renderGeneration!==gvSearchRenderGeneration)return;
