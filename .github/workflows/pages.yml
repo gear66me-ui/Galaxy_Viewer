@@ -89,9 +89,9 @@ jobs:
           rc=rc_path.read_text()
           active_build=str(viewer.get('build',''))
 
-          assert viewer.get('version')=='RC-V1.0.0.8'
+          assert viewer.get('version')=='RC-V1.0.0.9'
           assert re.fullmatch(r'\d{4}',str(viewer.get('build',''))), 'viewer build must be four digits'
-          assert viewer.get('viewer')==f"RC-V1.0.0.8-BLD-{viewer.get('build')}.py", 'pointer filename must match active build'
+          assert viewer.get('viewer')==f"{viewer.get('version')}-BLD-{viewer.get('build')}.py", 'pointer filename must match active build'
           assert manifest.get('build')==viewer.get('build')
           assert manifest.get('sourceBranch')=='release'
           assert manifest.get('release')==viewer.get('version')
@@ -224,7 +224,7 @@ jobs:
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
           assert 'const maxBarPx=Math.max(1,Math.min(144,viewport.clientWidth-160))' in module and 'fraction<.55' not in module, 'HD ruler must remain in the free central gap and must not disappear due to full-image fraction checks'
           assert '2*(distanceMly*1e6)*Math.sin(theta/2)/width' in rc, 'Live physical scale must use spherical chord equation'
-          print(f"PRODUCTION RELEASE GATE PASSED: RC-V1.0.0.8 BUILD {viewer.get('build')} — LIVE EARTH-DISTANCE MATCHING AND HD TRANSFORM HELPERS, ZOOM-RESPONSIVE SCALE, AND EARTH-DISTANCE DISPLAY")
+          print(f"PRODUCTION RELEASE GATE PASSED: {viewer.get('version')} BUILD {viewer.get('build')} — LIVE EARTH-DISTANCE MATCHING AND HD TRANSFORM HELPERS, ZOOM-RESPONSIVE SCALE, AND EARTH-DISTANCE DISPLAY")
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
           print('SOURCE BRANCH:', avm['sourceBranch'])
