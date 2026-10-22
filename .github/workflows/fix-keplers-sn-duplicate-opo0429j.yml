@@ -1,0 +1,90 @@
+name: Fix duplicate Kepler's SN record opo0429j
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/fix-keplers-sn-duplicate-opo0429j.yml
+
+permissions:
+  contents: write
+
+jobs:
+  correct-duplicate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      - name: Correct only duplicate Kepler's SN record
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          records = data.get("records")
+          if not isinstance(records, list):
+              raise SystemExit("Guard failed: records is not a list")
+
+          matches = [
+              (i, r) for i, r in enumerate(records)
+              if str(r.get("archiveId", "")).lower() == "opo0429j"
+              and str(r.get("providerKey", "")).lower() == "hubble"
+              and "kepler" in str(r.get("name", "")).lower()
+          ]
+          if len(matches) != 1:
+              raise SystemExit(f"Guard failed: expected exactly one Hubble Kepler record opo0429j; found {len(matches)}")
+
+          index, record = matches[0]
+          old = record.get("distanceMly")
+          record["distanceMly"] = 0.013
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + chr(10), encoding="utf-8")
+
+          check = json.loads(path.read_text(encoding="utf-8"))
+          verified = [
+              r for r in check["records"]
+              if str(r.get("archiveId", "")).lower() == "opo0429j"
+              and str(r.get("providerKey", "")).lower() == "hubble"
+              and "kepler" in str(r.get("name", "")).lower()
+          ]
+          if len(verified) != 1 or verified[0].get("distanceMly") != 0.013:
+              raise SystemExit("Post-write verification failed")
+          print(json.dumps({
+              "recordIndex": index,
+              "archiveId": record.get("archiveId"),
+              "name": record.get("name"),
+              "oldDistanceMly": old,
+              "newDistanceMly": 0.013,
+              "displayDistanceKly": 13.0,
+              "verified": True
+          }, indent=2))
+          PY
+
+      - name: Validate catalog and both Kepler records
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          records = data["records"]
+          targets = [r for r in records if str(r.get("archiveId", "")).lower() in ("opo0429h", "opo0429j") and "kepler" in str(r.get("name", "")).lower()]
+          by_id = {r.get("archiveId"): r for r in targets}
+          assert "opo0429h" in by_id and "opo0429j" in by_id, f"Expected both archive records, found {list(by_id)}"
+          assert by_id["opo0429h"]["distanceMly"] == 0.013, by_id["opo0429h"].get("distanceMly")
+          assert by_id["opo0429j"]["distanceMly"] == 0.013, by_id["opo0429j"].get("distanceMly")
+          print(f"PASS: valid JSON; {len(records)} records; both Kepler SN records equal 0.013 Mly (13 Kly)")
+          PY
+
+      - name: Commit only runtime catalog correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          git diff --cached --quiet && { echo "No catalog change staged"; exit 1; }
+          git commit -m "Correct duplicate Kepler SN distance to 13 Kly"
+          git push origin release
