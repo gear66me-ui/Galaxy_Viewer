@@ -2993,7 +2993,7 @@ function gvPrewarmProviderWebsite(destination){
 let gvFirstDestinationPreload=null;
 let gvNextTripPrewarm=null;
 let gvNextTripPrewarmGeneration=0;
-gvStartMemoryDiagnostics();
+/* Memory diagnostics start after resource registries are initialized below. */
 function gvDisposeNextTripPrewarm(warm,reason='invalidated'){
     if(!warm)return;
     console.info('GV NEXT DESTINATION PREWARM INVALIDATED',{reason,name:warm.destination?.name||warm.destination?.designation||''});
@@ -3061,6 +3061,7 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // ============================================================================
 // Keep image objects alive while their constellation artwork warms in parallel.
 const gvConstellationArtworkPrewarm=new Map();
+gvStartMemoryDiagnostics();
 const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=2;
 function gvReleaseConstellationArtwork(url){
     const image=gvConstellationArtworkPrewarm.get(url);if(!image)return;
