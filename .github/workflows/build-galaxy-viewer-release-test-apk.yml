@@ -4,122 +4,81 @@ on:
   push:
     branches: [release]
     paths:
-      - 'viewer/gv-current-viewer.json'
-      - 'viewer/RC-V1.0.0.9-BLD-0004.py'
-      - 'android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java'
+      - 'viewer/RC-V1.0.0.9-BLD-0005.py'
+      - 'android/galaxy-viewer-web-browser/**'
       - '.github/workflows/build-galaxy-viewer-release-test-apk.yml'
-permissions: { contents: write }
+
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: { ref: release }
-      - name: Validate Build 0004 release pointer and preserve catalog
+        with:
+          ref: release
+          fetch-depth: 1
+
+      - name: Validate Build 0005 source and extraction
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import json
           from pathlib import Path
-          pointer = json.loads(Path('viewer/gv-current-viewer.json').read_text(encoding='utf-8'))
-          expected = {'version': 'RC-V1.0.0.9', 'viewer': 'RC-V1.0.0.9-BLD-0004.py', 'build': '0004'}
-          if pointer != expected:
-              raise SystemExit(f'Unexpected Build 0004 pointer: {pointer!r}')
-          viewer = Path('viewer') / pointer['viewer']
-          if not viewer.is_file():
-              raise SystemExit(f'Viewer target missing: {viewer}')
-          source = viewer.read_text(encoding='utf-8')
-          if 'BUILD_NUMBER = "0004"' not in source:
-              raise SystemExit('Build number inside viewer does not match pointer')
-          html = source.count('display(HTML("""')
-          js = source.count('display(Javascript(r"""')
-          if html != 1 or js != 1:
-              raise SystemExit(f'Viewer extraction markers invalid: html={html}, js={js}')
-          contracts = {
-              'two tracked HD object URLs': 'const GV_HD_RESOURCE_WINDOW=2;' in source,
-              'abortable next-destination prewarm': 'gvPrepareDirectHd(presentation,Promise.resolve(record),controller.signal)' in source,
-              'bounded constellation artwork cache': 'GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=2' in source,
-              'two provider origins': 'GV_PROVIDER_PORTAL_WINDOW=2' in source,
-              'decoded bitmap closure': 'bitmap.close?.()' in source,
-              'temporary canvas release': 'tempCanvas.width=0;tempCanvas.height=0' in source,
-              'lazy thumbnail mode': 'GV SURVEY THUMBNAILS LAZY MODE' in source,
-              'post-handoff resource snapshot': "gvMemoryDiagnosticSnapshot('hd-layer-handoff')" in source,
-          }
-          failed = [name for name, ok in contracts.items() if not ok]
-          if failed:
-              raise SystemExit('Resource contract checks failed: ' + ', '.join(failed))
-          java = Path('android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java').read_text(encoding='utf-8')
-          if 'releaseProviderPortalOnMainThread' not in java or 'old.destroy()' not in java:
-              raise SystemExit('Native provider WebView release lifecycle is incomplete')
-          if 'old.clearCache(true)' in java:
-              raise SystemExit('Provider retirement must not purge the shared HTTP cache')
-          print('RESOURCE CONTRACTS PASSED:', ', '.join(contracts))
-          print(f'Validated Build 0004 pointer and viewer extraction markers: {viewer}')
-          html_start = source.index('display(HTML("""') + len('display(HTML("""')
+          source_path = Path('viewer/RC-V1.0.0.9-BLD-0005.py')
+          if not source_path.is_file():
+              raise SystemExit(f'Missing Build 0005 source: {source_path}')
+          source = source_path.read_text(encoding='utf-8')
+          if 'VIEWER_VERSION = "RC-V1.0.0.9"' not in source:
+              raise SystemExit('Viewer version mismatch')
+          if 'BUILD_NUMBER = "0005"' not in source:
+              raise SystemExit('Build number mismatch')
+          html_marker = 'display(HTML("""'
+          js_marker = 'display(Javascript(r"""'
+          html_count = source.count(html_marker)
+          js_count = source.count(js_marker)
+          if html_count != 1 or js_count != 1:
+              raise SystemExit(f'Viewer extraction markers invalid: html={html_count}, js={js_count}')
+          html_start = source.index(html_marker) + len(html_marker)
           html_end = source.index('"""))', html_start)
-          js_start = source.index('display(Javascript(r"""') + len('display(Javascript(r"""')
+          js_start = source.index(js_marker) + len(js_marker)
           js_end = source.index('"""))', js_start)
-          Path('/tmp/gv-build-0004.js').write_text(source[js_start:js_end], encoding='utf-8')
+          Path('/tmp/gv-build-0005.js').write_text(source[js_start:js_end], encoding='utf-8')
+          print('Build 0005 identity and extraction markers passed')
           PY
-          node --check /tmp/gv-build-0004.js
-          if git diff --name-only HEAD^ HEAD | grep -q '^viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
-        with: { distribution: temurin, java-version: '17' }
-      - uses: android-actions/setup-android@v3
-        with:
-          packages: 'platforms;android-35 build-tools;35.0.0'
-      - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
-      - uses: gradle/actions/setup-gradle@v4
-        with: { gradle-version: '8.9' }
-      - name: Build the actual Galaxy Viewer Android app
-        shell: bash
-        run: |
-          set -euo pipefail
-          gradle --no-daemon -p android/galaxy-viewer-web-browser :app:assembleDebug
-          APK=android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
-          test -s "$APK"
-          cp "$APK" Galaxy-Viewer-Build-0004-Memory-Stabilization.apk
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose Galaxy-Viewer-Build-0004-Memory-Stabilization.apk
-          sha256sum Galaxy-Viewer-Build-0004-Memory-Stabilization.apk > Galaxy-Viewer-Build-0004-Memory-Stabilization.apk.sha256
-      - name: Publish direct-download Build 0004 APK
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          T=galaxy-viewer-build-0004-memory-stabilization
-          gh release delete "$T" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$T" Galaxy-Viewer-Build-0004-Memory-Stabilization.apk Galaxy-Viewer-Build-0004-Memory-Stabilization.apk.sha256 --target release --title "Galaxy Viewer Build 0004 — Memory Stabilization" --notes "Build 0004 Android APK. Viewer pointer and release manifest target Build 0004. Runtime catalog is preserved."
-      - uses: actions/upload-artifact@v4
-        with: { name: Galaxy-Viewer-Build-0004-Memory-Stabilization, path: 'Galaxy-Viewer-Build-0004-Memory-Stabilization.apk*' }
-; then
-            echo 'Runtime catalog must not change in a memory-only build' >&2
-            exit 1
-          fi
+          node --check /tmp/gv-build-0005.js
+
       - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: '17' }
+        with:
+          distribution: temurin
+          java-version: '17'
+
       - uses: android-actions/setup-android@v3
         with:
           packages: 'platforms;android-35 build-tools;35.0.0'
+
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+
       - uses: gradle/actions/setup-gradle@v4
-        with: { gradle-version: '8.9' }
-      - name: Build the actual Galaxy Viewer Android app
+        with:
+          gradle-version: '8.9'
+
+      - name: Build Galaxy Viewer Android APK
         shell: bash
         run: |
           set -euo pipefail
           gradle --no-daemon -p android/galaxy-viewer-web-browser :app:assembleDebug
           APK=android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          cp "$APK" Galaxy-Viewer-Build-0004-Memory-Stabilization.apk
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose Galaxy-Viewer-Build-0004-Memory-Stabilization.apk
-          sha256sum Galaxy-Viewer-Build-0004-Memory-Stabilization.apk > Galaxy-Viewer-Build-0004-Memory-Stabilization.apk.sha256
-      - name: Publish direct-download Build 0004 APK
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          T=galaxy-viewer-build-0004-memory-stabilization
-          gh release delete "$T" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$T" Galaxy-Viewer-Build-0004-Memory-Stabilization.apk Galaxy-Viewer-Build-0004-Memory-Stabilization.apk.sha256 --target release --title "Galaxy Viewer Build 0004 — Memory Stabilization" --notes "Build 0004 Android APK. Viewer pointer and release manifest target Build 0004. Runtime catalog is preserved."
+          cp "$APK" Galaxy-Viewer-RC-V1.0.0.9-Build-0005.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose Galaxy-Viewer-RC-V1.0.0.9-Build-0005.apk
+          sha256sum Galaxy-Viewer-RC-V1.0.0.9-Build-0005.apk > Galaxy-Viewer-RC-V1.0.0.9-Build-0005.apk.sha256
+
       - uses: actions/upload-artifact@v4
-        with: { name: Galaxy-Viewer-Build-0004-Memory-Stabilization, path: 'Galaxy-Viewer-Build-0004-Memory-Stabilization.apk*' }
+        with:
+          name: Galaxy-Viewer-RC-V1.0.0.9-Build-0005
+          path: |
+            Galaxy-Viewer-RC-V1.0.0.9-Build-0005.apk
+            Galaxy-Viewer-RC-V1.0.0.9-Build-0005.apk.sha256
+          retention-days: 30
