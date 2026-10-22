@@ -1,0 +1,87 @@
+name: Fix Kepler's SN distance to 13 Kly
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/fix-keplers-sn-distance-13-kly.yml
+
+permissions:
+  contents: write
+
+jobs:
+  correct-distance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+
+      - name: Set only Kepler's SN distance in runtime catalog 0004
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          records = data.get("records")
+          if not isinstance(records, list):
+              raise SystemExit("Guard failed: runtime catalog records is not a list")
+
+          matches = [
+              (i, record) for i, record in enumerate(records)
+              if str(record.get("archiveId", "")).lower() == "opo0429h"
+              and "kepler" in str(record.get("name", "")).lower()
+          ]
+          if len(matches) != 1:
+              raise SystemExit(f"Guard failed: expected exactly one Hubble opo0429h Kepler's SN record; found {len(matches)}")
+
+          index, record = matches[0]
+          old = record.get("distanceMly")
+          record["distanceMly"] = 0.013
+
+          path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+          check = json.loads(path.read_text(encoding="utf-8"))
+          verified = [
+              r for r in check["records"]
+              if str(r.get("archiveId", "")).lower() == "opo0429h"
+              and "kepler" in str(r.get("name", "")).lower()
+          ]
+          if len(verified) != 1 or verified[0].get("distanceMly") != 0.013:
+              raise SystemExit("Post-write verification failed")
+          print(json.dumps({
+              "file": str(path),
+              "recordIndex": index,
+              "archiveId": record.get("archiveId"),
+              "name": record.get("name"),
+              "oldDistanceMly": old,
+              "newDistanceMly": 0.013,
+              "displayDistanceKly": 13.0,
+              "redshiftChanged": False,
+              "verified": True
+          }, indent=2))
+          PY
+
+      - name: Validate runtime catalog JSON and targeted record
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          data = json.loads(p.read_text(encoding="utf-8"))
+          hits = [r for r in data["records"] if str(r.get("archiveId", "")).lower() == "opo0429h" and "kepler" in str(r.get("name", "")).lower()]
+          assert len(hits) == 1, f"Expected one target record, found {len(hits)}"
+          assert hits[0]["distanceMly"] == 0.013, hits[0].get("distanceMly")
+          print(f"PASS: valid JSON; {len(data['records'])} records; Kepler's SN distanceMly={hits[0]['distanceMly']} (=13 Kly)")
+          PY
+
+      - name: Commit runtime catalog correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          git diff --cached --quiet && { echo "No catalog change staged"; exit 1; }
+          git commit -m "Correct Kepler's SN distance to 13 Kly"
+          git push origin release
