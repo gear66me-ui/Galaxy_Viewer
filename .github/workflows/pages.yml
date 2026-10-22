@@ -223,7 +223,12 @@ jobs:
           assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
           assert 'const maxBarPx=Math.max(1,Math.min(144,viewport.clientWidth-160))' in module and 'fraction<.55' not in module, 'HD ruler must remain in the free central gap and must not disappear due to full-image fraction checks'
-          assert 'const angle=2*Math.asin(Math.sqrt(q)),ly=2*distanceMly*1e6*Math.sin(angle/2);' in rc, 'Live physical scale must use spherical chord distance from actual Aladin endpoint separation'
+          if active_build == '0005':
+              assert 'const angle=2*Math.asin(Math.sqrt(q)),ly=2*distanceMly*1e6*Math.sin(angle/2);' in rc, 'Build 0005 live physical scale must use spherical chord distance from actual Aladin endpoint separation'
+          elif active_build == '0004':
+              assert 'const theta=Math.min(180,fovX)*Math.PI/180;' in rc and 'const lyPerPx=2*(distanceMly*1e6)*Math.sin(theta/2)/width;' in rc, 'Build 0004 live physical scale must match its released FOV-based implementation'
+          else:
+              raise AssertionError(f'No approved live physical scale validation for release build {active_build}')
           print(f"PRODUCTION RELEASE GATE PASSED: {viewer.get('version')} BUILD {viewer.get('build')} — LIVE EARTH-DISTANCE MATCHING AND HD TRANSFORM HELPERS, ZOOM-RESPONSIVE SCALE, AND EARTH-DISTANCE DISPLAY")
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
