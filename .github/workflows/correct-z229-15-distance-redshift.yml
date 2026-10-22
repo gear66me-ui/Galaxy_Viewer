@@ -1,0 +1,129 @@
+name: Correct Z 229-15 distance and redshift in AVM runtime 0004
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/correct-z229-15-distance-redshift.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: correct-z229-15-runtime-0004
+  cancel-in-progress: false
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Correct and verify the unique Z 229-15 Hubble record
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          raw = json.loads(path.read_text(encoding="utf-8"))
+          records = raw if isinstance(raw, list) else raw.get("records")
+          if not isinstance(records, list):
+              raise SystemExit("STOP: runtime catalog has no records list; no changes written.")
+
+          archive_id = "potw2313a"
+          provider_key = "hubble"
+          target_name = "Z 229-15"
+          distance_mly = 390.0
+          redshift = 0.02789
+          distance_source = "ESA/Hubble Picture of the Week 2313a: https://esahubble.org/images/potw2313a/ (about 390 million light-years)"
+          redshift_source = "Adopted redshift z=0.02789 for Z 229-15, consistent with published redshift near 0.0279; not an FLRW back-calculation from 390 Mly."
+          distance_method = "Published approximate distance adopted as nominal Galaxy Viewer value: 390.0 million light-years."
+          redshift_method = "Published spectroscopic redshift adopted as z=0.02789 (approximately 0.0279). Kept as the measured/published redshift rather than deriving z from the approximate distance."
+
+          found = []
+          for i, record in enumerate(records):
+              if not isinstance(record, dict):
+                  continue
+              if str(record.get("archiveId", "")).strip().lower() == archive_id:
+                  found.append((i, record))
+
+          if len(found) != 1:
+              raise SystemExit(f"STOP: expected exactly one record with archiveId={archive_id}, found {len(found)}; no changes written.")
+          index, record = found[0]
+          if str(record.get("providerKey", "")).strip().lower() != provider_key:
+              raise SystemExit(f"STOP: {archive_id} providerKey is {record.get('providerKey')!r}, expected {provider_key!r}; no changes written.")
+
+          name_values = [record.get("name"), record.get("objectName"), record.get("title")]
+          if not any(isinstance(v, str) and target_name.lower() in v.lower() for v in name_values):
+              aliases = record.get("aliases", [])
+              if not isinstance(aliases, list) or not any(isinstance(v, str) and target_name.lower() in v.lower() for v in aliases):
+                  raise SystemExit(f"STOP: archiveId={archive_id} did not also identify {target_name}; no changes written.")
+
+          before = {
+              "index": index, "providerKey": record.get("providerKey"),
+              "archiveId": record.get("archiveId"), "name": record.get("name"),
+              "distanceMly": record.get("distanceMly"), "redshift": record.get("redshift"),
+              "science": record.get("science")
+          }
+
+          for key, value in {
+              "distanceMly": distance_mly, "redshift": redshift,
+              "distanceMethod": distance_method, "distanceSource": distance_source,
+              "redshiftMethod": redshift_method, "redshiftSource": redshift_source
+          }.items():
+              record[key] = value
+
+          science = record.get("science")
+          if not isinstance(science, dict):
+              science = {}
+              record["science"] = science
+          for key, value in {
+              "distanceMly": distance_mly, "redshift": redshift,
+              "distanceMethod": distance_method, "distanceSource": distance_source,
+              "redshiftMethod": redshift_method, "redshiftSource": redshift_source
+          }.items():
+              science[key] = value
+
+          encoded = json.dumps(raw, ensure_ascii=False, indent=2) + "\\n"
+          check_raw = json.loads(encoded)
+          check_records = check_raw if isinstance(check_raw, list) else check_raw.get("records")
+          verified = [r for r in check_records if isinstance(r, dict) and r.get("archiveId") == archive_id and r.get("providerKey") == provider_key]
+          if len(verified) != 1:
+              raise SystemExit("STOP: post-serialization target uniqueness check failed; no file written.")
+          check = verified[0]
+          check_science = check.get("science")
+          if (float(check.get("distanceMly", -1)) != distance_mly or
+              float(check.get("redshift", -1)) != redshift or
+              not isinstance(check_science, dict) or
+              float(check_science.get("distanceMly", -1)) != distance_mly or
+              float(check_science.get("redshift", -1)) != redshift):
+              raise SystemExit("STOP: post-serialization field validation failed; no file written.")
+
+          path.write_text(encoded, encoding="utf-8")
+          # Re-open the exact written bytes and validate again.
+          on_disk = json.loads(path.read_text(encoding="utf-8"))
+          disk_records = on_disk if isinstance(on_disk, list) else on_disk.get("records")
+          disk_matches = [r for r in disk_records if isinstance(r, dict) and r.get("archiveId") == archive_id and r.get("providerKey") == provider_key]
+          if len(disk_matches) != 1 or float(disk_matches[0].get("distanceMly", -1)) != distance_mly or float(disk_matches[0].get("redshift", -1)) != redshift or float(disk_matches[0].get("science", {}).get("distanceMly", -1)) != distance_mly or float(disk_matches[0].get("science", {}).get("redshift", -1)) != redshift:
+              raise SystemExit("STOP: on-disk verification failed.")
+
+          print(json.dumps({
+              "verified": True, "updatedCount": 1,
+              "target": {"name": target_name, "providerKey": provider_key, "archiveId": archive_id,
+                         "distanceMly": distance_mly, "redshift": redshift},
+              "before": before
+          }, ensure_ascii=False, indent=2))
+          PY
+      - name: Validate JSON and commit catalog
+        run: |
+          python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json >/dev/null
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          if git diff --cached --quiet; then
+            echo "Catalog already contains the approved Z 229-15 values; no commit required."
+          else
+            git commit -m "Correct Z 229-15 distance and redshift in AVM runtime catalog 0004"
+            git push origin HEAD:release
+          fi
