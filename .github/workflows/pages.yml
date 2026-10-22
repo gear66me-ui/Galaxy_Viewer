@@ -192,7 +192,10 @@ jobs:
           assert 'gvNavigationTravelActive=false;' in rc, 'Distance display lifecycle must reopen on arrival and reset on navigation failure'
           assert "aladin.on('positionChanged'" in rc and "aladin.on('zoomChanged'" in rc, 'Earth-distance banner must refresh on pan and zoom events'
           assert 'if(window.GV_NAV_BACKGROUND_SUSPENDED||gvEarthDistanceSyncBusy)return;' not in rc, 'Earth-distance refresh must not be blocked by background suspension'
-          assert 'gvShowEarthDistance(nearest);' in rc and 'const record=await gvRuntimeAvmRecord(destination);' in rc, 'Earth-distance banner must refresh from live center and resolve only against runtime catalog 0004'
+          if active_build == '0007':
+              assert 'gvShowEarthDistance(nearest,true);' in rc and 'alreadyResolvedRuntimeRecord?destination:await gvRuntimeAvmRecord(destination)' in rc, 'Build 0007 must display the exact live-center runtime record'
+          else:
+              assert 'gvShowEarthDistance(nearest);' in rc and 'const record=await gvRuntimeAvmRecord(destination);' in rc, 'Earlier builds must resolve the live-center match against runtime catalog 0004'
           assert "return (v/1000).toFixed(2)+' BLY'" in rc and "return v.toFixed(2)+' MLY'" in rc and "return (v*1000).toFixed(2)+' KLY'" in rc and 'destination?.distanceMly' in rc and "const text=gvFormatEarthDistance(runtimeDestination);" in rc, 'Earth banner must display runtime distance only; redshift remains catalog metadata'
           assert ('setInterval(()=>{gvInstallEarthDistanceInteractionListeners();gvSyncEarthDistanceToCenter()},100)' in rc or 'setInterval(()=>{gvInstallEarthDistanceInteractionListeners();if(!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},100)' in rc), 'Earth distance must resync every 100 ms while respecting active zoom/travel guards'
           assert 'const distanceSource=gvEarthDistanceTarget;' in rc and 'const distanceSource=gvEarthDistanceTarget||activeDestination;' not in rc, 'physical scale must avoid the activeDestination temporal-dead-zone and use the live Earth-distance target'
