@@ -15,8 +15,8 @@ BUILD_NUMBER = "0065"
 # ECO: GV200-001
 # ============================================================================
 ALADIN_VERSION = "3.8.2"
-ALADIN_CSS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css"
-ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js"
+ALADIN_CSS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css"
+ALADIN_JS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
@@ -36,7 +36,7 @@ HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d8
 # ECO: GV200-001
 # ============================================================================
 display(HTML("""
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" />
+<link rel="stylesheet" href="https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css" />
 <div id="aladin-cosmic-command-test">
 
 <!-- =======================================================================
@@ -96,8 +96,8 @@ document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:t
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'RC-V1.0.0.8',
     aladinVersion:'3.8.2',
-    aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
-    aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
+    aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css',
+    aladinJsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js',
     hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
     constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@42620e479e7fa719ca168dd1fbf96e924e23eb9d/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
