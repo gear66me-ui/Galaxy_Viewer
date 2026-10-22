@@ -1,0 +1,147 @@
+name: Correct NGC 1376 distance and FLRW redshift
+on:
+  workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/correct-ngc1376-distance-redshift.yml"
+permissions:
+  contents: write
+concurrency:
+  group: correct-ngc1376-runtime-0004
+  cancel-in-progress: false
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Update the verified NGC 1376 runtime record
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          raw = json.loads(path.read_text(encoding="utf-8"))
+          records = raw if isinstance(raw, list) else raw.get("records")
+          if not isinstance(records, list):
+              raise SystemExit("STOP: runtime catalog has no records[] list; no changes written.")
+
+          expected = {"opo1000a": "hubble"}
+          distance_mly = 180.0
+          redshift = 0.0124813
+          distance_method = (
+              "Adopted ESA/Hubble provider caption distance: over 180 million light-years; "
+              "Galaxy Viewer uses 180.0 Mly as the nominal value selected for this correction. "
+              "Provider object details separately list 200 million light-years."
+          )
+          redshift_method = (
+              "FLRW-derived redshift calculated from the adopted nominal 180.0 Mly comoving "
+              "distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, "
+              "Omega_Lambda=0.685. This is a calculated value, not a spectroscopic measurement."
+          )
+          distance_source = "ESA/Hubble provider page https://esahubble.org/images/opo1000a/ (caption: over 180 million light-years)"
+          redshift_source = "Galaxy Viewer FLRW back-calculation from nominal 180.0 Mly comoving distance"
+
+          found = {}
+          for index, record in enumerate(records):
+              if not isinstance(record, dict):
+                  continue
+              archive_id = str(record.get("archiveId", ""))
+              if archive_id in expected:
+                  if record.get("providerKey") != expected[archive_id]:
+                      raise SystemExit(
+                          f"STOP: archiveId {archive_id} has unexpected provider "
+                          f"{record.get('providerKey')!r}; no changes written."
+                      )
+                  if archive_id in found:
+                      raise SystemExit(f"STOP: duplicate archiveId {archive_id}; no changes written.")
+                  found[archive_id] = (index, record)
+
+          missing = sorted(set(expected) - set(found))
+          if missing:
+              raise SystemExit(f"STOP: expected target archive IDs missing: {missing}; no changes written.")
+          if len(found) != 1:
+              raise SystemExit(f"STOP: expected exactly 1 target record, found {len(found)}.")
+
+          before = []
+          for archive_id, (index, record) in found.items():
+              before.append({
+                  "index": index,
+                  "providerKey": record.get("providerKey"),
+                  "archiveId": archive_id,
+                  "name": record.get("name"),
+                  "distanceMly": record.get("distanceMly"),
+                  "redshift": record.get("redshift"),
+              })
+              record["distanceMly"] = distance_mly
+              record["redshift"] = redshift
+              record["distanceMethod"] = distance_method
+              record["distanceSource"] = distance_source
+              record["redshiftMethod"] = redshift_method
+              record["redshiftSource"] = redshift_source
+
+              science = record.get("science")
+              if not isinstance(science, dict):
+                  science = {}
+                  record["science"] = science
+              science["distanceMly"] = distance_mly
+              science["redshift"] = redshift
+              science["distanceMethod"] = distance_method
+              science["distanceSource"] = distance_source
+              science["redshiftMethod"] = redshift_method
+              science["redshiftSource"] = redshift_source
+
+          path.write_text(json.dumps(raw, ensure_ascii=False, indent=2) + "\\n", encoding="utf-8")
+
+          check = json.loads(path.read_text(encoding="utf-8"))
+          check_records = check if isinstance(check, list) else check.get("records")
+          verified = []
+          for record in check_records:
+              if not isinstance(record, dict) or record.get("archiveId") not in expected:
+                  continue
+              science = record.get("science")
+              if (
+                  record.get("providerKey") != expected[record["archiveId"]]
+                  or float(record.get("distanceMly", -1)) != distance_mly
+                  or float(record.get("redshift", -1)) != redshift
+                  or not isinstance(science, dict)
+                  or float(science.get("distanceMly", -1)) != distance_mly
+                  or float(science.get("redshift", -1)) != redshift
+              ):
+                  raise SystemExit(f"STOP: post-write verification failed for {record.get('archiveId')}; no commit.")
+              verified.append({
+                  "providerKey": record["providerKey"],
+                  "archiveId": record["archiveId"],
+                  "name": record.get("name"),
+                  "distanceMly": record["distanceMly"],
+                  "redshift": record["redshift"],
+              })
+
+          if len(verified) != 1:
+              raise SystemExit(f"STOP: post-write verification found {len(verified)} records, expected 1.")
+
+          print(json.dumps({
+              "verified": True,
+              "updatedCount": len(verified),
+              "target": {"distanceMly": distance_mly, "redshift": redshift},
+              "cosmology": {"H0_km_s_Mpc": 67.6, "Omega_m": 0.315, "Omega_Lambda": 0.685},
+              "records": verified,
+              "before": before,
+          }, ensure_ascii=False, indent=2))
+          PY
+      - name: Validate JSON and commit catalog
+        run: |
+          python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json > /dev/null
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          if git diff --cached --quiet; then
+            echo "Catalog already contains the target values; no commit required."
+          else
+            git commit -m "Set NGC 1376 distance to 180 Mly and FLRW z 0.0124813"
+            git push origin HEAD:release
+          fi
