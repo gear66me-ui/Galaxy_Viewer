@@ -19,7 +19,7 @@ jobs:
         with:
           ref: release
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Apply nine reviewed distance/redshift corrections
+      - name: Apply nine reviewed distance/redshift corrections (including NGC 6769)
         run: |
           python3 - <<'PY'
           import json
@@ -104,6 +104,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Catalog already contains all approved values; no catalog commit needed."
           else
-            git commit -m "Correct nine approved distance and redshift records in AVM catalog 0004"
+            git commit -m "Correct reviewed distances and redshifts in AVM catalog 0004, including NGC 6769"
             git push origin HEAD:release
           fi
