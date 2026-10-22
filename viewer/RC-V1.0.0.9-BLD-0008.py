@@ -718,24 +718,15 @@ async function gvSyncEarthDistanceToCenter(){
         const observedRa=Number(Array.isArray(observed)?observed[0]:(observed?.ra??observed?.[0]));
         const observedDec=Number(Array.isArray(observed)?observed[1]:(observed?.dec??observed?.[1]));
         if(Number.isFinite(observedRa)&&Number.isFinite(observedDec)){
-            if(gvEarthDistanceLastObservedCenter){
-                const dra=Math.abs(((observedRa-gvEarthDistanceLastObservedCenter.ra+540)%360)-180)*Math.cos(observedDec*Math.PI/180);
-                const ddec=observedDec-gvEarthDistanceLastObservedCenter.dec;
-                if(Math.hypot(dra,ddec)>0.00001)gvEarthDistanceUserAdjustedView=true;
-            }
+            // Center drift alone is not proof of a deliberate user pan; arrival animation
+            // and settling can emit position changes. Only explicit sky gestures unlock live matching.
             gvEarthDistanceLastObservedCenter={ra:observedRa,dec:observedDec};
         }
     }
     // BUILD 0008: arrival is authoritative until the user deliberately pans the sky.
     // Do not let the periodic live-center poll replace the just-arrived galaxy with
     // a nearby/previous catalog record when travel finishes.
-    if(gvEarthDistanceArrivalDestination&&!gvEarthDistanceUserAdjustedView){
-        const arrivalUrl=gvCanonicalAvmImageUrl(directHdUrl(gvEarthDistanceArrivalDestination)).toLowerCase();
-        const targetUrl=gvCanonicalAvmImageUrl(directHdUrl(gvEarthDistanceTarget||{})).toLowerCase();
-        if(gvEarthDistanceTarget&&targetUrl===arrivalUrl&&banner.classList.contains('gv-visible'))return;
-        gvShowEarthDistance(gvEarthDistanceArrivalDestination);
-        return;
-    }
+    if(gvEarthDistanceArrivalDestination&&!gvEarthDistanceUserAdjustedView)return;
     gvEarthDistanceSyncBusy=true;
     try{
         const size=aladin.getSize?.();
@@ -819,8 +810,8 @@ function gvInstallEarthDistanceInteractionListeners(){
     const userChangedView=event=>{
         if(gvNavigationTravelActive||isHdViewport(event))return;
         const type=String(event?.type||'');
-        const touchGesture=type.startsWith('touch')||event?.pointerType==='touch';
-        const pointerGesture=type==='pointerdown'||type==='pointerup'||(type==='pointermove'&&Number(event?.buttons)>0);
+        const touchGesture=type==='touchmove';
+        const pointerGesture=type==='pointermove'&&Number(event?.buttons)>0;
         if(!touchGesture&&!pointerGesture&&type!=='wheel')return;
         gvEarthDistanceUserAdjustedView=true;
         gvSyncEarthDistanceToCenter();
@@ -840,8 +831,8 @@ function gvInstallEarthDistanceInteractionListeners(){
 }
 // Update immediately on Aladin sky position/zoom events and poll every 100 ms.
 // HD pan/pinch is intentionally isolated in the destination module.
-try{aladin.on('positionChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;if(gvEarthDistanceArrivalDestination)gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0005 EARTH POSITION EVENT REGISTRATION FAILED',error)}
-try{aladin.on('zoomChanged',()=>{if(!gvNavigationTravelActive&&gvEarthDistanceArrivalDestination)gvEarthDistanceUserAdjustedView=true;if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0005 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
+try{aladin.on('positionChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter()})}catch(error){console.warn('GV0005 EARTH POSITION EVENT REGISTRATION FAILED',error)}
+try{aladin.on('zoomChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0005 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
 setInterval(()=>{gvInstallEarthDistanceInteractionListeners();if(!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},100);
 
 // ============================================================================
@@ -3231,11 +3222,15 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         // The identity guard prevents stale post-arrival work if another trip starts.
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
             if(activeDestination!==presentationDestination)return;
-            headsUpDisplay.render();
-            gvShowEarthDistance(presentationDestination);
             gvEarthDistanceArrivalDestination=presentationDestination;
             gvEarthDistanceUserAdjustedView=false;
             gvEarthDistanceLastObservedCenter=null;
+            gvEarthDistanceSyncGeneration++;
+            gvEarthDistanceSyncPending=false;
+            gvEarthDistanceTarget=presentationDestination;
+            gvEarthDistanceTargetKey=gvEarthDistanceIdentity(presentationDestination);
+            headsUpDisplay.render();
+            gvShowEarthDistance(presentationDestination);
             gvPrewarmProviderWebsite(v.destination);
             gvStartNextTripPrewarm();
         }));
@@ -3255,13 +3250,15 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     // The identity guard prevents stale post-arrival work if another trip starts.
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
         if(activeDestination!==presentationDestination)return;
-        headsUpDisplay.render();
-        gvShowEarthDistance(presentationDestination);
         gvEarthDistanceArrivalDestination=presentationDestination;
         gvEarthDistanceUserAdjustedView=false;
         gvEarthDistanceLastObservedCenter=null;
+        gvEarthDistanceSyncGeneration++;
+        gvEarthDistanceSyncPending=false;
         gvEarthDistanceTarget=presentationDestination;
         gvEarthDistanceTargetKey=gvEarthDistanceIdentity(presentationDestination);
+        headsUpDisplay.render();
+        gvShowEarthDistance(presentationDestination);
         gvPrewarmProviderWebsite(v.destination);
         gvStartNextTripPrewarm();
     }));
