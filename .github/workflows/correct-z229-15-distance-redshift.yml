@@ -85,7 +85,7 @@ jobs:
           }.items():
               science[key] = value
 
-          encoded = json.dumps(raw, ensure_ascii=False, indent=2) + "\\n"
+          encoded = json.dumps(raw, ensure_ascii=False, indent=2) + chr(10)
           check_raw = json.loads(encoded)
           check_records = check_raw if isinstance(check_raw, list) else check_raw.get("records")
           verified = [r for r in check_records if isinstance(r, dict) and r.get("archiveId") == archive_id and r.get("providerKey") == provider_key]
