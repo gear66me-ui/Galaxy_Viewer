@@ -4,7 +4,9 @@ on:
   push:
     branches: [release]
     paths:
-      - 'viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv'
+      - 'viewer/gv-current-viewer.json'
+      - 'viewer/RC-V1.0.0.9-BLD-0004.py'
+      - 'android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java'
       - '.github/workflows/build-galaxy-viewer-release-test-apk.yml'
 permissions: { contents: write }
 jobs:
@@ -13,71 +15,36 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with: { ref: release }
-      - name: Generate canonical runtime catalog 0004 and pointer
+      - name: Validate Build 0004 release pointer and preserve catalog
         shell: bash
         run: |
           set -euo pipefail
           python - <<'PY'
-          import csv, json, math
+          import json
           from pathlib import Path
-          base = Path('viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json')
-          mapping = Path('viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv')
-          target = Path('viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json')
-          with mapping.open(newline='', encoding='utf-8') as f:
-              rows = list(csv.DictReader(f))
-          if len(rows) != 1847:
-              raise SystemExit(f'Expected 1847 distance rows, got {len(rows)}')
-          catalog = json.loads(base.read_text(encoding='utf-8'))
-          records = catalog.get('records')
-          if not isinstance(records, list) or len(records) != 1847:
-              raise SystemExit(f'Expected 1847 source records, got {len(records) if isinstance(records,list) else None}')
-          for i, (row, record) in enumerate(zip(rows, records), start=1):
-              if int(row['catalog_record_number']) != i:
-                  raise SystemExit(f'Out-of-order distance row at {i}: {row.get("catalog_record_number")}')
-              if str(row['providerKey']).strip().lower() != str(record.get('providerKey','')).strip().lower():
-                  raise SystemExit(f'Provider mismatch at record {i}: {row.get("providerKey")} != {record.get("providerKey")}')
-              if str(row['archiveId']).strip() != str(record.get('archiveId','')).strip():
-                  raise SystemExit(f'Archive ID mismatch at record {i}: {row.get("archiveId")} != {record.get("archiveId")}')
-              distance = float(row['distanceMly'])
-              if not math.isfinite(distance) or distance < 0:
-                  raise SystemExit(f'Invalid distance at record {i}: {row.get("distanceMly")}')
-              record['distanceMly'] = distance
-              for key in list(record):
-                  if 'distance' in key.lower() and key != 'distanceMly':
-                      del record[key]
-              science = record.get('science')
-              if isinstance(science, dict):
-                  for key in list(science):
-                      if 'distance' in key.lower():
-                          del science[key]
-          catalog['version'] = '0004'
-          catalog['sourceBranch'] = 'release'
-          catalog['sourceMasterCatalog'] = str(base)
-          catalog['distancePolicy'] = {
-              'canonicalField': 'records[].distanceMly',
-              'unit': 'Mly',
-              'source': 'avm-runtime-distance-map-0004.csv, mapped by catalog record number and validated against providerKey and archiveId',
-              'duplicateDistanceFieldsRemoved': True
-          }
-          catalog['recordCount'] = len(records)
-          target.write_text(json.dumps(catalog, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          pointer = {'version': 'RC-V1.0.0.9', 'viewer': 'RC-V1.0.0.9-BLD-0001.py', 'build': '0001'}
-          Path('viewer/gv-current-viewer.json').write_text(json.dumps(pointer, indent=2) + '\n', encoding='utf-8')
-          for i, record in enumerate(records, start=1):
-              distance_keys = [k for k in record if 'distance' in k.lower()]
-              science_keys = [k for k in (record.get('science') or {}) if 'distance' in k.lower()]
-              if distance_keys != ['distanceMly'] or science_keys:
-                  raise SystemExit(f'Duplicate distance fields remain on record {i}: {distance_keys}, science={science_keys}')
-          print(f'Validated {len(records)} records; exactly one distance field per record; pointer rolled to build 0001')
+          pointer = json.loads(Path('viewer/gv-current-viewer.json').read_text(encoding='utf-8'))
+          expected = {'version': 'RC-V1.0.0.9', 'viewer': 'RC-V1.0.0.9-BLD-0004.py', 'build': '0004'}
+          if pointer != expected:
+              raise SystemExit(f'Unexpected Build 0004 pointer: {pointer!r}')
+          viewer = Path('viewer') / pointer['viewer']
+          if not viewer.is_file():
+              raise SystemExit(f'Viewer target missing: {viewer}')
+          source = viewer.read_text(encoding='utf-8')
+          if 'BUILD_NUMBER = "0004"' not in source:
+              raise SystemExit('Build number inside viewer does not match pointer')
+          html = source.count('display(HTML("""')
+          js = source.count('display(Javascript(r"""')
+          if html != 1 or js != 1:
+              raise SystemExit(f'Viewer extraction markers invalid: html={html}, js={js}')
+          print(f'Validated Build 0004 pointer and viewer extraction markers: {viewer}')
+          html_start = source.index('display(HTML("""') + len('display(HTML("""')
+          html_end = source.index('"""))', html_start)
+          js_start = source.index('display(Javascript(r"""') + len('display(Javascript(r"""')
+          js_end = source.index('"""))', js_start)
+          Path('/tmp/gv-build-0004.js').write_text(source[js_start:js_end], encoding='utf-8')
           PY
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json viewer/gv-current-viewer.json
-          if ! git diff --cached --quiet; then
-            git commit -m 'Generate canonical AVN runtime catalog 0004 and roll build 0050'
-            git push origin HEAD:release
-          fi
-      - uses: actions/setup-java@v4
+          node --check /tmp/gv-build-0004.js
+          if git diff --name-only HEAD^ HEAD | grep -q '^viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json      - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: '17' }
       - uses: android-actions/setup-android@v3
         with:
@@ -85,38 +52,23 @@ jobs:
       - run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
       - uses: gradle/actions/setup-gradle@v4
         with: { gradle-version: '8.9' }
-      - name: Build isolated release APK
+      - name: Build the actual Galaxy Viewer Android app
         shell: bash
         run: |
           set -euo pipefail
-          R=/tmp/gvr; mkdir -p "$R/app/src/main/java/com/gear66me/galaxyviewerrelease" "$R/app/src/main/assets"
-          printf "pluginManagement { repositories { google(); mavenCentral(); gradlePluginPortal() } }\ndependencyResolutionManagement { repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS); repositories { google(); mavenCentral() } }\nrootProject.name='GVR'\ninclude ':app'\n" > "$R/settings.gradle"
-          printf "plugins { id 'com.android.application' version '8.7.3' apply false }\n" > "$R/build.gradle"
-          printf "org.gradle.jvmargs=-Xmx2048m -Dfile.encoding=UTF-8\nandroid.useAndroidX=false\n" > "$R/gradle.properties"
-          cat > "$R/app/build.gradle" <<'EOF'
-          plugins { id 'com.android.application' }
-          android { namespace 'com.gear66me.galaxyviewerrelease'; compileSdk 35; defaultConfig { applicationId 'com.gear66me.galaxyviewerrelease'; minSdk 29; targetSdk 35; versionCode 10000; versionName '1.0.0-RELEASE-TEST' } }
-          EOF
-          cp viewer/artwork/runtime/navigation/galaxy-viewer-target-icon.svg "$R/app/src/main/assets/target-icon.svg"
-          cat > "$R/app/src/main/AndroidManifest.xml" <<'EOF'
-          <manifest xmlns:android="http://schemas.android.com/apk/res/android"><uses-permission android:name="android.permission.INTERNET"/><application android:allowBackup="false" android:hardwareAccelerated="true" android:label="Galaxy Viewer Release 1.0.0" android:theme="@android:style/Theme.Material.NoActionBar" android:usesCleartextTraffic="false"><activity android:name=".MainActivity" android:exported="true" android:screenOrientation="portrait"><intent-filter><action android:name="android.intent.action.MAIN"/><category android:name="android.intent.category.LAUNCHER"/></intent-filter></activity></application></manifest>
-          EOF
-          cat > "$R/app/src/main/java/com/gear66me/galaxyviewerrelease/MainActivity.java" <<'EOF'
-          package com.gear66me.galaxyviewerrelease; import android.app.*;import android.os.*;import android.graphics.*;import android.view.*;import android.webkit.*; public final class MainActivity extends Activity{WebView w;public void onCreate(Bundle b){super.onCreate(b);getWindow().getDecorView().setSystemUiVisibility(5894);w=new WebView(this);w.setBackgroundColor(Color.BLACK);WebSettings s=w.getSettings();s.setJavaScriptEnabled(true);s.setDomStorageEnabled(true);s.setAllowFileAccess(true);s.setAllowContentAccess(true);s.setAllowFileAccessFromFileURLs(true);s.setAllowUniversalAccessFromFileURLs(true);s.setCacheMode(WebSettings.LOAD_NO_CACHE);w.setWebViewClient(new WebViewClient());w.setWebChromeClient(new WebChromeClient());setContentView(w);w.loadUrl("file:///android_asset/index.html");}}
-          EOF
-          cat > "$R/app/src/main/assets/index.html" <<'EOF'
-          <!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"><style>html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:#9be5ff}#b,#e{position:fixed;inset:0;z-index:999999;display:flex;align-items:center;justify-content:center;flex-direction:column;background:#000}#b img{width:220px;height:220px}#e{display:none;padding:24px;white-space:pre-wrap;font:12px monospace}</style></head><body><div id="b"><img src="target-icon.svg"><div>GALAXY VIEWER 1.0.0 — RELEASE TEST</div></div><div id="e"></div><script>(async()=>{const B='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/';const r=async u=>{let x=await fetch(u+(u.includes('?')?'&':'?')+'t='+Date.now(),{cache:'no-store'});if(!x.ok)throw Error('HTTP '+x.status+' '+u);return x.text()};try{let p=JSON.parse(await r(B+'gv-current-viewer.json'));if(p.version!=='RC-V1.0.0.9'||p.viewer!=='RC-V1.0.0.9-BLD-0001.py'||p.build!=='0001')throw Error('BAD RELEASE POINTER '+JSON.stringify(p));let s=await r(B+p.viewer),h=[...s.matchAll(/display\(HTML\(\"\"\"([\s\S]*?)\"\"\"\)\)/g)],j=[...s.matchAll(/display\(Javascript\(r?\"\"\"([\s\S]*?)\"\"\"\)\)/g)];if(h.length!==1||j.length!==1)throw Error('EXTRACTION FAILED');document.body.insertAdjacentHTML('beforeend',h[0][1]);let q=document.createElement('script');q.textContent=j[0][1];document.body.appendChild(q);document.getElementById('b').remove()}catch(x){document.getElementById('b').remove();let e=document.getElementById('e');e.style.display='flex';e.textContent=String(x.stack||x)}})()</script></body></html>
-          EOF
-          gradle --no-daemon -p "$R" :app:assembleDebug
-          cp "$R/app/build/outputs/apk/debug/app-debug.apk" Galaxy-Viewer-Release-1.0.0-Test.apk
-          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose Galaxy-Viewer-Release-1.0.0-Test.apk
-          sha256sum Galaxy-Viewer-Release-1.0.0-Test.apk > Galaxy-Viewer-Release-1.0.0-Test.apk.sha256
-      - name: Publish direct-download test asset
+          gradle --no-daemon -p android/galaxy-viewer-web-browser :app:assembleDebug
+          APK=android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
+          test -s "$APK"
+          cp "$APK" Galaxy-Viewer-Build-0004-Memory-Stabilization.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose Galaxy-Viewer-Build-0004-Memory-Stabilization.apk
+          sha256sum Galaxy-Viewer-Build-0004-Memory-Stabilization.apk > Galaxy-Viewer-Build-0004-Memory-Stabilization.apk.sha256
+      - name: Publish direct-download Build 0004 APK
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          T=galaxy-viewer-release-1.0.0-test
+          set -euo pipefail
+          T=galaxy-viewer-build-0004-memory-stabilization
           gh release delete "$T" --yes --cleanup-tag >/dev/null 2>&1 || true
-          gh release create "$T" Galaxy-Viewer-Release-1.0.0-Test.apk Galaxy-Viewer-Release-1.0.0-Test.apk.sha256 --target release --title "Galaxy Viewer Release 1.0.0 Test" --notes "Isolated release branch test APK."
+          gh release create "$T" Galaxy-Viewer-Build-0004-Memory-Stabilization.apk Galaxy-Viewer-Build-0004-Memory-Stabilization.apk.sha256 --target release --title "Galaxy Viewer Build 0004 — Memory Stabilization" --notes "Build 0004 Android APK. Viewer pointer and release manifest target Build 0004. Runtime catalog is preserved."
       - uses: actions/upload-artifact@v4
-        with: { name: Galaxy-Viewer-Release-1.0.0-Test, path: 'Galaxy-Viewer-Release-1.0.0-Test.apk*' }
+        with: { name: Galaxy-Viewer-Build-0004-Memory-Stabilization, path: 'Galaxy-Viewer-Build-0004-Memory-Stabilization.apk*' }

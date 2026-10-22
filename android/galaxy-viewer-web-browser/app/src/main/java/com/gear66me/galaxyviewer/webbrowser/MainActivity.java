@@ -127,9 +127,10 @@ public final class MainActivity extends Activity {
     if(providerFrame!=null)providerFrame.addView(v,wp);
     return v;
   }
-  // Retire the previous provider page before warming a different galaxy. Cache clearing is
-  // app-wide for WebView, so do it deliberately at this boundary, then destroy the old view.
-  // Cookies and DOM storage are intentionally preserved.
+  // Retire the previous provider page before warming a different galaxy.
+  // Destroy the old WebView to release its page/renderer references; do not purge the
+  // app-wide HTTP cache here, because that creates avoidable repeat downloads and is not
+  // a reliable way to release renderer/GPU memory. Cookies and DOM storage are preserved.
   private void retireProviderWebView(){
     if(pendingProviderLaunch!=null&&web!=null)web.removeCallbacks(pendingProviderLaunch);
     pendingProviderLaunch=null;
@@ -139,7 +140,6 @@ public final class MainActivity extends Activity {
     if(old!=null){
       try{old.stopLoading();}catch(Exception ignored){}
       try{old.clearHistory();}catch(Exception ignored){}
-      try{old.clearCache(true);}catch(Exception ignored){}
       try{ViewGroup parent=(ViewGroup)old.getParent();if(parent!=null)parent.removeView(old);}catch(Exception ignored){}
       try{old.removeAllViews();}catch(Exception ignored){}
       try{old.destroy();}catch(Exception ignored){}
@@ -326,6 +326,19 @@ public final class MainActivity extends Activity {
   }
   public final class ViewerBridge{
     @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}
+    @JavascriptInterface public void releaseProviderPortal(String origin){
+      runOnUiThread(()->releaseProviderPortalOnMainThread(origin));
+    }
+  }
+  private void releaseProviderPortalOnMainThread(String origin){
+    if(origin==null||origin.isEmpty())return;
+    String prewarmOrigin="";
+    try{if(prewarmedUrl!=null&&!prewarmedUrl.isEmpty())prewarmOrigin=Uri.parse(prewarmedUrl).getScheme()+"://"+Uri.parse(prewarmedUrl).getAuthority();}catch(Exception ignored){}
+    if(!origin.equals(prewarmOrigin))return;
+    if(prerenderSignal!=null){try{prerenderSignal.cancel();}catch(Exception ignored){}prerenderSignal=null;}
+    prewarmedUrl="";
+    prewarmReadyUrl="";
+    if(!browserMode&&web!=null)retireProviderWebView();
   }
   public final class Bridge{
     @JavascriptInterface public void back(){runOnUiThread(()->{restoreProviderHome();});}
