@@ -299,9 +299,20 @@
       ],
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.7943,
-      "science": {},
-      "redshift": 0.008515
+      "distanceMly": 114.0,
+      "science": {
+        "distanceMly": 114.0,
+        "redshift": 0.00789618,
+        "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+        "distanceSource": "NASA/Webb published image page: 114 million light-years",
+        "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
+      },
+      "redshift": 0.00789618,
+      "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+      "distanceSource": "NASA/Webb published image page: 114 million light-years",
+      "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
     },
     {
       "providerKey": "chandra",
@@ -11182,9 +11193,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.794271,
-      "science": {},
-      "redshift": 0.003792
+      "distanceMly": 114.0,
+      "science": {
+        "distanceMly": 114.0,
+        "redshift": 0.00789618,
+        "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+        "distanceSource": "NASA/Webb published image page: 114 million light-years",
+        "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
+      },
+      "redshift": 0.00789618,
+      "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+      "distanceSource": "NASA/Webb published image page: 114 million light-years",
+      "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
     },
     {
       "providerKey": "hubble",
@@ -15661,9 +15683,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.794271,
-      "science": {},
-      "redshift": 0.003792
+      "distanceMly": 114.0,
+      "science": {
+        "distanceMly": 114.0,
+        "redshift": 0.00789618,
+        "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+        "distanceSource": "NASA/Webb published image page: 114 million light-years",
+        "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
+      },
+      "redshift": 0.00789618,
+      "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+      "distanceSource": "NASA/Webb published image page: 114 million light-years",
+      "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
     },
     {
       "providerKey": "hubble",
@@ -33756,9 +33789,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.794271,
-      "science": {},
-      "redshift": 0.003792
+      "distanceMly": 114.0,
+      "science": {
+        "distanceMly": 114.0,
+        "redshift": 0.00789618,
+        "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+        "distanceSource": "NASA/Webb published image page: 114 million light-years",
+        "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
+      },
+      "redshift": 0.00789618,
+      "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+      "distanceSource": "NASA/Webb published image page: 114 million light-years",
+      "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
     },
     {
       "providerKey": "hubble",
@@ -51141,9 +51185,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.794271,
-      "science": {},
-      "redshift": 0.003792
+      "distanceMly": 114.0,
+      "science": {
+        "distanceMly": 114.0,
+        "redshift": 0.00789618,
+        "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+        "distanceSource": "NASA/Webb published image page: 114 million light-years",
+        "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
+      },
+      "redshift": 0.00789618,
+      "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+      "distanceSource": "NASA/Webb published image page: 114 million light-years",
+      "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
     },
     {
       "providerKey": "jwst",
@@ -57235,9 +57290,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.7943,
-      "science": {},
-      "redshift": 0.008515
+      "distanceMly": 114.0,
+      "science": {
+        "distanceMly": 114.0,
+        "redshift": 0.00789618,
+        "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+        "distanceSource": "NASA/Webb published image page: 114 million light-years",
+        "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
+      },
+      "redshift": 0.00789618,
+      "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+      "distanceSource": "NASA/Webb published image page: 114 million light-years",
+      "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
     },
     {
       "providerKey": "noirlab",
@@ -64856,9 +64922,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.794271,
-      "science": {},
-      "redshift": 0.009292
+      "distanceMly": 114.0,
+      "science": {
+        "distanceMly": 114.0,
+        "redshift": 0.00789618,
+        "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+        "distanceSource": "NASA/Webb published image page: 114 million light-years",
+        "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
+      },
+      "redshift": 0.00789618,
+      "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+      "distanceSource": "NASA/Webb published image page: 114 million light-years",
+      "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
     },
     {
       "providerKey": "spitzer",
@@ -64891,9 +64968,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 54.794271,
-      "science": {},
-      "redshift": 0.009292
+      "distanceMly": 114.0,
+      "science": {
+        "distanceMly": 114.0,
+        "redshift": 0.00789618,
+        "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+        "distanceSource": "NASA/Webb published image page: 114 million light-years",
+        "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
+      },
+      "redshift": 0.00789618,
+      "distanceMethod": "Adopted published NASA/Webb distance of 114 million light-years; stored as 114.0 Mly. Distance convention is inherited from the published source.",
+      "distanceSource": "NASA/Webb published image page: 114 million light-years",
+      "redshiftMethod": "FLRW-derived redshift calculated from the adopted 114.0 Mly distance using flat Lambda-CDM with H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685; calculated value, not a spectroscopic measurement. Assumes the input distance is comoving distance.",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 114.0 Mly distance"
     },
     {
       "providerKey": "spitzer",
