@@ -1386,6 +1386,7 @@ function gvSearchMatchedStrings(item,tokens){
 const GV_SEARCH_RESULT_LIMIT=24;
 const GV_SEARCH_RENDER_DEBOUNCE_MS=120;
 let gvSearchRenderTimer=0;
+let gvSearchRenderGeneration=0;
 
 function gvClearSearchResultImages(){
     gvSearchResults.querySelectorAll('img').forEach(img=>{
@@ -1395,12 +1396,16 @@ function gvClearSearchResultImages(){
 }
 
 async function gvSearchRender(query){
+    const renderGeneration=++gvSearchRenderGeneration;
     const q=String(query||'').normalize('NFKD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
     gvClearSearchResultImages();
     if(!q){gvSearchResults.style.display='none';return}
     gvSearchResults.style.display='block';
     const loading=document.createElement('div');loading.className='gv-search-empty';loading.textContent='SEARCHING ALL SURVEY CATALOGS…';gvSearchResults.appendChild(loading);
     await gvEnsureFullSearchIndex();
+    if(renderGeneration!==gvSearchRenderGeneration)return;
+    await gvSurveyThumbnailPackReady;
+    if(renderGeneration!==gvSearchRenderGeneration)return;
     gvClearSearchResultImages();
     if(gvFullSearchIndexError){
         const failed=document.createElement('div');failed.className='gv-search-empty';
@@ -1454,8 +1459,10 @@ async function gvSearchRender(query){
             const candidates=gvSurveyThumbnailCandidates(record,provider);
             let thumbIndex=0;
             const loadThumb=()=>{
+                if(renderGeneration!==gvSearchRenderGeneration)return;
                 const src=candidates[thumbIndex++];
-                if(!src){thumb.removeAttribute('src');return}
+                if(!src){thumb.removeAttribute('src');thumb.style.visibility='hidden';return}
+                thumb.style.visibility='visible';
                 thumb.src=src;
             };
             thumb.onerror=loadThumb;loadThumb();thumbWrap.appendChild(thumb);
