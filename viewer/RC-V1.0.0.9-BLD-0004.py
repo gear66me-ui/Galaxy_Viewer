@@ -1954,10 +1954,10 @@ let gvMemoryDiagnosticTimer=0;
 function gvMemoryDiagnosticSnapshot(reason='periodic'){
     let heap=null;
     try{const m=performance?.memory;if(m&&Number.isFinite(m.usedJSHeapSize))heap={usedMB:Math.round(m.usedJSHeapSize/1048576),totalMB:Math.round(m.totalJSHeapSize/1048576),limitMB:Math.round(m.jsHeapSizeLimit/1048576)}}catch(_){}
-    let imageNodes=0,canvasNodes=0;
-    try{imageNodes=document.querySelectorAll('img').length;canvasNodes=document.querySelectorAll('canvas').length}catch(_){}
+    let imageNodes=0,canvasNodes=0,searchThumbnails=0;
+    try{imageNodes=document.querySelectorAll('img').length;canvasNodes=document.querySelectorAll('canvas').length;searchThumbnails=document.querySelectorAll('.gv-search-result-thumb img').length}catch(_){}
     let pendingPrewarm=!!gvNextTripPrewarm;
-    const snapshot={build:GV200001_BUILD,reason,at:Math.round(performance.now()),heap,hd:typeof gvHdResourceSnapshot==='function'?gvHdResourceSnapshot():null,prewarm:pendingPrewarm,prewarmGeneration:typeof gvNextTripPrewarmGeneration!=='undefined'?gvNextTripPrewarmGeneration:null,prewarmPrepared:typeof gvNextTripPrewarm!=='undefined'&&!!gvNextTripPrewarm?.preparedValue,objectUrls:typeof gvHdObjectUrls!=='undefined'?gvHdObjectUrls.length:null,cleanObjectUrls:typeof gvCleanImageObjectUrls!=='undefined'?gvCleanImageObjectUrls.length:null,constellationArtwork:typeof gvConstellationArtworkPrewarm!=='undefined'?gvConstellationArtworkPrewarm.size:null,providerOrigins:typeof gvProviderPortalOrigins!=='undefined'?gvProviderPortalOrigins.length:null,images:imageNodes,canvases:canvasNodes,travel:!!gvNavigationTravelActive,hipsSuspended:!!window.GV_NAV_HIPS_FETCH_SUSPENDED};
+    const snapshot={build:GV200001_BUILD,reason,at:Math.round(performance.now()),heap,hd:typeof gvHdResourceSnapshot==='function'?gvHdResourceSnapshot():null,prewarm:pendingPrewarm,prewarmGeneration:typeof gvNextTripPrewarmGeneration!=='undefined'?gvNextTripPrewarmGeneration:null,prewarmPrepared:typeof gvNextTripPrewarm!=='undefined'&&!!gvNextTripPrewarm?.preparedValue,objectUrls:typeof gvHdObjectUrls!=='undefined'?gvHdObjectUrls.length:null,cleanObjectUrls:typeof gvCleanImageObjectUrls!=='undefined'?gvCleanImageObjectUrls.length:null,constellationArtwork:typeof gvConstellationArtworkPrewarm!=='undefined'?gvConstellationArtworkPrewarm.size:null,providerOrigins:typeof gvProviderPortalOrigins!=='undefined'?gvProviderPortalOrigins.length:null,images:imageNodes,searchThumbnails,canvases:canvasNodes,travel:!!gvNavigationTravelActive,hipsSuspended:!!window.GV_NAV_HIPS_FETCH_SUSPENDED};
     console.info('GV MEMORY WORKLOAD SNAPSHOT',snapshot);
     return snapshot;
 }
@@ -2533,6 +2533,7 @@ function gvInstallPreparedHd(prepared,{stage=false}={}){
             applyDirectHdOpacity();
             retirePrevious();
             console.info('GV HD LAYER HANDOFF COMPLETE',{layer:layerName,previousLayer:previous.layerName||null});
+            gvMemoryDiagnosticSnapshot('hd-layer-handoff');
             resolveReady(true);
         },
         errorCallback:error=>{
