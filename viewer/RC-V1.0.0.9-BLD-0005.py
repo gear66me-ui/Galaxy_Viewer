@@ -598,7 +598,7 @@ function gvUpdateLivePhysicalScale(){
   const rad=Math.PI/180,lat1=a[1]*rad,lat2=b[1]*rad,dLat=lat2-lat1,dLon=((b[0]-a[0]+540)%360-180)*rad;
   const q=Math.sin(dLat/2)**2+Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLon/2)**2;
   if(!Number.isFinite(q)||q<0||q>1)return null;
-  const angle=2*Math.asin(Math.sqrt(q)),ly=distanceMly*1e6*angle;
+  const angle=2*Math.asin(Math.sqrt(q)),ly=2*distanceMly*1e6*Math.sin(angle/2);
   return ly>0&&Number.isFinite(ly)?ly:null;
  };
  const onePx=physicalSpanLy(1);
