@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — Aladin Overlay Registration Lab</title>
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.css">
+<style>
+:root{color-scheme:dark;--bg:#060a13;--panel:#10192a;--line:#263a56;--cyan:#72d8ff;--muted:#b2c1d6}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#122744,var(--bg) 64%);color:#eef6ff;font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+main{max-width:1100px;margin:auto;padding:20px 14px 36px}h1{font-size:clamp(23px,4vw,35px);margin:0 0 5px}p{color:var(--muted)}.panel{border:1px solid var(--line);border-radius:13px;background:var(--panel);padding:13px;margin:12px 0}
+.controls{display:flex;gap:9px;align-items:center;flex-wrap:wrap}button,select{background:#172943;color:#f1f7ff;border:1px solid #3d5b7a;border-radius:9px;padding:10px 12px;font:inherit}button{cursor:pointer}button:hover{border-color:var(--cyan)}label{font-size:13px;color:#d6e7fa}
+.slider{display:grid;grid-template-columns:auto minmax(110px,1fr) 42px;gap:12px;align-items:center;margin-top:13px}.slider input{width:100%;accent-color:var(--cyan)}
+#aladin-lite-div{width:100%;height:min(68vh,650px);min-height:380px;background:#02040a;border-radius:10px;overflow:hidden}
+.status{font-size:13px;color:var(--cyan);overflow-wrap:anywhere}.details{font-size:13px;overflow-wrap:anywhere}.tag{display:inline-block;border:1px solid #426180;border-radius:999px;padding:3px 8px;font-size:11px;color:#bfeaff;margin:3px 4px 3px 0}.warn{border-left:3px solid #ffcc75;padding:9px 12px;background:#211a10;color:#ffe4b2;font-size:13px}
+a{color:var(--cyan)}code{overflow-wrap:anywhere}
+</style>
+</head>
+<body><main>
+<h1>Galaxy Viewer · Aladin Overlay Registration Lab</h1>
+<p>Real Aladin Lite sky view + one mirrored provider image registered as an image layer. Move the opacity slider to compare the image against the sky survey. This is the registration test—not a thumbnail gallery.</p>
+<div class="panel">
+ <div class="controls">
+  <label for="provider">Provider</label>
+  <select id="provider"><option>Hubble</option><option>ESO</option><option>NOIRLab</option><option>Chandra</option><option>JWST</option><option>Spitzer</option></select>
+  <button id="random">🎲 Load random registered image</button>
+  <button id="reload">↻ Re-register current image</button>
+ </div>
+ <div class="slider"><label for="opacity">Image overlay opacity</label><input id="opacity" type="range" min="0" max="100" value="55"><output id="opval">55%</output></div>
+ <div id="status" class="status" style="margin-top:10px">Starting Aladin Lite and loading provider catalogs…</div>
+</div>
+<div class="panel" style="padding:8px"><div id="aladin-lite-div"></div></div>
+<div class="panel"><div id="metadata" class="details">Waiting for image metadata…</div></div>
+<div class="panel">
+ <h2 style="font-size:17px;margin-top:0">How registration works</h2>
+ <p>The page matches a provider’s catalog entry to its mirror mapping, then builds an Aladin image layer with celestial reference coordinates, pixel reference point, image dimensions, pixel scale, and rotation. If an entry contains complete decoded AVM/WCS fields, those are preferred. Otherwise the page uses the provider catalog’s RA/Dec, FOV and orientation to synthesize a center-based TAN WCS; that fallback is explicitly labeled approximate and is useful for visual inspection, not proof of precise astrometric registration.</p>
+ <p class="warn">For a scientifically conclusive registration test, select images with full AVM/WCS metadata. The slider changes the actual Aladin overlay layer opacity; it does not fade a separate HTML image.</p>
+</div>
+</main>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" charset="utf-8"></script>
+<script>
+(() => {
+'use strict';
+const ROOT='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/';
+const configs={
+ Hubble:{folder:'Hubble',catalog:'viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json'},
+ ESO:{folder:'ESO',catalog:'viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json'},
+ NOIRLab:{folder:'NoirLab',catalog:'viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json'},
+ Chandra:{folder:'Chandra',catalog:'viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json'},
+ JWST:{folder:'JWST',catalog:'viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json'},
+ Spitzer:{folder:'Spitzer',catalog:'viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json'}
+};
+let aladin=null, catalogs={}, mappings={}, current=null, currentWcs=null, currentUrl=null, overlayName='gv-provider-registration-overlay', alpha=.55;
+const $=id=>document.getElementById(id);
+function status(s){$('status').textContent=s}
+function normUrl(u){if(!u)return '';try{const x=new URL(u);return decodeURIComponent(x.pathname.split('/').pop()||'').toLowerCase()}catch{return String(u).split(/[/?#]/)[0].split('/').pop().toLowerCase()}}
+function urlsFor(e){return [e.selectedImageUrl,e.avmSourceUrl,e.screenUrl,e.largeUrl,e.hdUrl,e.imageUrl,e.url,e.sourceUrl,e.esaPublicationJpeg,...(Array.isArray(e.jpegCandidates)?e.jpegCandidates:[])].filter(x=>typeof x==='string'&&/^https?:/i.test(x))}
+function recordArray(j){if(Array.isArray(j))return j;for(const k of ['entries','records','images','galaxies','catalog'])if(Array.isArray(j?.[k]))return j[k];return []}
+function findRecordForImage(entries,img){
+ const src=normUrl(img.sourceUrl),filename=normUrl(img.sourceFilename||img.mirrorFilename);
+ let matches=entries.map(e=>({e,urls:urlsFor(e)})).filter(x=>x.urls.some(u=>normUrl(u)===src));
+ if(matches.length===1)return matches[0].e;
+ matches=entries.map(e=>({e,urls:urlsFor(e)})).filter(x=>x.urls.some(u=>normUrl(u)===filename));
+ if(matches.length===1)return matches[0].e;
+ const id=String(img.sourceFilename||'').replace(/\.[^.]+$/,'').toLowerCase();
+ matches=entries.filter(e=>[e.archiveId,e.imageId,e.targetId,e.id,e.assetName,e.name,e.designation].some(v=>String(v||'').toLowerCase()===id));
+ return matches.length===1?matches[0]:null;
+}
+function n(v){if(typeof v==='number'&&Number.isFinite(v))return v;if(typeof v==='string'){const m=v.trim().match(/^[-+]?\d*\.?\d+(?:e[-+]?\d+)?/i);if(m)return Number(m[0])}return null}
+function getPath(obj,path){return path.split('.').reduce((v,k)=>v==null?undefined:v[k],obj)}
+function pick(obj,paths){for(const p of paths){const v=getPath(obj,p);if(v!==undefined&&v!==null&&v!=='')return v}return null}
+function vec(v){if(Array.isArray(v))return v.map(n);if(typeof v==='string')return v.split(/[ ,;]+/).map(n).filter(x=>x!==null);return []}
+function extractExactWcs(e,img){
+ const candidates=[e.wcs,e.avmWcs,e.spatialWcs,e.avm?.wcs,e.avmMetadata?.wcs,e.metadata?.wcs,e.registration?.wcs,e];
+ const direct=candidates.find(o=>o&&typeof o==='object'&&(n(o.CRVAL1??o.crval1)!==null)&&(n(o.CRVAL2??o.crval2)!==null)&&(n(o.CD1_1??o.cd1_1)!==null||n(o.CDELT1??o.cdelt1)!==null));
+ if(direct){
+  const w={};for(const k of ['NAXIS','NAXIS1','NAXIS2','CTYPE1','CTYPE2','EQUINOX','CRVAL1','CRVAL2','CRPIX1','CRPIX2','CUNIT1','CUNIT2','CD1_1','CD1_2','CD2_1','CD2_2','CDELT1','CDELT2','CROTA2']){const v=direct[k]??direct[k.toLowerCase()];if(v!==undefined)w[k]=v}
+  w.NAXIS=w.NAXIS||0;w.NAXIS1=n(w.NAXIS1)||img.optimizedWidthPx;w.NAXIS2=n(w.NAXIS2)||img.optimizedHeightPx;return {wcs:w,mode:'Full WCS fields found in catalog record'};
+ }
+ const rv=vec(pick(e,['Spatial.ReferenceValue','spatial.ReferenceValue','avm.Spatial.ReferenceValue','avmMetadata.Spatial.ReferenceValue','Spatial.ReferenceValueDegrees']));
+ const rp=vec(pick(e,['Spatial.ReferencePixel','spatial.ReferencePixel','avm.Spatial.ReferencePixel','avmMetadata.Spatial.ReferencePixel']));
+ const sc=vec(pick(e,['Spatial.Scale','spatial.Scale','avm.Spatial.Scale','avmMetadata.Spatial.Scale']));
+ const rot=n(pick(e,['Spatial.Rotation','spatial.Rotation','avm.Spatial.Rotation','avmMetadata.Spatial.Rotation']));
+ const projection=pick(e,['Spatial.Projection','spatial.Projection','avm.Spatial.Projection','avmMetadata.Spatial.Projection']);
+ const ra=n(e.ra??e.RA??e.rightAscension??rv[0]),dec=n(e.dec??e.DEC??e.declination??rv[1]);
+ const width=n(img.optimizedWidthPx)||n(img.originalWidthPx)||1024,height=n(img.optimizedHeightPx)||n(img.originalHeightPx)||1024;
+ let fx=n(e.imageFovXDeg??e.fovXDegrees??e.fieldOfViewDegrees?.widthDegrees??e.fovDegrees??e.fieldOfViewDegrees?.effectiveDegrees);
+ let fy=n(e.imageFovYDeg??e.fovYDegrees??e.fieldOfViewDegrees?.heightDegrees);
+ const fovText=typeof e.fieldOfView==='string'?e.fieldOfView:'';
+ if(!fx&&fovText){const vals=[...fovText.matchAll(/([\d.]+)\s*(degrees?|deg|arcminutes?|arcmin|′|minutes?)/ig)].map(m=>Number(m[1])*(/arc|min|′/i.test(m[2])?1/60:1));if(vals.length)fx=vals[0];if(vals.length>1)fy=vals[1]}
+ if(!fx&&n(e.fovDegrees))fx=n(e.fovDegrees);
+ if(!fy)fy=fx*height/width;
+ const orientation=n(e.aladinRotation??e.orientationDegrees??e.rotationDegrees??e.orientation);
+ if(ra===null||dec===null||!fx||!fy)return null;
+ const sX=fx/width,sY=fy/height,theta=(orientation||0)*Math.PI/180;
+ const cos=Math.cos(theta),sin=Math.sin(theta);
+ const wcs={NAXIS:0,CTYPE1:'RA---TAN',CTYPE2:'DEC--TAN',EQUINOX:2000,LONPOLE:180,LATPOLE:0,CRVAL1:ra,CRVAL2:dec,CRPIX1:(width+1)/2,CRPIX2:(height+1)/2,CUNIT1:'deg',CUNIT2:'deg',CD1_1:-sX*cos,CD1_2:sX*sin,CD2_1:sY*sin,CD2_2:sY*cos,NAXIS1:width,NAXIS2:height};
+ if(rv.length>=2&&rp.length>=2&&sc.length>=2&&projection){wcs.CRVAL1=n(rv[0]);wcs.CRVAL2=n(rv[1]);wcs.CRPIX1=n(rp[0])||wcs.CRPIX1;wcs.CRPIX2=n(rp[1])||wcs.CRPIX2;const sx=n(sc[0]),sy=n(sc[1]);if(sx&&sy){wcs.CD1_1=-Math.abs(sx);wcs.CD2_2=Math.abs(sy);if(rot!==null){const t=rot*Math.PI/180;wcs.CD1_1=-Math.abs(sx)*Math.cos(t);wcs.CD1_2=Math.abs(sx)*Math.sin(t);wcs.CD2_1=Math.abs(sy)*Math.sin(t);wcs.CD2_2=Math.abs(sy)*Math.cos(t)}wcs.CTYPE1='RA---'+String(projection).toUpperCase();wcs.CTYPE2='DEC--'+String(projection).toUpperCase();return {wcs,mode:'AVM Spatial fields found; validate scale convention'}}}
+ return {wcs,mode:'Catalog-derived TAN WCS (approximate; no complete AVM WCS matched)'};
+}
+function getWcs(e,img){
+ const exact=extractExactWcs(e,img);if(!exact)return null;
+ const w=exact.wcs;
+ if(!(n(w.CRVAL1)!==null&&n(w.CRVAL2)!==null))return null;
+ return exact;
+}
+function getImageUrl(provider,img){return ROOT+'viewer/image-databases/'+configs[provider].folder+'/Mirror/'+encodeURIComponent(img.mirrorFilename||img.sourceFilename||img.relativePath?.split('/').pop()||'')}
+function getReleaseMirrorUrl(img){return typeof img.originalMirrorUrl==='string'&&/^https:\/\//i.test(img.originalMirrorUrl)?img.originalMirrorUrl:null}
+async function loadAll(){
+ const names=Object.keys(configs);
+ const results=await Promise.all(names.map(async name=>{
+  const c=configs[name],base=ROOT+'viewer/image-databases/'+c.folder+'/Mirror/mirror-mapping.json';
+  const [mr,cr]=await Promise.all([fetch(base,{cache:'no-store'}),fetch(ROOT+c.catalog,{cache:'no-store'})]);
+  if(!mr.ok)throw Error(name+' mirror mapping HTTP '+mr.status);if(!cr.ok)throw Error(name+' catalog HTTP '+cr.status);
+  const [m,catalog]=await Promise.all([mr.json(),cr.json()]);
+  return [name,m.images||[],recordArray(catalog)];
+ }));
+ for(const [name,imgs,entries] of results){
+  const joined=imgs.map(img=>({img,entry:findRecordForImage(entries,img)})).filter(x=>x.entry&&getWcs(x.entry,x.img));
+  mappings[name]=imgs;catalogs[name]={entries,joined};
+ }
+ const summary=names.map(name=>name+': '+catalogs[name].joined.length+' image/metadata matches').join(' · ');
+ status('Catalogs loaded. '+summary);
+ await loadRandom();
+}
+function setLayerOpacity(value){
+ alpha=value;
+ const layer=aladin?.getOverlayImageLayer?.(overlayName);
+ if(layer){
+  if(typeof layer.setAlpha==='function'){layer.setAlpha(alpha);return}
+  if(typeof layer.setOpacity==='function'){layer.setOpacity(alpha);return}
+  if(layer.options){layer.options.opacity=alpha;layer.options.transparency=alpha}
+ }
+ if(current&&currentWcs&&currentUrl)placeCurrent();
+}
+function placeCurrent(){
+ if(!current||!currentWcs||!aladin)return;
+ const imageName=current.entry.displayName||current.entry.name||current.img.mirrorFilename;
+ const fallback=getReleaseMirrorUrl(current.img);
+ const image=A.image(currentUrl,{name:imageName,imgFormat:'jpg',wcs:currentWcs.wcs,opacity:alpha,transparency:alpha,
+  successCallback:()=>status('Mirror-folder image loaded and registered in Aladin Lite: '+current.provider+' / '+(current.img.mirrorFilename||'image')),
+  errorCallback:err=>{if(fallback&&currentUrl!==fallback){status('Mirror-folder URL failed; retrying the mirrored release asset…');currentUrl=fallback;const retry=A.image(currentUrl,{name:imageName,imgFormat:'jpg',wcs:currentWcs.wcs,opacity:alpha,transparency:alpha,successCallback:()=>status('Mirrored release asset loaded and registered in Aladin Lite: '+current.provider+' / '+(current.img.mirrorFilename||'image')),errorCallback:e=>status('Both mirror URLs failed: '+String(e?.message||e))});aladin.setOverlayImageLayer(retry,overlayName)}else status('Could not load mirrored image: '+String(err?.message||err))}
+ });
+ aladin.setOverlayImageLayer(image,overlayName);
+ const ra=currentWcs.wcs.CRVAL1,dec=currentWcs.wcs.CRVAL2;
+ aladin.gotoRaDec(ra,dec);
+ const sx=Math.abs(Number(currentWcs.wcs.CD1_1)||Number(currentWcs.wcs.CDELT1)||.001);
+ const sy=Math.abs(Number(currentWcs.wcs.CD2_2)||Number(currentWcs.wcs.CDELT2)||sx);
+ const fov=Math.max(sx*Number(currentWcs.wcs.NAXIS1||current.img.optimizedWidthPx||1024),sy*Number(currentWcs.wcs.NAXIS2||current.img.optimizedHeightPx||1024))*1.4;
+ aladin.setFoV(Math.max(fov,.005));
+ const mode=currentWcs.mode;
+ $('metadata').innerHTML='<span class="tag">'+escapeHtml(current.provider)+'</span><span class="tag">'+escapeHtml(mode)+'</span><br><b>'+escapeHtml(current.entry.displayName||current.entry.name||current.img.mirrorFilename)+'</b><br>Mirror file: '+escapeHtml(current.img.mirrorFilename||current.img.sourceFilename)+'<br>RA/Dec: '+Number(ra).toFixed(6)+'°, '+Number(dec).toFixed(6)+'°<br>Raster: '+escapeHtml(current.img.optimizedWidthPx||'?')+' × '+escapeHtml(current.img.optimizedHeightPx||'?')+' px · opacity '+Math.round(alpha*100)+'%<br>Source: <a href="'+escapeHtml(current.img.sourceUrl||'#')+'" target="_blank" rel="noopener">original provider image</a><br><details><summary>WCS used by Aladin</summary><pre>'+escapeHtml(JSON.stringify(currentWcs.wcs,null,2))+'</pre></details>';
+ status('Overlay submitted to Aladin Lite: '+current.provider+' / '+(current.img.mirrorFilename||'image')+' — '+mode);
+}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+async function loadRandom(){
+ const provider=$('provider').value,group=catalogs[provider]?.joined||[];
+ if(!group.length){status('No unambiguous image/catalog matches with usable coordinates were found for '+provider+'. Choose another provider; no geometry will be guessed.');return}
+ current={provider,...choose(group)};
+ currentUrl=getImageUrl(provider,current.img);currentWcs=getWcs(current.entry,current.img);
+ if(!currentWcs){status('Selected image has no usable WCS/coordinate metadata.');return}
+ placeCurrent();
+}
+function choose(a){return a[Math.floor(Math.random()*a.length)]}
+$('random').addEventListener('click',()=>loadRandom().catch(e=>status('Load failed: '+e.message)));
+$('reload').addEventListener('click',()=>placeCurrent());
+$('opacity').addEventListener('input',e=>{$('opval').textContent=e.target.value+'%';setLayerOpacity(Number(e.target.value)/100)});
+$('provider').addEventListener('change',()=>loadRandom().catch(e=>status('Load failed: '+e.message)));
+A.init.then(()=>{
+ aladin=A.aladin('#aladin-lite-div',{target:'M 51',fov:0.5,showReticle:true,showZoomControl:true,showFullscreenControl:true,showLayersControl:true});
+ aladin.setImageSurvey('P/DSS2/color');
+ loadAll().catch(e=>status('Could not load provider catalog/mapping: '+e.message+' — inspect browser console/network.'));
+}).catch(e=>status('Aladin Lite failed to initialize: '+e.message));
+})();
+</script>
+</body></html>

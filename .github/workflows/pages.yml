@@ -107,23 +107,7 @@ jobs:
           assert "host.addEventListener('touchmove',userChangedView,capturePassive)" in rc, 'Earth-distance must observe Android touchmove in capture phase'
           assert 'gvEarthDistanceSyncPending=true;' in rc, 'Earth-distance refreshes must queue while catalog lookup is busy'
           assert f"const GV200001_BUILD='{viewer.get('build')}';" in rc, 'runtime cache-busting build identity must match pointer'
-          # Explicit rollback lane: build 0066 intentionally pins destination presentation 0060.
-          # Do not apply newer-build feature assertions to this historical rollback source.
-          if active_build == '0066':
-              assert "GalaxyDestinationPresentation?.VERSION!=='0060'" in rc, 'build 0066 must check its pinned destination module version 0060'
-              assert 'Galaxy_Viewer@378083be0554066caacf362afd7a3e1153b3ec8d/viewer/modules/destination-presentation/gv-destination-presentation-0060.js' in rc, 'build 0066 destination dependency pin mismatch'
-              rollback_required = [
-                  'viewer/releases/launch/Galaxy-Viewer-Launch/index.html',
-                  'viewer/modules/destination-presentation/gv-destination-presentation-0060.js',
-                  'viewer/artwork/startup/galaxy-viewer-startup.png',
-                  'viewer/Web-Browser/Web-Browser-0026/config.json',
-                  'viewer/image-databases/master-database/gv-master-catalog.json',
-                  'viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json',
-              ]
-              assert all((root / p).is_file() and (root / p).stat().st_size > 0 for p in rollback_required), 'build 0066 rollback is missing required runtime assets'
-              print('PRODUCTION ROLLBACK GATE PASSED: RC-V1.0.0.8 BUILD 0066; historical destination module 0060 pin verified')
-              raise SystemExit(0)
-          assert "GalaxyDestinationPresentation?.VERSION!=='0061'" in rc
+          assert "GalaxyDestinationPresentation?.VERSION!=='0060'" in rc
           assert 'gv-galaxy-navigator-001.js' not in rc
           # BUILD 0128 search regression gate: renderer helpers and visible failure reporting.
           assert 'function gvSearchDisplayName(record)' in rc, 'search result sort/display helper missing'
@@ -230,7 +214,7 @@ jobs:
           assert 'gvEarthDistanceUserAdjustedView=true;gvSyncEarthDistanceToCenter()' in rc, 'Aladin pan must switch from arrival distance to live-center matching'
           assert "host.addEventListener('pointermove',userChangedView,capturePassive)" in rc and 'if(gvNavigationTravelActive||isHdViewport(event))return;' in rc, 'Sky pointer movement must refresh live matching while HD gestures stay independent'
           module=pathlib.Path('viewer/modules/destination-presentation/gv-destination-presentation-0060.js').read_text()
-          assert "const VERSION='0061'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
+          assert "const VERSION='0060'" in module and 'lyPerPx:g.lyPerPx/hdScale,width:g.width}' in module, 'HD viewport scale equation/version missing; viewport width must not be multiplied by zoom'
           assert "if(v>=1000)return['DISTANCE (BLY)',(v/1000).toFixed(2)]" in module and "if(v>=1)return['DISTANCE (MLY)',v.toFixed(2)]" in module and "return['DISTANCE (KLY)',(v*1000).toFixed(2)]" in module, 'destination and HD distance displays must use two decimals for BLY/MLY/KLY'
           assert '.gvdp-key{font:400 10px/1.12' in module and '.gvdp-value{min-height:12px;margin-top:2px;font:400 9px/1.1' in module, 'destination card labels and values must use original typography'; assert '.gvdp-hd-science .gvdp-key{font-size:11px}' in module and '.gvdp-hd-science .gvdp-value{font-size:10.5px' in module and '.gvdp-hd-science .gvdp-span-cell .gvdp-fov-value{font-size:10.5px' in module and '.gvdp-hd-science .gvdp-span-cell .gvdp-fov-key{font-size:11px' in module, 'HD science labels and values must use original typography'
           assert 'FOV (ARC MIN)' in module and 'function imageFovArcmin(d)' in module and 'const x=finite(d?.fovXDegrees),y=finite(d?.fovYDegrees)' in module and 'hydrateAvmFov(d,generation)' in module and 'AVM runtime catalog' in module, 'HD destination card must use hydrated AVM FOVX/FOVY metadata without fabricating missing axes'

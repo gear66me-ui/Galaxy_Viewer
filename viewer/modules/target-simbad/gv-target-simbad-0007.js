@@ -43,7 +43,7 @@ function installStyles(){
 .gv-target-calculator{position:fixed;left:50%;top:104px;transform:translateX(-50%);z-index:2147483000;width:min(66vw,420px);max-width:66vw;max-height:76dvh;overflow:auto;padding:12px;border:1px solid #7CCBFF;border-radius:14px;background:radial-gradient(ellipse at 50% 0%,rgba(20,78,134,.98),rgba(3,17,38,.99) 58%,rgba(2,9,24,.99));box-shadow:inset 0 1px 2px rgba(225,251,255,.3),0 0 20px rgba(50,190,255,.65),0 0 48px rgba(0,0,0,.85);display:none;pointer-events:auto;color:#EAFBFF;font-family:"GV Survey Space Age","Space Age",sans-serif;overscroll-behavior:contain}
 .gv-target-calculator.gv-open{display:block}
 .gv-target-calculator *{box-sizing:border-box}
-.gv-target-calculator-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;cursor:move;touch-action:none;user-select:none;color:#DDF8FF;font-size:10px;letter-spacing:1px;text-shadow:0 0 5px rgba(88,191,255,.82)}
+.gv-target-calculator-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:#DDF8FF;font-size:10px;letter-spacing:1px;text-shadow:0 0 5px rgba(88,191,255,.82)}
 .gv-target-calculator-close{width:25px;height:25px;border:1px solid #43CFFF;border-radius:6px;background:linear-gradient(180deg,#174E86,#041B3E);color:#EAFBFF;font:16px/1 sans-serif}
 .gv-target-calculator-display{width:100%;min-height:48px;margin-bottom:8px;padding:9px 8px;overflow:hidden;border:1px solid #43CFFF;border-radius:7px;background:linear-gradient(180deg,#010914,#071C33);color:#9DFFDF;text-align:right;font:16px/1.4 "GV Survey Space Age","Space Age",sans-serif;overflow-wrap:anywhere;box-shadow:inset 0 0 9px #000,0 0 6px #008bce55}
 .gv-target-calculator-keys{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px}
@@ -93,28 +93,6 @@ function createInstance(options={}){
   calculator.addEventListener('gv-cosmo-data',event=>{const d=event.detail||{};const put=(key,value)=>{const el=calculator.querySelector('[data-cosmo="'+key+'"]');if(el)el.textContent=value??'UNAVAILABLE'};put('z',d.z??'UNAVAILABLE');put('fov',d.fov??'UNAVAILABLE');put('dc',d.dc??'UNAVAILABLE');put('dem',d.dem??'UNAVAILABLE')});
    const calculatorDisplay=calculator.querySelector('.gv-target-calculator-display');
   const calculatorClose=calculator.querySelector('.gv-target-calculator-close');
-  const calculatorHead=calculator.querySelector('.gv-target-calculator-head');
-  let calculatorDrag=null;
-  calculatorHead.addEventListener('pointerdown',event=>{
-    if(event.target.closest('button'))return;
-    const rect=calculator.getBoundingClientRect();
-    calculatorDrag={x:event.clientX,y:event.clientY,left:rect.left,top:rect.top};
-    calculator.style.left=rect.left+'px';calculator.style.top=rect.top+'px';calculator.style.right='auto';calculator.style.bottom='auto';calculator.style.transform='none';
-    try{calculatorHead.setPointerCapture(event.pointerId)}catch(_){}
-    event.preventDefault();
-  });
-  calculatorHead.addEventListener('pointermove',event=>{
-    if(!calculatorDrag)return;
-    const dx=event.clientX-calculatorDrag.x,dy=event.clientY-calculatorDrag.y;
-    const maxLeft=Math.max(0,window.innerWidth-calculator.offsetWidth);
-    const maxTop=Math.max(0,window.innerHeight-Math.min(calculator.offsetHeight,window.innerHeight));
-    calculator.style.left=Math.max(0,Math.min(maxLeft,calculatorDrag.left+dx))+'px';
-    calculator.style.top=Math.max(0,Math.min(maxTop,calculatorDrag.top+dy))+'px';
-  });
-  const endCalculatorDrag=()=>{calculatorDrag=null};
-  calculatorHead.addEventListener('pointerup',endCalculatorDrag);
-  calculatorHead.addEventListener('pointercancel',endCalculatorDrag);
-
   const calculatorKeys=calculator.querySelector('.gv-target-calculator-keys');
   const list=panel.querySelector('.gv-target-survey-list');
 
@@ -127,7 +105,7 @@ function createInstance(options={}){
   let calcCurrent='0',calcStored=null,calcOperator=null,calcFresh=false;
   const calcRender=()=>{calculatorDisplay.textContent=calcCurrent;};
   const calcClose=()=>{calculatorOpen=false;calculator.classList.remove('gv-open');};
-  const calcOpen=()=>{close();calculatorOpen=true;const surveyRect=button.getBoundingClientRect();calculator.style.left=Math.max(8,Math.min(window.innerWidth-Math.min(window.innerWidth*.66,420)-8,(window.innerWidth-Math.min(window.innerWidth*.66,420))/2))+'px';calculator.style.top=Math.max(0,Math.min(surveyRect.bottom+8,window.innerHeight-80))+'px';calculator.style.right='auto';calculator.style.bottom='auto';calculator.style.transform='none';calculator.classList.add('gv-open');calcRender();calculator.querySelectorAll('[data-cosmo]').forEach(e=>e.textContent='LOADING…');window.dispatchEvent(new CustomEvent('gv-request-cosmo-calculator'));};
+  const calcOpen=()=>{close();calculatorOpen=true;calculator.classList.add('gv-open');calcRender();calculator.querySelectorAll('[data-cosmo]').forEach(e=>e.textContent='LOADING…');window.dispatchEvent(new CustomEvent('gv-request-cosmo-calculator'));};
   const calcReset=()=>{calcCurrent='0';calcStored=null;calcOperator=null;calcFresh=false;calcRender();};
   const calcNumber=value=>{if(calcFresh){calcCurrent='0';calcFresh=false;}if(value==='.' ){if(!calcCurrent.includes('.'))calcCurrent+='.';}else if(calcCurrent==='0')calcCurrent=value;else if(calcCurrent.length<16)calcCurrent+=value;calcRender();};
   const calcOperate=op=>{const v=Number(calcCurrent);if(!Number.isFinite(v))return;if(calcStored!==null&&calcOperator&&!calcFresh){const result=calcApply(calcStored,v,calcOperator);if(result===null){calcCurrent='ERROR';calcStored=null;calcOperator=null;calcFresh=true;calcRender();return;}calcCurrent=calcFormat(result);}calcStored=Number(calcCurrent);calcOperator=op;calcFresh=true;calcRender();};
