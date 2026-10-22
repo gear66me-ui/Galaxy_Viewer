@@ -1,8 +1,8 @@
 {
-  "release": "RC-V1.0.0.8",
+  "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
   "sourceCommit": "9694a0add234ea36d122b162edd915bcbcfc4857",
-  "build": "0064",
+  "build": "0001",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
@@ -150,6 +150,18 @@
   ],
   "dependencySnapshot": "373de63d264588f524aed2b999e61f7da7558b42",
   "catalogSnapshot": "204acf761689239cc7f35eeb3b8a573d89907969",
-  "dependencyPins": ["0006f9bcdbd50b08e027cb63a21679d5a3a184ff","10ae327ec7ab126627cc1e482e27828075bbf4f4","d4c95ace9c0ec81e948b2440ead7b06c269b344d","42620e479e7fa719ca168dd1fbf96e924e23eb9d","9ad02b64b0c10e09938ad8276109f2a61a0229cc","e38bfcc36a2f156517f9a77865da0c1c13d49175","d85d91201ea52aa6524a62394fc81b450b15ac23","f7740afe20a1dccd0e58644e8c154f4e6396ed83","faac4b2796b760c3dae674483d7eaba05d7745e7","ee3100fe9d98ce1252dbe26931a4556221d12d4e","378083be0554066caacf362afd7a3e1153b3ec8d"],
+  "dependencyPins": [
+    "0006f9bcdbd50b08e027cb63a21679d5a3a184ff",
+    "10ae327ec7ab126627cc1e482e27828075bbf4f4",
+    "d4c95ace9c0ec81e948b2440ead7b06c269b344d",
+    "42620e479e7fa719ca168dd1fbf96e924e23eb9d",
+    "9ad02b64b0c10e09938ad8276109f2a61a0229cc",
+    "e38bfcc36a2f156517f9a77865da0c1c13d49175",
+    "d85d91201ea52aa6524a62394fc81b450b15ac23",
+    "f7740afe20a1dccd0e58644e8c154f4e6396ed83",
+    "faac4b2796b760c3dae674483d7eaba05d7745e7",
+    "ee3100fe9d98ce1252dbe26931a4556221d12d4e",
+    "378083be0554066caacf362afd7a3e1153b3ec8d"
+  ],
   "validationProfile": "production-release-gate-1.0.0.8-build-0048-manual-zoom-suspends-hips-fetch-350ms-settle"
 }
