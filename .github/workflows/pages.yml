@@ -241,7 +241,11 @@ jobs:
           if active_build == '0007':
               assert 'gvShowEarthDistance(nearest,true);' in rc and 'alreadyResolvedRuntimeRecord?destination:await gvRuntimeAvmRecord(destination)' in rc, 'Build 0007 must render the exact matched runtime record without ambiguous second lookup'
           if active_build == '0008':
-              assert 'BUILD 0008: arrival is authoritative until the user deliberately pans the sky.' in rc and 'if(gvEarthDistanceArrivalDestination&&!gvEarthDistanceUserAdjustedView)' in rc, 'Build 0008 must keep the arriving destination authoritative until explicit sky pan'
+              assert 'if(gvEarthDistanceArrivalDestination&&!gvEarthDistanceUserAdjustedView)return;' in rc, 'Build 0008 must lock the arrival target against polling until an explicit gesture'
+              assert 'gvEarthDistanceSyncGeneration++;' in rc and 'gvEarthDistanceSyncPending=false;' in rc, 'Build 0008 must invalidate in-flight pre-arrival catalog matching'
+              assert "aladin.on('positionChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter()})" in rc, 'Aladin position events must not silently unlock the arrival target'
+              assert "aladin.on('zoomChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})" in rc, 'Aladin zoom events must not silently unlock the arrival target'
+              assert "const touchGesture=type==='touchmove';" in rc and "const pointerGesture=type==='pointermove'&&Number(event?.buttons)>0;" in rc, 'Only deliberate sky gestures may unlock the arrival target'
           print(f"PRODUCTION RELEASE GATE PASSED: {viewer.get('version')} BUILD {viewer.get('build')} — LIVE EARTH-DISTANCE MATCHING AND HD TRANSFORM HELPERS, ZOOM-RESPONSIVE SCALE, AND EARTH-DISTANCE DISPLAY")
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
