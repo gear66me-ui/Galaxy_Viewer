@@ -18163,9 +18163,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 1000.0,
-      "science": {},
-      "redshift": 0.070318
+      "distanceMly": 390.0,
+      "science": {
+        "distanceMly": 390.0,
+        "redshift": 0.02789,
+        "distanceMethod": "Published approximate distance adopted as nominal Galaxy Viewer value: 390.0 million light-years.",
+        "distanceSource": "ESA/Hubble Picture of the Week 2313a: https://esahubble.org/images/potw2313a/ (about 390 million light-years)",
+        "redshiftMethod": "Published spectroscopic redshift adopted as z=0.02789 (approximately 0.0279). Kept as the measured/published redshift rather than deriving z from the approximate distance.",
+        "redshiftSource": "Adopted redshift z=0.02789 for Z 229-15, consistent with published redshift near 0.0279; not an FLRW back-calculation from 390 Mly."
+      },
+      "redshift": 0.02789,
+      "distanceMethod": "Published approximate distance adopted as nominal Galaxy Viewer value: 390.0 million light-years.",
+      "distanceSource": "ESA/Hubble Picture of the Week 2313a: https://esahubble.org/images/potw2313a/ (about 390 million light-years)",
+      "redshiftMethod": "Published spectroscopic redshift adopted as z=0.02789 (approximately 0.0279). Kept as the measured/published redshift rather than deriving z from the approximate distance.",
+      "redshiftSource": "Adopted redshift z=0.02789 for Z 229-15, consistent with published redshift near 0.0279; not an FLRW back-calculation from 390 Mly."
     },
     {
       "providerKey": "hubble",
