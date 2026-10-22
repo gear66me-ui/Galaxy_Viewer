@@ -23,7 +23,16 @@ const edge=(g,a,b)=>g.E.get(a<b?`${a}:${b}`:`${b}:${a}`);function degree(g,i,u){
 function solve(g){const starts=g.nodes.map((_,i)=>i).filter(i=>g.N[i].length);for(let attempt=1;attempt<=C.ROUTE_RESTARTS;attempt++){const ranked=shuffle(starts).sort((a,b)=>g.N[a].length-g.N[b].length),band=ranked.slice(0,Math.max(1,Math.ceil(ranked.length*.35))),start=band[Math.floor(Math.random()*band.length)],path=[start],used=new Set(path);while(path.length<C.ROUTE_LENGTH){const cur=path.at(-1),cand=g.N[cur].filter(i=>!used.has(i));if(!cand.length)break;const s=cand.map(next=>{const e=edge(g,cur,next);return {next,target:Math.abs(e.travelDeg-C.TRANSLATION_TARGET_DEG),fov:e.fovDeltaOctaves,remain:degree(g,next,used),tie:Math.random()}}).sort((a,b)=>a.target-b.target||a.fov-b.fov||b.remain-a.remain||a.tie-b.tie);path.push(s[0].next);used.add(s[0].next)}if(path.length===C.ROUTE_LENGTH)return {path,attempt}}return null}
 function validate(route){if(route.length!==100||new Set(route.map(x=>x.key)).size!==100)return false;for(let i=1;i<route.length;i++)if(!compat(route[i-1],route[i]).compatible)return false;return true}
 function plan(records){const e=eligible(records);if(e.length<130)throw Error(`ELIGIBLE CATALOG TOO SMALL ${e.length}`);const t=performance.now();for(let sampleAttempt=1;sampleAttempt<=100;sampleAttempt++){const sample=shuffle(e).slice(0,130),s=solve(graph(sample));if(!s)continue;const route=s.path.map(i=>sample[i]);if(!validate(route))continue;const used=new Set(route.map(x=>x.key)),reserve=sample.filter(x=>!used.has(x.key));if(reserve.length!==30)throw Error(`RESERVE ${reserve.length}`);return {sample:sample.map(x=>x.record),route:route.map(x=>x.record),reserve:reserve.map(x=>x.record),sampleAttempt,solverAttempt:s.attempt,solveTimeMs:performance.now()-t}}throw Error('130->100 FAILED')}
-function imageUrl(r){const a=[...(Array.isArray(r?.jpegCandidates)?r.jpegCandidates:[]),r?.selectedImageUrl,r?.hdUrl].map(clean).filter(Boolean);return a.find(x=>/\/screen\//i.test(x))||a[0]||''}
+function canonicalImageUrl(value,provider=''){
+ const url=clean(value);
+ if(!url)return '';
+ // ESO's legacy public-archive screen endpoint fails in the full-image fetch path.
+ // Keep the same archive filename while using ESO's image CDN origin.
+ if(String(provider||'').trim().toUpperCase()==='ESO'||/^https?:\/\/www\.eso\.org\/public\/archives\/images\/screen\//i.test(url))
+  return url.replace(/^https?:\/\/www\.eso\.org\/public\/archives\/images\/screen\//i,'https://cdn.eso.org/images/screen/');
+ return url;
+}
+function imageUrl(r,provider=''){const a=[...(Array.isArray(r?.jpegCandidates)?r.jpegCandidates:[]),r?.selectedImageUrl,r?.hdUrl].map(x=>canonicalImageUrl(x,provider)).filter(Boolean);return a.find(x=>/\/screen\//i.test(x))||a[0]||''}
 function normalizeRaw(r,i,catalogKey,meta){
  const science=(r?.science&&typeof r.science==='object')?r.science:{};
  const distanceDisplay=clean(science.distanceDisplay??r?.distance);
@@ -72,7 +81,7 @@ function normalizeRaw(r,i,catalogKey,meta){
   instrument:Object.freeze(Array.isArray(r?.instrument)?r.instrument.map(clean).filter(Boolean):[]),
   sourceUrl:clean(r?.sourceUrl),
   astroPixSourceUrl:clean(r?.astroPixSourceUrl),
-  hdUrl:clean(r?.hdUrl),
+  hdUrl:canonicalImageUrl(r?.hdUrl,r?.provider??meta.provider??catalogKey),
   githubImageUrl:clean(r?.githubImageUrl),
   sha256:clean(r?.sha256),
   fovDegrees:finite(r?.fovDegrees??r?.fieldOfViewDegrees?.effectiveDegrees??r?.fieldOfViewDegrees),
@@ -86,7 +95,7 @@ function normalizeRaw(r,i,catalogKey,meta){
   fovAuthority:clean(r?.fovAuthority),
   rotationAuthority:clean(r?.rotationAuthority),
   coordinateAuthority:clean(r?.coordinateAuthority),
-  imageUrl:imageUrl(r),
+  imageUrl:imageUrl(r,r?.provider??meta.provider??catalogKey),
   catalogKey,catalogIndex:i
  })
 }
