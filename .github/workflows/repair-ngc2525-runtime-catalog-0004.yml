@@ -107,6 +107,8 @@ jobs:
           git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv viewer/image-databases/master-database/avm-metadata/AVM-METADATA-GEMINI-NED-SIMBAD/Galaxy_Viewer_v0004a_Distance_Review_Workbook.csv
           git diff --cached --check
           git commit -m "Correct NGC 2525 runtime distance and redshift"
+          # Rebase onto any release-branch commits that landed while this repair ran.
+          git pull --rebase origin release
           git push origin HEAD:release
       - name: Upload repair report
         if: always()
