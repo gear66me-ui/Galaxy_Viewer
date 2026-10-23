@@ -64040,9 +64040,14 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 53.0004,
+      "distanceMly": 75.0,
       "science": {},
-      "redshift": 0.003667
+      "redshift": 0.006492,
+      "distanceMethod": "published_object_distance_75_Mly",
+      "distanceSource": "Published object page supplied for ESO 440-11: 75 million light-years; corroborating distance entry in the review workbook includes 75.016 Mly.",
+      "redshiftMethod": "SIMBAD_2004MNRAS_350_1195M_heliocentric_emission_redshift",
+      "redshiftSource": "SIMBAD ESO 440-11 (MCG-05-28-007), 2004MNRAS.350.1195M; heliocentric z(emission)=0.006492; https://simbad.u-strasbg.fr/simbad/sim-id?Ident=ESO+440-11",
+      "redshiftFrame": "heliocentric"
     },
     {
       "providerKey": "noirlab",
