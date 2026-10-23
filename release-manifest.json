@@ -2,12 +2,12 @@
   "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
   "sourceCommit": "0a80ed17a0125224890caedd95a5b8064c0ac4ad",
-  "build": "0010",
+  "build": "0011",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.9-BLD-0010.py",
+    "viewer/RC-V1.0.0.9-BLD-0011.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -165,5 +165,5 @@
     "f5b26bd7a317a57a76a4b68adc05b50ec3f0567e",
     "08e7c8cae3f90fc66b0e9a4925d70047c98854d1"
   ],
-  "validationProfile": "production-release-gate-1.0.0.9-build-0010-travel-distance-equation"
+  "validationProfile": "production-release-gate-1.0.0.9-build-0011-arrival-distance-match"
 }
