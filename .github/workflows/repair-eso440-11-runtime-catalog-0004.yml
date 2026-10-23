@@ -1,4 +1,5 @@
 name: Repair ESO 440-11 AVM runtime distance and redshift
+# The repair step validates persisted JSON after writing with real newline terminators.
 
 on:
   push:
