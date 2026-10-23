@@ -14958,7 +14958,7 @@
       "dec": 4.449897222199999,
       "raText": "14 33 24.10",
       "decText": "4° 26' 59.63\"",
-      "distance": 38.812564,
+      "distance": 90.0,
       "constellation": "Virgo",
       "fieldOfView": "0.041667 x 0.044833 degrees",
       "orientation": "North is 14.6° right of vertical",
@@ -14994,8 +14994,8 @@
       "githubImageUrl": "https://github.com/gear66me-ui/Galaxy_Viewer/releases/download/hubble-galaxies-0001-a/potw2437a.jpg",
       "releaseTag": "hubble-galaxies-0001-a",
       "science": {
-        "distanceMly": 38.812564,
-        "distanceMethod": "esa",
+        "distanceMly": 90.0,
+        "distanceMethod": "published_distance_ESA_Hubble_potw2437a_90_Mly",
         "sizeKly": [
           65.45,
           70.42
@@ -15009,10 +15009,16 @@
         "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 13.38 GYR",
-        "redshift": 0.006256,
-        "redshiftDisplay": "EST. z 0.00626",
-        "redshiftEstimated": true,
-        "redshiftMethod": "inverted_lcdm_from_age_0011"
+        "redshift": 0.005291,
+        "redshiftDisplay": "z = 0.005291",
+        "redshiftEstimated": false,
+        "redshiftMethod": "SIMBAD_2022ApJS_261_21Y_heliocentric_spectroscopic_redshift",
+        "distanceSource": "https://esahubble.org/images/potw2437a/",
+        "distanceEstimated": false,
+        "distanceDisplay": "90 million light-years",
+        "redshiftSource": "SIMBAD 2022ApJS..261...21Y; heliocentric z(emission)=0.005291 +/- 0.000010; https://simbad.u-strasbg.fr/simbad/sim-id?Ident=%402272923",
+        "redshiftFrame": "heliocentric",
+        "redshiftUncertainty": 1e-05
       },
       "constellationMethod": "catalog_or_iau_consistent",
       "designation": "NGC 5668",

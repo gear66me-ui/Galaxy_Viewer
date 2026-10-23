@@ -15984,9 +15984,15 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 38.8126,
+      "distanceMly": 90.0,
       "science": {},
-      "redshift": 0.006278
+      "redshift": 0.005291,
+      "distanceMethod": "published_distance_ESA_Hubble_potw2437a_90_Mly",
+      "distanceSource": "https://esahubble.org/images/potw2437a/",
+      "redshiftMethod": "SIMBAD_2022ApJS_261_21Y_heliocentric_spectroscopic_redshift",
+      "redshiftSource": "SIMBAD 2022ApJS..261...21Y; heliocentric z(emission)=0.005291 +/- 0.000010; https://simbad.u-strasbg.fr/simbad/sim-id?Ident=%402272923",
+      "redshiftFrame": "heliocentric",
+      "redshiftUncertainty": 1e-05
     },
     {
       "providerKey": "hubble",
