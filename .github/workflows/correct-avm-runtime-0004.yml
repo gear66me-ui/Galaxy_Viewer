@@ -19,7 +19,7 @@ jobs:
         with:
           ref: release
           token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Apply nine reviewed distance/redshift corrections (including NGC 6769)
+      - name: Apply ten reviewed distance/redshift corrections (including IC 391 and NGC 6769)
         run: |
           python3 - <<'PY'
           import json
@@ -37,6 +37,7 @@ jobs:
               {"id":"potw1151a","names":["lrg 3-757","cosmic horseshoe"],"distanceMly":5722.583,"redshift":0.444},
               {"id":"weic2428a","names":["mrc 1138-262","spiderweb galaxy"],"distanceMly":17992.853,"redshift":2.156},
               {"id":"ann1105a","names":["cl j1449+0856"],"distanceMly":17603.089,"redshift":2.07},
+              {"id":"potw1105a","names":["ic 391"],"distanceMly":80.0,"redshift":0.005507713},
           ]
 
           def walk(node, p="$"):
@@ -85,8 +86,8 @@ jobs:
               obj[dk], obj[rk] = c["distanceMly"], c["redshift"]
               changed.append((c["names"][0], p, old, (obj[dk], obj[rk])))
 
-          if len(changed) != 9:
-              raise SystemExit(f"STOP: expected 9 corrections, prepared {len(changed)}; no catalog changes committed.")
+          if len(changed) != 10:
+              raise SystemExit(f"STOP: expected 10 corrections, prepared {len(changed)}; no catalog changes committed.")
           # Validate serialization before writing.
           encoded = json.dumps(data, ensure_ascii=False, indent=2)
           json.loads(encoded)
@@ -104,6 +105,6 @@ jobs:
           if git diff --cached --quiet; then
             echo "Catalog already contains all approved values; no catalog commit needed."
           else
-            git commit -m "Correct reviewed distances and redshifts in AVM catalog 0004, including NGC 6769"
+            git commit -m "Correct reviewed distances and redshifts in AVM catalog 0004, including IC 391"
             git push origin HEAD:release
           fi
