@@ -192,7 +192,7 @@ jobs:
           assert 'gvNavigationTravelActive=false;' in rc, 'Distance display lifecycle must reopen on arrival and reset on navigation failure'
           assert "aladin.on('positionChanged'" in rc and "aladin.on('zoomChanged'" in rc, 'Earth-distance banner must refresh on pan and zoom events'
           assert 'if(window.GV_NAV_BACKGROUND_SUSPENDED||gvEarthDistanceSyncBusy)return;' not in rc, 'Earth-distance refresh must not be blocked by background suspension'
-          if active_build in ('0007', '0008', '0009', '0010'):
+          if active_build in ('0007', '0008', '0009', '0010', '0011'):
               assert 'gvShowEarthDistance(nearest,true);' in rc and 'alreadyResolvedRuntimeRecord?destination:await gvRuntimeAvmRecord(destination)' in rc, f'Build {active_build} must display the exact live-center runtime record'
           else:
               assert 'gvShowEarthDistance(nearest);' in rc and 'const record=await gvRuntimeAvmRecord(destination);' in rc, 'Live-center matching must resolve the runtime catalog 0004 record'
@@ -241,7 +241,7 @@ jobs:
           if active_build == '0007':
               assert 'gvShowEarthDistance(nearest,true);' in rc and 'alreadyResolvedRuntimeRecord?destination:await gvRuntimeAvmRecord(destination)' in rc, 'Build 0007 must render the exact matched runtime record without ambiguous second lookup'
           if active_build in ('0009', '0010', '0011'):
-              assert 'gvShowEarthDistance(presentationAvmRecord,true);' in rc if active_build in ('0009','0010') else 'gvShowEarthDistance(presentationDestination,true);' in rc, 'Arrival Earth distance must use the exact validated destination runtime record'
+              assert ('gvShowEarthDistance(presentationAvmRecord,true);' in rc if active_build in ('0009','0010') else 'gvShowEarthDistance(presentationDestination,true);' in rc), 'Arrival Earth distance must use the exact validated destination runtime record'
               assert 'gvShowEarthDistance(presentationDestination);' not in rc, 'Arrival Earth distance must not perform a second ambiguous AVM lookup'
               assert 'if(gvEarthDistanceArrivalDestination&&!gvEarthDistanceUserAdjustedView)return;' in rc, 'Build 0009 must lock the arrival target against polling until an explicit gesture'
               assert 'gvEarthDistanceSyncGeneration++;' in rc and 'gvEarthDistanceSyncPending=false;' in rc, 'Build 0008 must invalidate in-flight pre-arrival catalog matching'
