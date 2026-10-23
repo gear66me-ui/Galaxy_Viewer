@@ -1,5 +1,5 @@
 name: Repair NGC 5775 distance and FLRW redshift in AVM runtime 0004
-# Trigger refresh: adopt 85.0 Mly and matching flat-LCDM redshift for the two guarded catalog records.
+# Trigger refresh 2026-10-23: repair runtime catalog AND both distance-map rows for NGC 5775.
 on:
   push:
     branches: [release]
@@ -104,7 +104,7 @@ jobs:
                   raise SystemExit(f"Expected one distance-map row for {provider}/{archive}; found {len(found)}.")
               found[0]["distanceMly"] = "85"
           with path.open("w", encoding="utf-8", newline="") as f:
-              writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\\n")
+              writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
               writer.writeheader()
               writer.writerows(rows)
           print("PASS: both NGC 5775 distance-map rows set to 85 Mly.")
