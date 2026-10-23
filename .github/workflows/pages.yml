@@ -200,7 +200,7 @@ jobs:
           assert ('setInterval(()=>{gvInstallEarthDistanceInteractionListeners();gvSyncEarthDistanceToCenter()},100)' in rc or 'setInterval(()=>{gvInstallEarthDistanceInteractionListeners();if(!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},100)' in rc), 'Earth distance must resync every 100 ms while respecting active zoom/travel guards'
           assert 'const distanceSource=gvEarthDistanceTarget;' in rc and 'const distanceSource=gvEarthDistanceTarget||activeDestination;' not in rc, 'physical scale must avoid the activeDestination temporal-dead-zone and use the live Earth-distance target'
           assert 'const catalog=await gvLoadAvmRuntimeCatalog();' in rc and 'if(gvNavigationTravelActive)return;' in rc, 'Earth banner must load the runtime catalog and avoid updates during travel'
-          if active_build in ('0006', '0007', '0008', '0009', '0010', '0011', '0012'):
+          if active_build in ('0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014'):
               assert 'GV0007 EARTH DISTANCE NO CATALOG MATCH — CLEARED STALE DISTANCE' in rc and 'RETAINED LAST VALID DISTANCE' not in rc, 'Build 0006 must clear stale distance on catalog no-match'
           else:
               assert 'GV0007 EARTH DISTANCE NO CATALOG MATCH — RETAINED LAST VALID DISTANCE' in rc, 'Prior builds must retain their approved no-match behavior'
