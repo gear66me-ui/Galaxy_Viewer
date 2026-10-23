@@ -390,9 +390,14 @@
       ],
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 47.2927,
+      "distanceMly": 70.0,
       "science": {},
-      "redshift": 0.003272
+      "redshift": 0.005611,
+      "distanceMethod": "published_object_distance_70_Mly",
+      "distanceSource": "ESO public object page supplied for NGC 1232: approximately 70 million light-years; https://www.eso.org/public/images/ngc1232b/",
+      "redshiftMethod": "SIMBAD_2004MNRAS_350_1195M_heliocentric_emission_redshift",
+      "redshiftSource": "SIMBAD NGC 1232, emission redshift z=0.005611 heliocentric, reference 2004MNRAS.350.1195M; https://simbad.u-strasbg.fr/simbad/sim-id?Ident=NGC+1232",
+      "redshiftFrame": "heliocentric"
     },
     {
       "providerKey": "chandra",
