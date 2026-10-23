@@ -22356,9 +22356,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 59.0343,
+      "distanceMly": 85.0,
       "science": {},
-      "redshift": 0.004085
+      "redshift": 0.0058496
     },
     {
       "providerKey": "hubble",
@@ -59565,9 +59565,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 59.0343,
+      "distanceMly": 85.0,
       "science": {},
-      "redshift": 0.004085
+      "redshift": 0.0058496
     },
     {
       "providerKey": "noirlab",
