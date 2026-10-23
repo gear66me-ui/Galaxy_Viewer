@@ -195,6 +195,9 @@ jobs:
           if active_build in ('0007', '0008', '0009', '0010'):
               assert 'gvShowEarthDistance(nearest,true);' in rc and 'alreadyResolvedRuntimeRecord?destination:await gvRuntimeAvmRecord(destination)' in rc, f'Build {active_build} must display the exact live-center runtime record'
           else:
+              if active_build in ('0009','0010','0011'):
+              assert 'gvShowEarthDistance(nearest);' in rc and 'const record=await gvRuntimeAvmRecord(destination);' in rc, 'Live-center matching must resolve the runtime catalog 0004 record'
+          else:
               assert 'gvShowEarthDistance(nearest);' in rc and 'const record=await gvRuntimeAvmRecord(destination);' in rc, 'Earlier builds must resolve the live-center match against runtime catalog 0004'
           assert "return (v/1000).toFixed(2)+' BLY'" in rc and "return v.toFixed(2)+' MLY'" in rc and "return (v*1000).toFixed(2)+' KLY'" in rc and 'destination?.distanceMly' in rc and "const text=gvFormatEarthDistance(runtimeDestination);" in rc, 'Earth banner must display runtime distance only; redshift remains catalog metadata'
           assert ('setInterval(()=>{gvInstallEarthDistanceInteractionListeners();gvSyncEarthDistanceToCenter()},100)' in rc or 'setInterval(()=>{gvInstallEarthDistanceInteractionListeners();if(!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},100)' in rc), 'Earth distance must resync every 100 ms while respecting active zoom/travel guards'
