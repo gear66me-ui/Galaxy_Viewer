@@ -996,7 +996,7 @@ catalog_record_number,providerKey,archiveId,distanceMly
 995,hubble,heic0106f,39.791032
 996,hubble,opo0104d,140
 997,hubble,opo0104c,50
-998,hubble,opo0001a,9.621602
+998,hubble,opo0001a,13
 999,hubble,heic1717c,130.4626
 1000,hubble,potw1641a,51.8589
 1001,hubble,heic2603e,6500
@@ -1700,7 +1700,7 @@ catalog_record_number,providerKey,archiveId,distanceMly
 1699,noirlab,noao-ngc3166,71.7544
 1700,noirlab,noao-ngc3628,31.6372
 1701,noirlab,noao-ngc3718,52.5112
-1702,noirlab,noao-ngc4214,9.6216
+1702,noirlab,noao-ngc4214,13
 1703,noirlab,noao-ngc4395,14.0247
 1704,noirlab,noao-ngc4490,29.0605
 1705,noirlab,noao-ngc4656,30
