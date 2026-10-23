@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — Adaptive Ruler Lab v0003</title>
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js" charset="utf-8"></script>
+<style>
+:root{color-scheme:dark;--bg:#07111f;--panel:#101f31;--line:#29445f;--text:#e8f1fb;--muted:#a8bdd2;--cyan:#69d7ff;--gold:#ffd782}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#122b43 0,#07111f 55%);font:15px/1.45 system-ui,-apple-system,Segoe UI,sans-serif;color:var(--text)}
+main{max-width:1250px;margin:auto;padding:18px}header{display:flex;gap:12px;align-items:center;margin-bottom:14px}header .emoji{font-size:34px}h1{font-size:clamp(22px,4vw,34px);margin:0}h2{font-size:17px;margin:0 0 10px}p{margin:7px 0;color:var(--muted)}.tag{display:inline-block;border:1px solid var(--line);border-radius:99px;padding:3px 9px;color:var(--cyan);font-size:12px}
+.panel{background:linear-gradient(145deg,#102238,#0b1727);border:1px solid var(--line);border-radius:14px;padding:14px;margin:12px 0;box-shadow:0 8px 28px #0003}
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px;align-items:end}label{display:block;font-size:12px;color:var(--muted);margin-bottom:5px}input,select,button{font:inherit;border:1px solid #35536f;background:#091726;color:var(--text);border-radius:8px;padding:10px;width:100%;min-width:0}button{cursor:pointer;background:#123650;border-color:#2e6a8a;font-weight:650}button.primary{background:#075b78;border-color:#38bde9}button:hover{filter:brightness(1.2)}button:disabled{opacity:.45;cursor:wait}.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}.actions button{width:auto;flex:1 1 145px}
+#viewerWrap{position:relative;border:1px solid #38536d;border-radius:12px;overflow:hidden;background:#000}#aladin-lite-div{width:100%;height:min(68vh,660px);min-height:360px}
+#rulerOverlay{position:absolute;left:16px;bottom:20px;z-index:5;pointer-events:none;max-width:80%;padding:7px 10px;background:#06101bd9;border:1px solid #8bc9e4;border-radius:8px;color:#fff;text-shadow:0 1px 2px #000}
+.rulerline{height:15px;position:relative;margin:1px 0 3px}.rulerline:before{content:"";position:absolute;left:0;right:0;top:7px;border-top:2px solid white}.rulerline:after{content:"";position:absolute;left:0;right:0;top:2px;height:11px;border-left:2px solid white;border-right:2px solid white}
+.rulerlabel{font-size:13px;font-weight:700;white-space:nowrap}.rulernote{font-size:11px;color:#c6e6f4}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:9px}.stat{background:#071726;border:1px solid #203b53;border-radius:10px;padding:10px}.stat .k{font-size:11px;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}.stat .v{font-size:18px;font-weight:700;overflow-wrap:anywhere}.stat .sub{font-size:12px;color:var(--muted)}
+.equation{font-family:ui-monospace,SFMono-Regular,Consolas,monospace;color:#c2edff;overflow-wrap:anywhere}.warning{border-left:3px solid var(--gold);padding-left:10px;color:#f8e5b5}.small{font-size:12px}.tablewrap{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:12px}th,td{text-align:right;padding:7px;border-bottom:1px solid #263e54;white-space:nowrap}th:first-child,td:first-child{text-align:left}th{color:#a8dfff}#status{color:var(--gold);font-size:13px;margin-top:8px}
+@media(max-width:600px){main{padding:10px}#aladin-lite-div{height:55vh;min-height:340px}.panel{padding:10px}}
+</style>
+</head>
+<body><main>
+<header><div class="emoji">🔭</div><div><h1>Adaptive Galaxy Distance Ruler Lab</h1><div class="tag">v0003 · test branch only</div></div></header>
+<p>Test whether a ruler can keep a meaningful angular and physical label while Aladin's field of view changes by many orders of magnitude.</p>
+<div class="panel">
+<h2>Reference galaxy: M74 / NGC 628</h2>
+<p>Use a nearby, face-on spiral galaxy. NASA/ESA report a distance of about <b>32 million light-years</b>. For this experiment, set the working diameter to <b>100,000 light-years</b> (a round calibration target, not a precision measurement of its faint outer boundary). Its expected angular diameter under the small-angle approximation is about 10.75 arcmin.</p>
+<div class="controls">
+<div><label for="fov">FOV step (degrees)</label><select id="fov"><option>180</option><option>90</option><option>45</option><option>20</option><option>10</option><option>5</option><option>1</option><option>0.1</option><option>0.01</option><option>0.0001</option><option>0.00001</option></select></div>
+<div><label for="distance">Galaxy distance (million ly)</label><input id="distance" type="number" min="0.001" step="0.1" value="32"></div>
+<div><label for="diameter">Reference diameter (light-years)</label><input id="diameter" type="number" min="1" step="1000" value="100000"></div>
+<div><label for="rulerPx">Ruler display width (pixels)</label><input id="rulerPx" type="number" min="50" max="420" step="10" value="180"></div>
+</div>
+<div class="actions"><button class="primary" id="apply">Apply selected FOV</button><button id="next">Next FOV</button><button id="measure">Measure current view</button><button id="save">Save measurement</button></div>
+<div id="status">Initializing Aladin…</div>
+</div>
+<div class="panel">
+<div id="viewerWrap"><div id="aladin-lite-div"></div><div id="rulerOverlay"><div class="rulerlabel" id="rulerLabel">Calculating ruler…</div><div class="rulerline" id="rulerLine" style="width:180px"></div><div class="rulernote" id="rulerNote">Angular and physical size are recalculated from sky coordinates</div></div></div>
+<p class="small">Aladin coordinate grid enabled · ICRSd frame · M74 center RA 24.174375°, Dec +15.780614°. The ruler's angular span is calculated with Aladin's pixel-to-sky angular-distance API, not just from a logarithmic plot or the requested FOV.</p>
+</div>
+<div class="panel"><h2>Live measurements</h2><div class="stats" id="stats"></div></div>
+<div class="panel"><h2>Equations used</h2>
+<p class="equation">α (degrees) = Aladin.angularDist(x₁, y, x₂, y)</p>
+<p class="equation">α (radians) = α (degrees) × π / 180</p>
+<p class="equation">physical ruler (ly) ≈ distance (ly) × α (radians)</p>
+<p class="equation">expected galaxy angular diameter ≈ diameter (ly) / distance (ly) × 180 / π</p>
+<p class="warning">The physical-size equation is the small-angle approximation. For nearby M74 it is a useful first test. The chosen 100,000 ly diameter is a reference assumption; the angular ruler itself is the part being calibrated.</p>
+</div>
+<div class="panel"><h2>Saved measurements</h2><div class="actions"><button id="downloadJson">Download JSON</button><button id="downloadCsv">Download CSV</button><button id="clear">Clear saved measurements</button></div><p id="savedCount">Saved settings: 0</p><div class="tablewrap"><table><thead><tr><th>#</th><th>FOV requested °</th><th>Aladin FOV X °</th><th>Measured ruler °</th><th>Ruler arcsec</th><th>Ruler physical ly</th><th>Full width °</th><th>Time</th></tr></thead><tbody id="rows"></tbody></table></div></div>
+<p class="small">Reference: <a href="https://science.nasa.gov/asset/webb/webb-and-hubbles-views-of-spiral-galaxy-ngc-628/" target="_blank" rel="noopener">NASA Science — NGC 628 / M74</a>. Calibration output is experimental, and browser measurements are stored locally until exported or cleared.</p>
+</main>
+<script>
+(() => {
+const KEY='gv-adaptive-distance-ruler-v0003';
+const target='24.174375 15.780614';
+const steps=[180,90,45,20,10,5,1,0.1,0.01,0.0001,0.00001];
+const $=id=>document.getElementById(id);
+let aladin=null, saved=[];
+try{saved=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(saved))saved=[];}catch(e){saved=[];}
+const fmt=(n,d=6)=>Number.isFinite(n)?n.toLocaleString('en-US',{maximumFractionDigits:d}):'—';
+function niceAngle(deg){
+ if(!Number.isFinite(deg)||deg<=0)return {deg:0,label:'—'};
+ const arcsec=deg*3600;
+ const base=Math.pow(10,Math.floor(Math.log10(arcsec)));
+ const candidates=[1,2,5,10].map(x=>x*base);
+ let chosen=candidates.reduce((best,v)=>Math.abs(Math.log(v/arcsec))<Math.abs(Math.log(best/arcsec))?v:best,candidates[0]);
+ if(arcsec/chosen>1.7)chosen*=2;
+ const out=chosen/3600;
+ let label;
+ if(chosen>=3600)label=fmt(chosen/3600,3)+'°';
+ else if(chosen>=60)label=fmt(chosen/60,3)+'′';
+ else label=fmt(chosen,3)+'″';
+ return {deg:out,label};
+}
+function angleLabel(deg){const a=deg*3600;if(a>=3600)return fmt(deg,7)+'°';if(a>=60)return fmt(a/60,5)+'′';return fmt(a,5)+'″';}
+function setStatus(s){$('status').textContent=s;}
+function getSize(){return aladin.getSize();}
+function measure(){
+ if(!aladin)return;
+ try{
+  const size=getSize(),w=size[0],h=size[1],fov=aladin.getFov(),center=aladin.getRaDec();
+  if(!w||!h)throw new Error('Aladin viewport has no dimensions yet');
+  const midY=Math.max(1,Math.floor(h/2)),x1=Math.max(0,Math.floor(w/2)-90),x2=Math.min(w-1,x1+Number($('rulerPx').value||180));
+  const rulerDeg=aladin.angularDist(x1,midY,x2,midY);
+  const fullDeg=aladin.angularDist(0,midY,w-1,midY);
+  const rulerPx=x2-x1;
+  const distLy=Number($('distance').value)*1e6;
+  const refDiam=Number($('diameter').value);
+  const physicalLy=distLy*rulerDeg*Math.PI/180;
+  const expectedDeg=refDiam/distLy*180/Math.PI;
+  const nice=niceAngle(rulerDeg);
+  const chosenPx=Math.max(50,Math.min(420,Number($('rulerPx').value)||180));
+  $('rulerLine').style.width=chosenPx+'px';
+  $('rulerLabel').textContent=nice.label+'  ·  '+fmt(distLy*nice.deg*Math.PI/180,0)+' ly at '+fmt(Number($('distance').value),1)+' Mly';
+  $('rulerNote').textContent='Measured '+angleLabel(rulerDeg)+' across '+rulerPx+' px · physical span from entered distance';
+  const items=[
+   ['Requested FOV',fmt(Number($('fov').value),8)+'°','Selected dropdown value'],
+   ['Aladin-reported FOV X × Y',fmt(fov[0],10)+'° × '+fmt(fov[1],10)+'°','Live API'],
+   ['Viewport',w+' × '+h+' px','Aladin canvas dimensions'],
+   ['Center (RA, Dec)',fmt(center[0],7)+'°, '+fmt(center[1],7)+'°','Degrees, ICRS'],
+   ['Measured ruler angle',fmt(rulerDeg,12)+'°',angleLabel(rulerDeg)+' across '+rulerPx+' px'],
+   ['Ruler angular sampling',fmt(rulerPx/rulerDeg,6)+' px/°',fmt(rulerDeg/rulerPx*3600,8)+' arcsec/px'],
+   ['Measured full-width angle',fmt(fullDeg,12)+'°','Coordinate-based endpoint measurement'],
+   ['Physical ruler length',fmt(physicalLy,2)+' ly','Distance × measured angle in radians'],
+   ['Reference galaxy angular diameter',fmt(expectedDeg,8)+'°',angleLabel(expectedDeg)+' for '+fmt(refDiam,0)+' ly at '+fmt(Number($('distance').value),1)+' Mly'],
+   ['Ruler vs reference diameter',fmt(physicalLy/refDiam*100,4)+'%','Physical ruler length / assumed galaxy diameter']
+  ];
+  $('stats').innerHTML=items.map(a=>'<div class="stat"><div class="k">'+a[0]+'</div><div class="v">'+a[1]+'</div><div class="sub">'+a[2]+'</div></div>').join('');
+  window.currentMeasurement={
+   timestamp:new Date().toISOString(),object:'M74 / NGC 628',raDegrees:center[0],decDegrees:center[1],
+   coordinateFrame:'ICRS',requestedFovDegrees:Number($('fov').value),aladinFovXDegrees:fov[0],aladinFovYDegrees:fov[1],
+   viewportWidthPixels:w,viewportHeightPixels:h,rulerStartPixelX:x1,rulerEndPixelX:x2,rulerY:midY,rulerSpanPixels:rulerPx,
+   measuredRulerAngleDegrees:rulerDeg,rulerArcseconds:rulerDeg*3600,pixelsPerDegree:rulerPx/rulerDeg,
+   arcsecondsPerPixel:rulerDeg*3600/rulerPx,measuredFullWidthAngleDegrees:fullDeg,
+   distanceMillionLightYears:Number($('distance').value),assumedGalaxyDiameterLightYears:refDiam,
+   physicalRulerLengthLightYears:physicalLy,expectedGalaxyAngularDiameterDegrees:expectedDeg,
+   rulerLengthAsPercentOfAssumedGalaxyDiameter:physicalLy/refDiam*100
+  };
+  setStatus('Measurement successful · live sky-coordinate calculation completed.');
+ }catch(e){setStatus('Measurement error: '+(e&&e.message?e.message:String(e)));console.error(e);}
+}
+function applyFov(){if(!aladin)return;const f=Number($('fov').value);aladin.setFov(f);setStatus('Applied '+f+'°; measuring after the view updates…');setTimeout(measure,700);setTimeout(measure,1600);}
+function renderRows(){
+ $('savedCount').textContent='Saved settings: '+saved.length+' · browser key: '+KEY;
+ $('rows').innerHTML=saved.map((r,i)=>'<tr><td>'+(i+1)+'</td><td>'+fmt(r.requestedFovDegrees,8)+'</td><td>'+fmt(r.aladinFovXDegrees,10)+'</td><td>'+fmt(r.measuredRulerAngleDegrees,12)+'</td><td>'+fmt(r.rulerArcseconds,8)+'</td><td>'+fmt(r.physicalRulerLengthLightYears,3)+'</td><td>'+fmt(r.measuredFullWidthAngleDegrees,10)+'</td><td>'+r.timestamp+'</td></tr>').join('');
+}
+function save(){if(!window.currentMeasurement){measure();if(!window.currentMeasurement)return;}saved.push({...window.currentMeasurement,savedAt:new Date().toISOString()});localStorage.setItem(KEY,JSON.stringify(saved));renderRows();setStatus('Saved measurement '+saved.length+'.');}
+function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
+function csv(){
+ const rows=saved;if(!rows.length)return '';
+ const cols=Object.keys(rows[0]);return [cols.join(','),...rows.map(r=>cols.map(k=>{const v=r[k];return '"'+String(v??'').replaceAll('"','""')+'"';}).join(','))].join('\r\n');
+}
+$('apply').addEventListener('click',applyFov);
+$('next').addEventListener('click',()=>{const i=steps.indexOf(Number($('fov').value));$('fov').value=String(steps[(i+1+steps.length)%steps.length]);applyFov();});
+$('measure').addEventListener('click',measure);
+$('save').addEventListener('click',save);
+$('rulerPx').addEventListener('change',measure);$('distance').addEventListener('change',measure);$('diameter').addEventListener('change',measure);
+$('downloadJson').addEventListener('click',()=>download('m74-adaptive-ruler-measurements-v0003.json',JSON.stringify({title:'M74 Adaptive Distance Ruler Calibration',version:'v0003',exportedAt:new Date().toISOString(),equations:{physicalLength:'distanceLightYears * measuredAngleDegrees * PI / 180',expectedAngularDiameter:'diameterLightYears / distanceLightYears * 180 / PI'},records:saved},null,2),'application/json'));
+$('downloadCsv').addEventListener('click',()=>{if(saved.length)download('m74-adaptive-ruler-measurements-v0003.csv',csv(),'text/csv');else setStatus('No saved measurements yet.');});
+$('clear').addEventListener('click',()=>{if(confirm('Clear all saved local measurements?')){saved=[];localStorage.removeItem(KEY);renderRows();setStatus('Saved dataset cleared.');}});
+renderRows();
+A.init.then(()=>{aladin=A.aladin('#aladin-lite-div',{survey:'P/DSS2/color',target:target,fov:180,cooFrame:'ICRSd',showCooGrid:true,showCooGridControl:true,showReticle:true,showZoomControl:true,showFullscreenControl:true});aladin.on('zoomChanged',()=>setTimeout(measure,150));aladin.on('positionChanged',()=>setTimeout(measure,150));setTimeout(measure,1400);setTimeout(measure,3000);setStatus('Aladin initialized; loading M74 sky view…');}).catch(e=>setStatus('Aladin initialization failed: '+(e&&e.message?e.message:String(e))));
+})();
+</script>
+</body></html>
