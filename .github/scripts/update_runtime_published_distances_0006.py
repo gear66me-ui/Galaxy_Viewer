@@ -79,16 +79,16 @@ def fetch_page(url):
         req = Request(url, headers={"User-Agent":"GalaxyViewerDistanceAudit/1.1","Accept":"text/html,*/*"})
         with urlopen(req, timeout=18) as response:
             raw = response.read(2_000_000).decode("utf-8","replace")
-        raw = re.sub(r"(?is)<(script|style|noscript|svg)[^>]*>.*?</\\1>", " ", raw)
-        raw = re.sub(r"(?i)</(p|div|li|h[1-6]|section|article|br|tr)>", "\\n", raw)
+        raw = re.sub(r"(?is)<(script|style|noscript|svg)[^>]*>.*?</\1>", " ", raw)
+        raw = re.sub(r"(?i)</(p|div|li|h[1-6]|section|article|br|tr)>", "\n", raw)
         raw = re.sub(r"(?s)<[^>]+>", " ", raw)
-        return re.sub(r"\\s+", " ", unescape(raw)).strip()
+        return re.sub(r"\s+", " ", unescape(raw)).strip()
     except Exception:
         return ""
 
 def page_distance(text):
     # Try structured Distance metadata first.
-    m = re.search(r"(?i)Distance\\s*:\\s*"+DISTANCE_RE.pattern[4:], text)
+    m = re.search(r"(?i)Distance\s*:\s*"+DISTANCE_RE.pattern[4:], text)
     if m:
         dm = DISTANCE_RE.search(m.group(0))
         if dm: return convert_match(dm), m.group(0)[:350]
