@@ -1,4 +1,5 @@
 name: Audit Runtime Distances Against Source Website Wording
+# Read-only audit; source catalog is never modified.
 
 on:
   push:
