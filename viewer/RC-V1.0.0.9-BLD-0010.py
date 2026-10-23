@@ -3165,7 +3165,9 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     const presentationFovX=Number(presentationAvmRecord?.fovXDegrees??presentationAvmRecord?.fovDegrees);
     const presentationFovY=Number(presentationAvmRecord?.fovYDegrees??presentationAvmRecord?.fovDegrees);
     if(!(presentationFovX>0&&presentationFovX<360&&presentationFovY>0&&presentationFovY<360))throw new Error('GV ROLL 0021 AVM FOVX/FOVY INVALID');
-    const presentationDestination=Object.freeze({...presentationBase,fovXDegrees:presentationFovX,fovYDegrees:presentationFovY,avmHorizontalFovDegrees:presentationFovX,avmVerticalFovDegrees:presentationFovY});
+    const presentationDistanceMly=Number(presentationAvmRecord?.distanceMly),presentationRedshift=Number(presentationAvmRecord?.redshift);
+    if(!(presentationDistanceMly>0)||!Number.isFinite(presentationDistanceMly)||!Number.isFinite(presentationRedshift)||presentationRedshift<0)throw new Error('GV ARRIVAL DISTANCE/REDSHIFT INVALID');
+    const presentationDestination=Object.freeze({...presentationBase,distanceMly:presentationDistanceMly,redshift:presentationRedshift,distance:presentationAvmRecord.distance,fovXDegrees:presentationFovX,fovYDegrees:presentationFovY,avmHorizontalFovDegrees:presentationFovX,avmVerticalFovDegrees:presentationFovY});
     // The destination card, HD banner, HD viewport and live distance display share the AVM-authoritative FOV record.
     activeDestination=presentationDestination;
     headsUpDisplay.render();
@@ -3230,7 +3232,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             gvEarthDistanceTarget=presentationDestination;
             gvEarthDistanceTargetKey=gvEarthDistanceIdentity(presentationDestination);
             headsUpDisplay.render();
-            gvShowEarthDistance(presentationAvmRecord,true);
+            gvShowEarthDistance(presentationDestination,true);
             gvPrewarmProviderWebsite(v.destination);
             gvStartNextTripPrewarm();
         }));
@@ -3258,7 +3260,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         gvEarthDistanceTarget=presentationDestination;
         gvEarthDistanceTargetKey=gvEarthDistanceIdentity(presentationDestination);
         headsUpDisplay.render();
-        gvShowEarthDistance(presentationAvmRecord,true);
+        gvShowEarthDistance(presentationDestination,true);
         gvPrewarmProviderWebsite(v.destination);
         gvStartNextTripPrewarm();
     }));
