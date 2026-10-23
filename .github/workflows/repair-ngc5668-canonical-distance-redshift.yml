@@ -102,7 +102,7 @@ jobs:
               raise SystemExit(f"STOP: expected exactly one distance-map row for {PROVIDER}/{ARCHIVE_ID}; found {len(map_matches)}")
           rows[map_matches[0]][3] = "90"
           with DISTANCE_MAP.open("w", encoding="utf-8", newline="") as f:
-              csv.writer(f, lineterminator="\\n").writerows(rows)
+              csv.writer(f, lineterminator="\n").writerows(rows)
 
           # Align the existing review row; leave all independent literature measurements intact.
           if REVIEW.is_file():
@@ -113,10 +113,10 @@ jobs:
                   raise SystemExit(f"STOP: expected exactly one review row for {PROVIDER}/{ARCHIVE_ID}; found {len(review_matches)}")
               review_matches[0][4] = "90"
               with REVIEW.open("w", encoding="utf-8", newline="") as f:
-                  csv.writer(f, lineterminator="\\n").writerows(review_rows)
+                  csv.writer(f, lineterminator="\n").writerows(review_rows)
 
-          SOURCE.write_text(json.dumps(source, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
-          RUNTIME.write_text(json.dumps(runtime, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+          SOURCE.write_text(json.dumps(source, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+          RUNTIME.write_text(json.dumps(runtime, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
           # Re-read persisted data and assert the requested values and single canonical entry.
           source_check = json.loads(SOURCE.read_text(encoding="utf-8"))
@@ -147,7 +147,7 @@ jobs:
               "redshiftSource": REDSHIFT_SOURCE,
               "updatedFiles": [str(SOURCE), str(RUNTIME), str(DISTANCE_MAP)] + ([str(REVIEW)] if REVIEW.is_file() else [])
           }
-          Path("ngc5668-distance-redshift-repair-report.json").write_text(json.dumps(report, indent=2) + "\\n", encoding="utf-8")
+          Path("ngc5668-distance-redshift-repair-report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
           print(json.dumps(report, indent=2))
           PY
 
