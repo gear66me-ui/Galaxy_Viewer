@@ -71,7 +71,7 @@ jobs:
               obj, p, dk, rk = matches[0]
               old = (obj[dk], obj[rk])
               obj[dk] = 85.0
-              obj[rk] = 0.00584960
+              obj[rk] = 0.0058504261375674615
               changed.append((rid, p, old, (obj[dk], obj[rk])))
 
           if len(changed) != 2:
@@ -79,19 +79,44 @@ jobs:
           encoded = json.dumps(data, ensure_ascii=False, indent=2)
           json.loads(encoded)
           path.write_text(encoded, encoding="utf-8")
-          print("NGC 5775 correction validated: luminosity distance 85.0 Mly; flat-LCDM FLRW redshift 0.00584960 (H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_L=0.685).")
+          print("NGC 5775 correction validated: luminosity distance 85.0 Mly; flat-LCDM FLRW redshift 0.0058504261375674615 (H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_L=0.685).")
           for rid, p, old, new in changed:
               print(f"{rid}: {old} -> {new}; path={p}")
+          PY
+      - name: Update matching distance-map rows and validate
+        run: |
+          python3 - <<'PY'
+          import csv
+          from pathlib import Path
+          path = Path("viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv")
+          with path.open(encoding="utf-8", newline="") as f:
+              reader = csv.DictReader(f)
+              fields = reader.fieldnames
+              rows = list(reader)
+          required = {"providerKey", "archiveId", "distanceMly"}
+          if not fields or not required.issubset(fields):
+              raise SystemExit(f"Unexpected distance-map columns: {fields}")
+          targets = {("hubble", "potw1119a"), ("noirlab", "noao-n5775matthews")}
+          for provider, archive in targets:
+              found = [r for r in rows if r["providerKey"].strip().lower() == provider and r["archiveId"].strip().lower() == archive]
+              if len(found) != 1:
+                  raise SystemExit(f"Expected one distance-map row for {provider}/{archive}; found {len(found)}.")
+              found[0]["distanceMly"] = "85"
+          with path.open("w", encoding="utf-8", newline="") as f:
+              writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\\n")
+              writer.writeheader()
+              writer.writerows(rows)
+          print("PASS: both NGC 5775 distance-map rows set to 85 Mly.")
           PY
       - name: Validate JSON and commit
         run: |
           python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json >/dev/null
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv
           if git diff --cached --quiet; then
             echo "No change: target records already contain the requested values."
           else
-            git commit -m "Correct NGC 5775 distance to 85 Mly and FLRW redshift"
+            git commit -m "Correct NGC 5775 distance, FLRW redshift, and distance map"
             git push origin HEAD:release
           fi
