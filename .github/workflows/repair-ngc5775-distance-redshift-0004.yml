@@ -1,5 +1,5 @@
 name: Repair NGC 5775 distance and FLRW redshift in AVM runtime 0004
-# Trigger refresh 2026-10-23: repair runtime catalog AND both distance-map rows for NGC 5775.
+# Trigger refresh 2026-10-23b: validate runtime redshift precision and both NGC 5775 distance-map rows.
 on:
   push:
     branches: [release]
