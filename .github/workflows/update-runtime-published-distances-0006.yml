@@ -2,11 +2,6 @@ name: Build AVM Runtime Catalog 0006 from 0004 using provider-published distance
 
 on:
   workflow_dispatch:
-  push:
-    branches: [release]
-    paths:
-      - ".github/workflows/update-runtime-published-distances-0006.yml"
-      - ".github/scripts/update_runtime_published_distances_0006.py"
 
 permissions:
   contents: write
