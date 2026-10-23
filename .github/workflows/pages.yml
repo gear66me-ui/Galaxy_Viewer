@@ -249,7 +249,7 @@ jobs:
               assert 'gvEarthDistanceSyncGeneration++;' in rc and 'gvEarthDistanceSyncPending=false;' in rc, 'Build 0008 must invalidate in-flight pre-arrival catalog matching'
               assert "aladin.on('positionChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter()})" in rc, 'Aladin position events must not silently unlock the arrival target'
               assert "aladin.on('zoomChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})" in rc, 'Aladin zoom events must not silently unlock the arrival target'
-              assert "const touchGesture=type==='touchmove';" in rc and "const pointerGesture=type==='pointermove'&&Number(event?.buttons)>0;" in rc, 'Only deliberate sky gestures may unlock the arrival target'
+              assert "if(type==='touchmove'){" in rc and "const pointerGesture=type==='pointermove'&&Number(event?.buttons)>0;" in rc and "if(!pointerGesture&&type!=='wheel')return;" in rc, 'Touchmove, pressed pointermove, and wheel must be the only view-adjustment paths that unlock the arrival target'
           print(f"PRODUCTION RELEASE GATE PASSED: {viewer.get('version')} BUILD {viewer.get('build')} — LIVE EARTH-DISTANCE MATCHING AND HD TRANSFORM HELPERS, ZOOM-RESPONSIVE SCALE, AND EARTH-DISTANCE DISPLAY")
           print('DEPENDENCY SNAPSHOT:', pins[0])
           print('WEB BROWSER:', pointer['version'])
