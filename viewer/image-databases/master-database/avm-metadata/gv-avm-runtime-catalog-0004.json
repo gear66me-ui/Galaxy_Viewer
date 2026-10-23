@@ -24436,9 +24436,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 116.764,
+      "distanceMly": 80.0,
       "science": {},
-      "redshift": 0.008088
+      "redshift": 0.005507713
     },
     {
       "providerKey": "hubble",
