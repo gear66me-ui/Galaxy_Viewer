@@ -115,3 +115,5 @@ jobs:
           name: ngc2525-runtime-repair-report
           path: ngc2525-runtime-repair-report.json
           if-no-files-found: warn
+
+# Triggered repair workflow; verifies both Hubble archive IDs.
