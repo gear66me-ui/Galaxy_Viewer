@@ -5,6 +5,7 @@ on:
     branches: [release]
     paths:
       - ".github/workflows/correct-ngc4214-distance-0001.yml"
+      - "viewer/image-databases/master-database/avm-metadata/avm-runtime-distance-map-0004.csv"
   workflow_dispatch:
 permissions:
   contents: write
