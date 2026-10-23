@@ -1,0 +1,97 @@
+name: Repair NGC 5775 distance and FLRW redshift in AVM runtime 0004
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/repair-ngc5775-distance-redshift-0004.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: repair-ngc5775-distance-redshift-0004
+  cancel-in-progress: false
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Apply guarded NGC 5775 correction
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          targets = {
+              "potw1119a": ("hubble", "NGC 5775"),
+              "noao-n5775matthews": ("noirlab", "NGC 5775"),
+          }
+
+          def walk(node, p="$"):
+              if isinstance(node, dict):
+                  yield node, p
+                  for k, v in node.items():
+                      if isinstance(v, (dict, list)):
+                          yield from walk(v, f"{p}.{k}")
+              elif isinstance(node, list):
+                  for i, v in enumerate(node):
+                      yield from walk(v, f"{p}[{i}]")
+
+          def scalars(obj):
+              return [(str(k).lower(), str(v).strip().lower())
+                      for k, v in obj.items()
+                      if isinstance(v, (str, int, float)) and not isinstance(v, bool)]
+
+          records = list(walk(data))
+          changed = []
+          for rid, (provider, expected_name) in targets.items():
+              matches = []
+              for obj, p in records:
+                  vals = scalars(obj)
+                  values = [v for _, v in vals]
+                  id_match = any(v == rid or v.endswith("/" + rid) for v in values)
+                  name_match = any(v == expected_name.lower() for k, v in vals
+                                   if any(t in k for t in ("name", "title", "object", "designation", "target")))
+                  provider_match = any(provider in v for k, v in vals
+                                       if any(t in k for t in ("provider", "catalog", "source")))
+                  distance_key = next((k for k in obj if k.lower() in ("distancemly", "distance_mly")), None)
+                  redshift_key = next((k for k in obj if k.lower() in ("redshift", "z", "redshiftz")), None)
+                  if id_match and name_match and provider_match and distance_key and redshift_key:
+                      matches.append((obj, p, distance_key, redshift_key))
+              matches = [(o,p,dk,rk) for o,p,dk,rk in matches
+                         if not any(p.startswith(q + ".") or p.startswith(q + "[")
+                                    for _,q,_,_ in matches if q != p)]
+              if len(matches) != 1:
+                  raise SystemExit(f"STOP: expected exactly one {provider} record for {rid}; found {len(matches)}. No changes written.")
+              obj, p, dk, rk = matches[0]
+              old = (obj[dk], obj[rk])
+              obj[dk] = 85.0
+              obj[rk] = 0.00584960
+              changed.append((rid, p, old, (obj[dk], obj[rk])))
+
+          if len(changed) != 2:
+              raise SystemExit(f"STOP: expected 2 records, prepared {len(changed)}. No changes written.")
+          encoded = json.dumps(data, ensure_ascii=False, indent=2)
+          json.loads(encoded)
+          path.write_text(encoded, encoding="utf-8")
+          print("NGC 5775 correction validated: luminosity distance 85.0 Mly; flat-LCDM FLRW redshift 0.00584960 (H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_L=0.685).")
+          for rid, p, old, new in changed:
+              print(f"{rid}: {old} -> {new}; path={p}")
+          PY
+      - name: Validate JSON and commit
+        run: |
+          python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json >/dev/null
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          if git diff --cached --quiet; then
+            echo "No change: target records already contain the requested values."
+          else
+            git commit -m "Correct NGC 5775 distance to 85 Mly and FLRW redshift"
+            git push origin HEAD:release
+          fi
