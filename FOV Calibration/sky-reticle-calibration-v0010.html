@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — NGC 5775 Reticle Calibration v0010</title>
+<style>
+:root{color-scheme:dark;font:15px system-ui;background:#07111e;color:#e8f1fb}*{box-sizing:border-box}body{margin:0;padding:12px;max-width:1200px;margin:auto}h1{font-size:1.5rem;margin:4px 0}p{color:#b7c9da}.panel{background:#102238;border:1px solid #34516b;border-radius:12px;padding:12px;margin:10px 0}.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:9px}label{display:block;color:#b7c9da;font-size:12px;margin-bottom:4px}select,input,button{width:100%;padding:10px;border-radius:7px;border:1px solid #42627c;background:#081725;color:#f4f8fc;font:inherit}button{background:#145071;font-weight:bold;cursor:pointer}#aladin{height:min(66vh,700px);min-height:360px;background:#000;border:1px solid #42627c;border-radius:10px}#status{color:#ffdc8b;white-space:pre-wrap}.metric{display:inline-block;padding:8px 12px;background:#071725;border-radius:8px;margin:4px 6px 4px 0}.bad{color:#ff9b9b}@media(max-width:600px){body{padding:7px}#aladin{height:55vh;min-height:320px}}
+</style>
+<script>function pageError(m){var s=document.getElementById('status');if(s)s.textContent='PAGE ERROR: '+m}</script>
+</head><body>
+<h1>🎯 NGC 5775 — Physical-scale reticle calibration</h1>
+<p>Controls are part of the page itself and should remain visible even if the astronomy library fails. The rings are centered on NGC 5775 sky coordinates.</p>
+<section class="panel"><div class="controls">
+<div><label for="ra">Right ascension (degrees)</label><input id="ra" type="number" step="0.001" value="223.49"></div>
+<div><label for="dec">Declination (degrees)</label><input id="dec" type="number" step="0.001" value="3.544"></div>
+<div><label for="distance">Adopted distance (million light-years)</label><input id="distance" type="number" min="0.001" step="0.01" value="59.03"></div>
+<div><label for="diameter">Main reticle diameter (thousand light-years)</label><input id="diameter" type="number" min="1" step="1" value="100"></div>
+<div><label for="fov">Field of view (degrees)</label><select id="fov"><option>1</option><option>0.5</option><option>0.3</option><option selected>0.15</option><option>0.1</option><option>0.05</option><option>0.03</option><option>0.01</option><option>0.005</option><option>0.001</option></select></div>
+<div><label for="opacity">Reticle opacity: <span id="opacityText">75%</span></label><input id="opacity" type="range" min="5" max="100" step="5" value="75"></div>
+</div>
+<div class="controls" style="margin-top:10px"><button id="apply">Apply coordinates / FOV</button><button id="redraw">Redraw reticle</button></div>
+<div id="status" role="status">Page loaded. Waiting for Aladin library…</div></section>
+<section class="panel"><div id="aladin" aria-label="Aladin sky viewer"></div>
+<p>The <b style="color:#73ddff">cyan ring</b> is the selected 100,000-light-year reticle. The <b style="color:#ffdb8c">gold ring</b> is the 85,300-light-year NGC 5775 reference diameter. Adjust transparency to compare the rings with the galaxy.</p>
+<div id="metrics"></div></section>
+<script>
+(function(){
+'use strict';
+var aladin=null,overlay=null,marker=null;
+var $=function(id){return document.getElementById(id)};
+var fmt=function(x,n){return Number(x).toFixed(n)};
+function status(t,bad){$('status').textContent=t;$('status').className=bad?'bad':''}
+function angularDiameterDeg(diameterKly,distanceMly){return (diameterKly/(distanceMly*1000))*180/Math.PI}
+function rgba(rgb,a){return 'rgba('+rgb+','+(Math.max(.05,Math.min(1,a/100)))+')'}
+function drawReticle(){
+ if(!aladin||!window.A){status('Aladin is not ready yet. The controls remain available.',true);return}
+ try{
+  if(overlay){try{aladin.removeOverlay(overlay)}catch(e){}overlay=null}
+  if(marker){try{aladin.removeCatalog(marker)}catch(e){}marker=null}
+  var ra=Number($('ra').value),dec=Number($('dec').value),dist=Number($('distance').value),d=Number($('diameter').value),op=Number($('opacity').value);
+  if(!Number.isFinite(ra)||!Number.isFinite(dec)||!(dist>0)||!(d>0)){status('Enter valid coordinates, positive distance, and positive reticle diameter.',true);return}
+  var galaxyDeg=angularDiameterDeg(85.3,dist),reticleDeg=angularDiameterDeg(d,dist);
+  overlay=A.graphicOverlay({color:rgba('115,221,255',op),lineWidth:3});aladin.addOverlay(overlay);
+  overlay.add(A.circle(ra,dec,reticleDeg/2,{color:rgba('115,221,255',op),lineWidth:3}));
+  overlay.add(A.circle(ra,dec,galaxyDeg/2,{color:rgba('255,219,140',op),lineWidth:2}));
+  marker=A.catalog({name:'NGC 5775 calibration center',sourceSize:8,color:'#ff6565'});
+  marker.addSources([A.marker(ra,dec,{popupTitle:'NGC 5775 scale check',popupDesc:'Cyan: '+d+',000 ly. Gold: 85,300 ly. Assumed distance: '+dist+' million ly.'})]);aladin.addCatalog(marker);
+  $('metrics').innerHTML='<span class="metric">100,000 ly ring: <b>'+fmt(angularDiameterDeg(d,dist)*60,3)+' arcmin</b></span><span class="metric">85,300 ly galaxy: <b>'+fmt(galaxyDeg*60,3)+' arcmin</b></span><span class="metric">Transparency: <b>'+op+'%</b></span>';
+  status('Reticle drawn at RA '+ra+'°, Dec '+dec+'°. Cyan diameter '+fmt(reticleDeg*60,3)+' arcmin; gold diameter '+fmt(galaxyDeg*60,3)+' arcmin.');
+ }catch(e){status('RETICLE ERROR: '+(e.message||e),true);console.error(e)}
+}
+function apply(){
+ if(!aladin){status('Aladin library has not initialized. Check internet access and reload; controls are still available.',true);return}
+ try{var ra=Number($('ra').value),dec=Number($('dec').value),fov=Number($('fov').value);
+ aladin.gotoRaDec(ra,dec);aladin.setFov(fov);drawReticle();
+ }catch(e){status('Could not apply view: '+(e.message||e),true)}
+}
+$('opacity').addEventListener('input',function(){$('opacityText').textContent=this.value+'%';drawReticle()});
+$('redraw').addEventListener('click',drawReticle);$('apply').addEventListener('click',apply);
+$('ra').addEventListener('change',drawReticle);$('dec').addEventListener('change',drawReticle);$('distance').addEventListener('change',drawReticle);$('diameter').addEventListener('change',drawReticle);
+window.addEventListener('error',function(e){status('PAGE ERROR: '+(e.message||'script error')+' (line '+(e.lineno||'?')+')',true)});
+window.addEventListener('unhandledrejection',function(e){status('INITIALIZATION ERROR: '+(e.reason&&e.reason.message||e.reason||'unknown'),true)});
+function boot(){
+ if(!window.A||typeof A.aladin!=='function'){status('Aladin library did not load. Controls are active, but the sky viewer needs access to aladin.cds.unistra.fr. Try the hosted preview while online.',true);return}
+ var ready=(A.init&&A.init.then)?A.init:Promise.resolve();
+ ready.then(function(){
+  aladin=A.aladin('#aladin',{survey:'P/DSS2/color',target:'223.49 3.544',fov:0.15,cooFrame:'ICRSd',projection:'SIN',showCooGrid:true,showReticle:true,showZoomControl:true,showFullscreenControl:true});
+  setTimeout(function(){apply()},900);
+  if(aladin.on){aladin.on('zoomChanged',function(){drawReticle()});aladin.on('positionChanged',function(){drawReticle()})}
+ }).catch(function(e){status('Aladin initialization failed: '+(e.message||e),true)});
+}
+var sc=document.createElement('script');sc.src='https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js';sc.async=true;
+sc.onload=boot;sc.onerror=function(){status('NETWORK ERROR: Aladin JavaScript failed to download. The page and controls loaded successfully, but the viewer cannot start offline.',true)};
+document.head.appendChild(sc);
+})();
+</script></body></html>
