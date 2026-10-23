@@ -1,4 +1,5 @@
 name: Correct NGC 4214 distance to Hubble publication value
+# Trigger run 2026-10-23: explicitly queue guarded NGC 4214 distance correction.
 on:
   push:
     branches: [release]
