@@ -22358,7 +22358,7 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 85.0,
       "science": {},
-      "redshift": 0.0058496
+      "redshift": 0.0058504261375674615
     },
     {
       "providerKey": "hubble",
@@ -59567,7 +59567,7 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 85.0,
       "science": {},
-      "redshift": 0.0058496
+      "redshift": 0.0058504261375674615
     },
     {
       "providerKey": "noirlab",
