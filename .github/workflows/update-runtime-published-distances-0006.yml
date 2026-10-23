@@ -2,9 +2,14 @@ name: Build AVM Runtime Catalog 0006 from 0004 using provider-published distance
 
 on:
   workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/update-runtime-published-distances-0006.yml"
 
 permissions:
   contents: write
+  actions: read
 
 concurrency:
   group: update-runtime-published-distances-0006
@@ -19,11 +24,19 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: release
+      - name: Download the completed source-distance audit CSV
+        uses: actions/download-artifact@v4
+        with:
+          name: runtime-distance-source-wording-audit
+          run-id: 40020620652
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          repository: ${{ github.repository }}
+          path: distance-source-wording-audit
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - name: Build catalog 0006 from catalog 0004
+      - name: Build catalog 0006 from catalog 0004 using saved audit
         run: python .github/scripts/update_runtime_published_distances_0006.py
       - name: Validate catalog and 400-record allocation
         run: |
