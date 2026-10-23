@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
-  "sourceCommit": "9a2c7d97329d38a6c68042b6b549f5071e14b114",
-  "build": "0014",
+  "sourceCommit": "fc69089ff5bc19207ab84b38ec6227d91c059b7a",
+  "build": "0015",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.9-BLD-0014.py",
+    "viewer/RC-V1.0.0.9-BLD-0015.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -165,5 +165,5 @@
     "f5b26bd7a317a57a76a4b68adc05b50ec3f0567e",
     "08e7c8cae3f90fc66b0e9a4925d70047c98854d1"
   ],
-  "validationProfile": "production-release-gate-1.0.0.9-build-0014-earth-distance-cache-identity"
+  "validationProfile": "production-release-gate-1.0.0.9-build-0015-earth-pointer-touch-gesture-stability"
 }
