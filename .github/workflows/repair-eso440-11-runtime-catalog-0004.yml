@@ -83,7 +83,7 @@ jobs:
               raise SystemExit(f"STOP: expected exactly one distance-map row; found {len(map_matches)}")
           map_matches[0][3] = "75"
           with DISTANCE_MAP.open("w", encoding="utf-8", newline="") as f:
-              csv.writer(f, lineterminator="\\n").writerows(map_rows)
+              csv.writer(f, lineterminator="\n").writerows(map_rows)
 
           with REVIEW.open("r", encoding="utf-8", newline="") as f:
               review_rows = list(csv.reader(f))
@@ -97,9 +97,9 @@ jobs:
               raise SystemExit(f"STOP: expected exactly one review-workbook row; found {len(review_matches)}")
           review_matches[0][4] = "75"
           with REVIEW.open("w", encoding="utf-8", newline="") as f:
-              csv.writer(f, lineterminator="\\n").writerows(review_rows)
+              csv.writer(f, lineterminator="\n").writerows(review_rows)
 
-          RUNTIME.write_text(json.dumps(runtime, indent=2, ensure_ascii=False) + "\\n", encoding="utf-8")
+          RUNTIME.write_text(json.dumps(runtime, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
           # Verify the saved artifacts, including uniqueness and exact requested values.
           runtime_check = json.loads(RUNTIME.read_text(encoding="utf-8"))
@@ -132,7 +132,7 @@ jobs:
               "distanceSource": DISTANCE_SOURCE,
               "updatedFiles": [str(RUNTIME), str(DISTANCE_MAP), str(REVIEW)]
           }
-          Path("eso440-11-runtime-repair-report.json").write_text(json.dumps(report, indent=2) + "\\n", encoding="utf-8")
+          Path("eso440-11-runtime-repair-report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
           print(json.dumps(report, indent=2))
           PY
 
