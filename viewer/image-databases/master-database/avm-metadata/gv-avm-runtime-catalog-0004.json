@@ -35967,7 +35967,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 9.621602,
+      "distanceMly": 13.0,
       "science": {},
       "redshift": 0.000665
     },
@@ -61130,7 +61130,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 9.6216,
+      "distanceMly": 13.0,
       "science": {},
       "redshift": 0.000665
     },
