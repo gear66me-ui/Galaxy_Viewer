@@ -6,6 +6,7 @@ on:
     branches: [release]
     paths:
       - ".github/workflows/update-runtime-published-distances-0006.yml"
+      - ".github/scripts/update_runtime_published_distances_0006.py"
 
 permissions:
   contents: write
