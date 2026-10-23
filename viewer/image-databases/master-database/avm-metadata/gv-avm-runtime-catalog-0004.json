@@ -392,12 +392,12 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 70.0,
       "science": {},
-      "redshift": 0.005611,
-      "distanceMethod": "published_object_distance_70_Mly",
-      "distanceSource": "ESO public object page supplied for NGC 1232: approximately 70 million light-years; https://www.eso.org/public/images/ngc1232b/",
-      "redshiftMethod": "SIMBAD_2004MNRAS_350_1195M_heliocentric_emission_redshift",
-      "redshiftSource": "SIMBAD NGC 1232, emission redshift z=0.005611 heliocentric, reference 2004MNRAS.350.1195M; https://simbad.u-strasbg.fr/simbad/sim-id?Ident=NGC+1232",
-      "redshiftFrame": "heliocentric"
+      "redshift": 0.004822,
+      "distanceMethod": "adopted_distance_70_Mly_cosmology_consistent_redshift",
+      "distanceSource": "Requested adopted distance: 70 million light-years; ESO NGC 1232 image page: https://www.eso.org/public/images/ngc1232b/",
+      "redshiftMethod": "flat_LCDM_redshift_derived_from_70_Mly_luminosity_distance",
+      "redshiftSource": "Cosmology-derived redshift corresponding approximately to 70 Mly luminosity distance using flat Lambda-CDM H0=67.6 km/s/Mpc and Omega_m=0.315; not a spectroscopic measurement.",
+      "redshiftFrame": "cosmological_model_derived"
     },
     {
       "providerKey": "chandra",
@@ -8003,9 +8003,14 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 47.2927,
+      "distanceMly": 70.0,
       "science": {},
-      "redshift": 0.003272
+      "redshift": 0.004822,
+      "distanceMethod": "adopted_distance_70_Mly_cosmology_consistent_redshift",
+      "distanceSource": "Requested adopted distance: 70 million light-years; ESO NGC 1232 image page: https://www.eso.org/public/images/ngc1232b/",
+      "redshiftMethod": "flat_LCDM_redshift_derived_from_70_Mly_luminosity_distance",
+      "redshiftSource": "Cosmology-derived redshift corresponding approximately to 70 Mly luminosity distance using flat Lambda-CDM H0=67.6 km/s/Mpc and Omega_m=0.315; not a spectroscopic measurement.",
+      "redshiftFrame": "cosmological_model_derived"
     },
     {
       "providerKey": "eso",
