@@ -8,6 +8,12 @@
 <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"></script>
 <style>
 :root{color-scheme:dark;font:16px system-ui,sans-serif;background:#07111f;color:#eaf3ff}*{box-sizing:border-box}body{margin:0 auto;padding:14px;max-width:1250px}h1{font-size:1.5rem;margin:0 0 6px}p{color:#b9cbe0;line-height:1.45}.panel{background:#101e30;border:1px solid #29425e;border-radius:14px;padding:13px;margin:12px 0}.controls{display:flex;gap:9px;flex-wrap:wrap;align-items:end}label{display:grid;gap:4px;font-size:.85rem;color:#c5d6e9}button,input,select{font:inherit;border-radius:8px;border:1px solid #47617e;background:#142942;color:#fff;padding:9px;max-width:100%}button{cursor:pointer}button:active{transform:scale(.98)}#aladin-lite-div{height:58vh;min-height:330px;max-height:650px;border-radius:10px;overflow:hidden;background:#000}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:9px}.stat{background:#091626;padding:11px;border-radius:10px;min-width:0}.value{font-size:1.08rem;font-weight:700;color:#7ee4c0;overflow-wrap:anywhere}.label{font-size:.8rem;color:#adc0d6}.note{font-size:.88rem}#status{overflow-wrap:anywhere}
+
+#viewer-wrap{position:relative}#ruler-overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;display:none;z-index:5}
+#ruler-overlay .axis{stroke:#77eaff;stroke-width:1.4;filter:drop-shadow(0 0 3px #00bfff)}
+#ruler-overlay .tick{stroke:#b8f7ff;stroke-width:1;filter:drop-shadow(0 0 2px #00bfff)}
+#ruler-overlay .major{stroke:#fff;stroke-width:1.6}
+#ruler-overlay text{fill:#d8fbff;font:12px system-ui,sans-serif;paint-order:stroke;stroke:#06101a;stroke-width:3px;stroke-linejoin:round}
 </style>
 </head>
 <body>
@@ -17,9 +23,14 @@
 <label>Target<select id="target"><option value="NGC 4214">NGC 4214</option><option value="M 31">M31 / Andromeda</option><option value="M 51">M51 / Whirlpool</option><option value="NGC 5775">NGC 5775</option></select></label>
 <label>Distance (million light-years)<input id="dist" type="number" value="10" min="0.001" step="any" style="width:155px"></label>
 <label>Galaxy diameter (thousand light-years)<input id="diam" type="number" value="30" min="0.001" step="any" style="width:180px"></label>
-<button id="go">Go to target</button><button id="zin">Zoom in ×2</button><button id="zout">Zoom out ×2</button><button id="reset">Reset FOV</button>
+<button id="go">Go to target</button><button id="zin">Zoom in ×2</button><button id="zout">Zoom out ×2</button><button id="reset">Reset FOV</button><label style="display:flex;align-items:center;gap:7px"><input id="ruler" type="checkbox" checked style="width:auto"> Center reticle + ruler</label>
 </div></div>
-<div id="aladin-lite-div" aria-label="Interactive sky viewer"></div>
+<div id="viewer-wrap"><div id="aladin-lite-div" aria-label="Interactive sky viewer"></div>
+<svg id="ruler-overlay" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
+<line class="axis" x1="500" y1="0" x2="500" y2="600"/><line class="axis" x1="0" y1="300" x2="1000" y2="300"/>
+<g id="ruler-ticks"></g><circle cx="500" cy="300" r="13" fill="none" stroke="#8df6ff" stroke-width="1.6"/><circle cx="500" cy="300" r="3" fill="#fff"/>
+<text x="512" y="286">CENTER</text><text x="18" y="286">−FOV/2</text><text x="982" y="286" text-anchor="end">+FOV/2</text>
+</svg></div>
 <div class="panel"><div class="stats">
 <div class="stat"><div class="label">FOV width</div><div class="value" id="fw">—</div></div>
 <div class="stat"><div class="label">FOV height</div><div class="value" id="fh">—</div></div>
@@ -28,12 +39,21 @@
 <div class="stat"><div class="label">Expected galaxy angular diameter</div><div class="value" id="ang">—</div></div>
 <div class="stat"><div class="label">FOV width / galaxy diameter</div><div class="value" id="ratio">—</div></div>
 </div><p id="status" class="note">Loading Aladin Lite…</p></div>
+<div class="panel"><b>Linear reference hypothesis</b><p class="note">Your proposed screen-width scale: if 180° is assigned 46.5 billion light-years, the proportional reference is <b id="linearScale">—</b> across the current FOV. This is a deliberately linear calibration hypothesis to compare against the celestial grid—not a standard cosmological distance conversion. The 46.5 billion light-year value is the approximate present-day radius of the observable universe, while 180° is an angular diameter.</p></div>
 <div class="panel"><b>Calibration notes</b><p class="note">For a small angle θ in radians, transverse span ≈ distance × θ. The tangent-plane width is 2D tan(θ/2); it becomes unsuitable near all-sky fields. The physical span shown here uses your entered distance as a reference assumption, not a distance inferred from zoom.</p></div>
 <script>
 (function(){
 const $=id=>document.getElementById(id);let aladin=null;let lastFov=0.5;
 function fmtDeg(d){if(!Number.isFinite(d)||d<=0)return '—';if(d>=1)return d.toFixed(5)+'°';if(d>=1/60)return (d*60).toFixed(4)+'′';return (d*3600).toFixed(3)+'″';}
 function fmtLength(kly){if(!Number.isFinite(kly))return '—';if(Math.abs(kly)>=1000000)return (kly/1000000).toFixed(4)+' billion ly';if(Math.abs(kly)>=1000)return (kly/1000).toFixed(4)+' million ly';return kly.toFixed(2)+' thousand ly';}
+function drawTicks(){
+ const g=$('ruler-ticks'); if(!g)return;g.innerHTML='';
+ for(let i=-10;i<=10;i++){if(i===0)continue;const x=500+i*22;const major=i%5===0;const len=major?13:6;
+ const ns='http://www.w3.org/2000/svg';const line=document.createElementNS(ns,'line');
+ line.setAttribute('x1',x);line.setAttribute('x2',x);line.setAttribute('y1',300-len);line.setAttribute('y2',300+len);line.setAttribute('class',major?'tick major':'tick');g.appendChild(line);
+ const v=document.createElementNS(ns,'line');v.setAttribute('x1',500-len);v.setAttribute('x2',500+len);v.setAttribute('y1',300-i*13);v.setAttribute('y2',300-i*13);v.setAttribute('class',major?'tick major':'tick');g.appendChild(v);
+ }
+}
 function update(){
  if(!aladin)return;
  try{
@@ -41,7 +61,7 @@ function update(){
  const D=Number($('dist').value)*1e6,L=Number($('diam').value)*1e3;
  const theta=w*Math.PI/180, span=D*theta, tangent=D*2*Math.tan(theta/2);
  const angularDeg=D>0&&L>0?(L/D)*180/Math.PI:NaN;
- $('fw').textContent=fmtDeg(w);$('fh').textContent=fmtDeg(h);
+ $('fw').textContent=fmtDeg(w);$('fh').textContent=fmtDeg(h);$('linearScale').textContent=(46.5*(w/180)).toFixed(4)+' billion ly (proportional hypothesis)';
  $('span').textContent=D>0?fmtLength(span/1000):'Enter a positive distance';
  $('tan').textContent=D>0&&w<170?fmtLength(tangent/1000):'Not meaningful at this FOV';
  $('ang').textContent=fmtDeg(angularDeg);
@@ -63,7 +83,7 @@ window.addEventListener('load',function(){
  $('zin').addEventListener('click',()=>{const f=aladin.getFov();setFov(Number(f[0])/2);});
  $('zout').addEventListener('click',()=>{const f=aladin.getFov();setFov(Number(f[0])*2);});
  $('reset').addEventListener('click',()=>setFov(0.5));
- $('dist').addEventListener('input',update);$('diam').addEventListener('input',update);
+ $('dist').addEventListener('input',update);$('diam').addEventListener('input',update);$('ruler').addEventListener('change',()=>{$('ruler-overlay').style.display=$('ruler').checked?'block':'none';});$('ruler-overlay').style.display='block';drawTicks();
  if(aladin.on){aladin.on('positionChanged',update);aladin.on('zoomChanged',update);}
  setInterval(update,700);setTimeout(update,1200);
  }catch(e){$('status').textContent='Aladin initialization failed: '+e.message;}
