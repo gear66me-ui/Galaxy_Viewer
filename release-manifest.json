@@ -1,5 +1,5 @@
 {
-  "release": "RC-V1.0.1.0",
+  "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
   "sourceCommit": "0a80ed17a0125224890caedd95a5b8064c0ac4ad",
   "build": "0010",
@@ -7,13 +7,13 @@
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.1.0-BLD-0010.py",
+    "viewer/RC-V1.0.0.9-BLD-0010.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
     "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js",
     "viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js",
-    "viewer/modules/random-galaxy/gv-random-travel-presentation-004.js",
+    "viewer/modules/random-galaxy/gv-random-travel-presentation-005.js",
     "viewer/modules/destination-presentation/gv-destination-presentation-0060.js",
     "viewer/modules/about/gv-about-presentation-0013.js",
     "viewer/modules/hud/gv-heads-up-display-0002.js",
@@ -163,7 +163,7 @@
     "ee3100fe9d98ce1252dbe26931a4556221d12d4e",
     "378083be0554066caacf362afd7a3e1153b3ec8d",
     "f5b26bd7a317a57a76a4b68adc05b50ec3f0567e",
-    "5412a8464257a4883ed579e23bd280c6b2791a6d"
+    "08e7c8cae3f90fc66b0e9a4925d70047c98854d1"
   ],
-  "validationProfile": "production-release-gate-1.0.1.0-build-0010-validated-travel-distance"
+  "validationProfile": "production-release-gate-1.0.0.9-build-0010-travel-distance-equation"
 }
