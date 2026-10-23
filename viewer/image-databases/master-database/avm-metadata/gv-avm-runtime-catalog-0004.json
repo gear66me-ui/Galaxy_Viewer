@@ -10443,9 +10443,14 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 49.2496,
+      "distanceMly": 70.0,
       "science": {},
-      "redshift": 0.003408
+      "redshift": 0.004822,
+      "distanceMethod": "adopted_distance_70_Mly_cosmology_consistent_redshift",
+      "distanceSource": "ESA/Hubble NGC 2525 release heic2018a: nearly 70 million light-years; https://esahubble.org/images/heic2018a/ (NASA lists 71 million light-years: https://science.nasa.gov/asset/hubble/ngc-2525/)",
+      "redshiftMethod": "flat_LCDM_redshift_derived_from_70_Mly_luminosity_distance",
+      "redshiftSource": "Cosmology-derived redshift corresponding approximately to 70 Mly luminosity distance using flat Lambda-CDM H0=67.6 km/s/Mpc and Omega_m=0.315; not a spectroscopic measurement.",
+      "redshiftFrame": "cosmological_model_derived"
     },
     {
       "providerKey": "hubble",
@@ -43634,9 +43639,14 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 49.2496,
+      "distanceMly": 70.0,
       "science": {},
-      "redshift": 0.003408
+      "redshift": 0.004822,
+      "distanceMethod": "adopted_distance_70_Mly_cosmology_consistent_redshift",
+      "distanceSource": "ESA/Hubble NGC 2525 release heic2018a: nearly 70 million light-years; https://esahubble.org/images/heic2018a/ (NASA lists 71 million light-years: https://science.nasa.gov/asset/hubble/ngc-2525/)",
+      "redshiftMethod": "flat_LCDM_redshift_derived_from_70_Mly_luminosity_distance",
+      "redshiftSource": "Cosmology-derived redshift corresponding approximately to 70 Mly luminosity distance using flat Lambda-CDM H0=67.6 km/s/Mpc and Omega_m=0.315; not a spectroscopic measurement.",
+      "redshiftFrame": "cosmological_model_derived"
     },
     {
       "providerKey": "hubble",

@@ -283,7 +283,7 @@ catalog_record_number,providerKey,archiveId,distanceMly
 282,eso,potw2250a,30.5935
 283,eso,potw2306a,39.9542
 284,eso,science-galaxies-evolution-banner1,120
-285,hubble,heic2018b,49.2496
+285,hubble,heic2018b,70
 286,hubble,potw1345a,70.12354
 287,hubble,heic0817a,225.0479
 288,hubble,potw2049a,36.8557
@@ -1211,7 +1211,7 @@ catalog_record_number,providerKey,archiveId,distanceMly
 1210,hubble,heic2007a,0.163
 1211,hubble,heic2011b,0.0038
 1212,hubble,heic2011c,0.003
-1213,hubble,heic2018a,49.2496
+1213,hubble,heic2018a,70
 1214,hubble,heic2102a,0.2
 1215,hubble,heic2105a,0.015
 1216,hubble,heic2304a,0.00096
