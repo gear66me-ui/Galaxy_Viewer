@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Aladin Scale Calibration — v0002</title>
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.css">
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"></script>
+<style>
+:root{color-scheme:dark;font:16px system-ui,sans-serif;background:#07111f;color:#eaf3ff}*{box-sizing:border-box}body{margin:0 auto;padding:12px;max-width:1450px}h1{font-size:1.4rem;margin:0 0 7px}h2{font-size:1.05rem;margin:0 0 9px}p{color:#b9cbe0;line-height:1.4}.panel{background:#101e30;border:1px solid #29425e;border-radius:13px;padding:12px;margin:10px 0}.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:end}label{display:grid;gap:4px;font-size:.82rem;color:#c5d6e9}button,input,select{font:inherit;border-radius:8px;border:1px solid #47617e;background:#142942;color:#fff;padding:8px;max-width:100%}button{cursor:pointer}button:disabled{opacity:.5;cursor:not-allowed}#aladin-lite-div{height:54vh;min-height:320px;max-height:720px;border-radius:9px;overflow:hidden;background:#000}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:8px}.stat{background:#091626;padding:10px;border-radius:9px;min-width:0}.value{font-size:1rem;font-weight:700;color:#7ee4c0;overflow-wrap:anywhere}.label{font-size:.78rem;color:#adc0d6}.note{font-size:.86rem}#status{overflow-wrap:anywhere}.tablewrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:.8rem}th,td{text-align:right;border-bottom:1px solid #29425e;padding:7px;white-space:nowrap}th{color:#c5d6e9}td:first-child,th:first-child{text-align:left}.btnrow{display:flex;gap:8px;flex-wrap:wrap}.primary{background:#17634f;border-color:#299b7d}.danger{background:#51252c;border-color:#84434b}.small{font-size:.78rem;color:#adc0d6}#bottomFov{font-weight:700;color:#7ee4c0}
+</style>
+</head>
+<body>
+<h1>🔭 Aladin Scale Calibration Lab — v0002</h1>
+<p>Restored calibration workflow: keep Aladin's grid and the full measurement readouts, compare the full screen width and a centered 250-pixel span, save each setting to a temporary browser dataset, step through the FOV list, then download the complete JSON/CSV dataset.</p>
+<div class="panel">
+ <div class="controls">
+  <label>FOV calibration step (degrees)
+   <select id="fovSelect">
+    <option value="180">180°</option><option value="90">90°</option><option value="45">45°</option><option value="20">20°</option><option value="10">10°</option><option value="5">5°</option><option value="1">1°</option><option value="0.1">0.1°</option><option value="0.01">0.01°</option><option value="0.001">0.001°</option>
+   </select>
+  </label>
+  <label>RA (ICRSd, degrees)<input id="ra" type="number" value="0" step="any" style="width:145px"></label>
+  <label>Dec (ICRSd, degrees)<input id="dec" type="number" value="0" min="-90" max="90" step="any" style="width:145px"></label>
+  <button id="applyBtn" disabled>Apply setting</button>
+  <button id="measureBtn" disabled>Measure current view</button>
+  <button id="saveBtn" class="primary" disabled>Save this setting</button>
+  <button id="nextBtn" disabled>Next FOV</button>
+ </div>
+ <p class="note">Default center is RA 0°, Dec 0° in ICRSd; default FOV is 180°. Grid lines are enabled. All FOV values are displayed in degrees in the readout below the viewer.</p>
+</div>
+<div id="aladin-lite-div" aria-label="Interactive Aladin Lite sky viewer"></div>
+<div class="panel">
+ <h2>Live scale measurements</h2>
+ <div class="stats">
+  <div class="stat"><div class="label">Aladin-reported FOV X × Y</div><div class="value" id="fovxy">—</div></div>
+  <div class="stat"><div class="label">Aladin viewer dimensions</div><div class="value" id="pixels">—</div></div>
+  <div class="stat"><div class="label">Measured full-width sky angle</div><div class="value" id="fullAngle">—</div></div>
+  <div class="stat"><div class="label">Full width — pixels per degree</div><div class="value" id="fullPpd">—</div></div>
+  <div class="stat"><div class="label">Full width — degrees per pixel</div><div class="value" id="fullDpp">—</div></div>
+  <div class="stat"><div class="label">250-pixel measured sky angle</div><div class="value" id="a250">—</div></div>
+  <div class="stat"><div class="label">250-pixel pixels per degree</div><div class="value" id="p250Ppd">—</div></div>
+  <div class="stat"><div class="label">250-pixel degrees per pixel</div><div class="value" id="p250Dpp">—</div></div>
+  <div class="stat"><div class="label">Aladin local center scale</div><div class="value" id="local">—</div></div>
+  <div class="stat"><div class="label">Your sine model — full measured width</div><div class="value" id="sineFull">—</div></div>
+  <div class="stat"><div class="label">Your sine model — 250 px span</div><div class="value" id="sine250">—</div></div>
+  <div class="stat"><div class="label">Linear model — full measured width</div><div class="value" id="linearFull">—</div></div>
+  <div class="stat"><div class="label">Linear model — 250 px span</div><div class="value" id="linear250">—</div></div>
+ </div>
+ <p id="bottomFov" class="note">FOV X: — degrees · FOV Y: — degrees</p>
+ <p id="status" class="note">Initializing Aladin Lite…</p>
+</div>
+<div class="panel">
+ <h2>Temporary dataset and final downloads</h2>
+ <p class="note">“Save this setting” stores the current measurements in this browser's temporary local dataset. It survives page reloads in the same browser unless site data is cleared. “Next FOV” advances to the next entry in the dropdown, applies it, and measures it; it does not silently save—you press Save for each setting you want in the final dataset.</p>
+ <div class="btnrow">
+  <button id="downloadJson" disabled>Download final JSON database</button>
+  <button id="downloadCsv" disabled>Download final CSV database</button>
+  <button id="clearBtn" class="danger" disabled>Clear temporary dataset</button>
+ </div>
+ <p class="small" id="datasetStatus">Saved settings: 0</p>
+ <div class="tablewrap"><table><thead><tr><th>#</th><th>Saved at</th><th>Requested FOV°</th><th>Aladin FOV X°</th><th>View width px</th><th>Measured full angle°</th><th>Full px/°</th><th>250px angle°</th><th>250px px/°</th><th>Sine full Gly</th><th>Sine 250px Gly</th></tr></thead><tbody id="rows"><tr><td colspan="11" style="text-align:left">No saved settings yet.</td></tr></tbody></table></div>
+</div>
+<div class="panel">
+ <h2>Definitions</h2>
+ <p class="note">Full-width angle and centered 250-pixel angle are measured from sky coordinates at the pixel endpoints using Aladin's angular-distance API. Pixel-per-degree and degree-per-pixel values are calculated independently for both spans. The custom cosmic scale is S(θ) = 46.5 × sin(θ/2), with θ converted to radians; the linear comparison is 46.5 × θ/180. These are comparison models, not validated cosmological distance laws.</p>
+</div>
+<script>
+(function(){
+ const $=id=>document.getElementById(id);
+ const STORAGE_KEY='gv-aladin-scale-calibration-v0002';
+ const fovSteps=[180,90,45,20,10,5,1,0.1,0.01,0.001];
+ let aladin=null, live=null, saved=[], busy=false;
+ const fmt=(v,n=8)=>Number.isFinite(v)?Number(v).toFixed(n):'—';
+ const angleText=v=>!Number.isFinite(v)?'—':(v>=1?fmt(v,8)+'°':v>=1/60?fmt(v*60,6)+'′':fmt(v*3600,5)+'″');
+ const glyText=v=>!Number.isFinite(v)?'—':v>=1?fmt(v,8)+' billion ly':v>=0.001?fmt(v*1000,6)+' million ly':fmt(v*1e6,3)+' thousand ly';
+ const sine=d=>46.5*Math.sin(d*Math.PI/360);
+ const linear=d=>46.5*d/180;
+ function status(s){$('status').textContent=s;}
+ function persist(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(saved));}catch(e){status('Saved in page memory only; browser storage unavailable: '+e.message);}}
+ function loadSaved(){try{const x=JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]');if(Array.isArray(x))saved=x;}catch(e){saved=[];}}
+ function download(name,content,type){const blob=new Blob([content],{type}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1200);}
+ function getMeasure(){
+  if(!aladin) return null;
+  try{
+   const sz=aladin.getSize(),f=aladin.getFov(),w=Number(sz[0]),h=Number(sz[1]),fx=Number(f[0]),fy=Number(f[1]);
+   if(!(w>1&&h>1&&fx>0&&fy>0))throw new Error('Aladin has not returned valid dimensions/FOV.');
+   const y=(h-1)/2,xCenter=(w-1)/2;
+   const fullAngle=aladin.angularDist(0,y,w-1,y);
+   const n250=Math.min(250,w-1),xA=xCenter-n250/2,xB=xCenter+n250/2;
+   const angle250=aladin.angularDist(xA,y,xB,y);
+   const localAngle=aladin.angularDist(Math.max(0,xCenter-0.5),y,Math.min(w-1,xCenter+0.5),y);
+   const ra=Number($('ra').value),dec=Number($('dec').value),req=Number($('fovSelect').value);
+   const pos=typeof aladin.getRaDec==='function'?aladin.getRaDec():[ra,dec];
+   return {
+    timestamp:new Date().toISOString(),requestedFovDegrees:req,raIcrsdDegrees:ra,decIcrsdDegrees:dec,
+    actualCenterRaDegrees:Number(pos[0]),actualCenterDecDegrees:Number(pos[1]),coordinateFrame:'ICRSd',
+    aladinFovXDegrees:fx,aladinFovYDegrees:fy,viewWidthPixels:w,viewHeightPixels:h,
+    measuredFullWidthSkyAngleDegrees:fullAngle,fullWidthPixelsPerDegree:(w-1)/fullAngle,fullWidthDegreesPerPixel:fullAngle/(w-1),
+    measured250PixelSkyAngleDegrees:angle250,measured250PixelSpanPixels:n250,pixelsPerDegreeFor250PixelSpan:n250/angle250,degreesPerPixelFor250PixelSpan:angle250/n250,
+    localCenterArcsecondsPerPixel:localAngle*3600,
+    sineScaleFullWidthBillionLightYears:sine(fullAngle),sineScale250PixelSpanBillionLightYears:sine(angle250),
+    linearScaleFullWidthBillionLightYears:linear(fullAngle),linearScale250PixelSpanBillionLightYears:linear(angle250),
+    sineScaleFromAladinFovXBillionLightYears:sine(fx),linearScaleFromAladinFovXBillionLightYears:linear(fx),
+    requestedFovSineModelBillionLightYears:sine(req),requestedFovLinearModelBillionLightYears:linear(req)
+   };
+  }catch(e){status('Measurement error: '+e.message);return null;}
+ }
+ function show(m){
+  if(!m)return;live=m;
+  $('fovxy').textContent=fmt(m.aladinFovXDegrees,9)+'° × '+fmt(m.aladinFovYDegrees,9)+'°';
+  $('pixels').textContent=m.viewWidthPixels+' × '+m.viewHeightPixels+' px';
+  $('fullAngle').textContent=fmt(m.measuredFullWidthSkyAngleDegrees,10)+'° ('+angleText(m.measuredFullWidthSkyAngleDegrees)+')';
+  $('fullPpd').textContent=fmt(m.fullWidthPixelsPerDegree,8)+' px/°';
+  $('fullDpp').textContent=fmt(m.fullWidthDegreesPerPixel,12)+' °/px';
+  $('a250').textContent=fmt(m.measured250PixelSkyAngleDegrees,10)+'° ('+angleText(m.measured250PixelSkyAngleDegrees)+')';
+  $('p250Ppd').textContent=fmt(m.pixelsPerDegreeFor250PixelSpan,8)+' px/°';
+  $('p250Dpp').textContent=fmt(m.degreesPerPixelFor250PixelSpan,12)+' °/px';
+  $('local').textContent=fmt(m.localCenterArcsecondsPerPixel,8)+' arcsec/px';
+  $('sineFull').textContent=glyText(m.sineScaleFullWidthBillionLightYears);
+  $('sine250').textContent=glyText(m.sineScale250PixelSpanBillionLightYears);
+  $('linearFull').textContent=glyText(m.linearScaleFullWidthBillionLightYears);
+  $('linear250').textContent=glyText(m.linearScale250PixelSpanBillionLightYears);
+  $('bottomFov').textContent='FOV X: '+fmt(m.aladinFovXDegrees,10)+' degrees · FOV Y: '+fmt(m.aladinFovYDegrees,10)+' degrees · Center ICRSd: '+fmt(m.actualCenterRaDegrees,8)+'°, '+fmt(m.actualCenterDecDegrees,8)+'°';
+ }
+ function render(){
+  $('datasetStatus').textContent='Saved settings: '+saved.length+' · temporary browser dataset key: '+STORAGE_KEY;
+  $('downloadJson').disabled=saved.length===0;$('downloadCsv').disabled=saved.length===0;$('clearBtn').disabled=saved.length===0;
+  const body=$('rows');body.innerHTML='';
+  if(!saved.length){body.innerHTML='<tr><td colspan="11" style="text-align:left">No saved settings yet.</td></tr>';return;}
+  saved.forEach((m,i)=>{const tr=document.createElement('tr');const vals=[i+1,m.timestamp,fmt(m.requestedFovDegrees,6),fmt(m.aladinFovXDegrees,9),m.viewWidthPixels,fmt(m.measuredFullWidthSkyAngleDegrees,10),fmt(m.fullWidthPixelsPerDegree,7),fmt(m.measured250PixelSkyAngleDegrees,10),fmt(m.pixelsPerDegreeFor250PixelSpan,7),fmt(m.sineScaleFullWidthBillionLightYears,10),fmt(m.sineScale250PixelSpanBillionLightYears,10)];vals.forEach(v=>{const td=document.createElement('td');td.textContent=v;tr.appendChild(td);});body.appendChild(tr);});
+ }
+ function measure(){const m=getMeasure();if(m){show(m);status('Live measurement refreshed. Press “Save this setting” to add it to the temporary dataset.');}}
+ function apply(){
+  if(!aladin||busy)return;busy=true;$('applyBtn').disabled=true;
+  const req=Number($('fovSelect').value),ra=Number($('ra').value),dec=Number($('dec').value);
+  try{
+   if(!Number.isFinite(ra)||!Number.isFinite(dec)||dec < -90||dec > 90)throw new Error('RA must be numeric and Dec must be between −90° and +90°.');
+   if(typeof aladin.gotoRaDec==='function')aladin.gotoRaDec(ra,dec);
+   aladin.setFoV(req);
+   status('Applying ICRSd center and '+req+'° FOV…');
+   setTimeout(()=>{measure();busy=false;$('applyBtn').disabled=false;},1200);
+  }catch(e){busy=false;$('applyBtn').disabled=false;status('Could not apply setting: '+e.message);}
+ }
+ function save(){
+  const m=getMeasure();if(!m){status('Nothing saved: measurement unavailable.');return;}
+  show(m);m.savedAt=new Date().toISOString();saved.push(m);persist();render();
+  status('Saved setting '+saved.length+' to the temporary dataset. Continue with Next FOV or choose another angle.');
+ }
+ function next(){
+  const cur=Number($('fovSelect').value),idx=fovSteps.indexOf(cur),nextVal=fovSteps[(idx+1)%fovSteps.length];
+  $('fovSelect').value=String(nextVal);apply();
+ }
+ function exportJson(){
+  const payload={title:'Galaxy Viewer Aladin Scale Calibration Database',version:'v0002',exportedAt:new Date().toISOString(),aladinApi:'https://cds-astro.github.io/aladin-lite/Aladin.html',defaults:{coordinateFrame:'ICRSd',raDegrees:0,decDegrees:0,fovDegrees:180},definitions:{fullWidth:'Aladin angular distance between left and right midpoint pixels',span250:'Aladin angular distance across a centered 250-pixel span (or the maximum available width if viewport is narrower)',sineModel:'46.5 * sin(angleDegrees * PI / 360)',linearModel:'46.5 * angleDegrees / 180',warning:'Cosmic scale formulas are calibration hypotheses, not validated cosmological distance laws.'},records:saved};
+  download('gv-aladin-scale-calibration-database-v0002.json',JSON.stringify(payload,null,2),'application/json');
+ }
+ function exportCsv(){
+  if(!saved.length)return;const keys=Object.keys(saved[0]);const q=v=>{const s=v===undefined||v===null?'':String(v);return '"'+s.replace(/"/g,'""')+'"';};
+  download('gv-aladin-scale-calibration-database-v0002.csv',[keys.map(q).join(','),...saved.map(r=>keys.map(k=>q(r[k])).join(','))].join('\r\n'),'text/csv;charset=utf-8');
+ }
+ window.addEventListener('load',()=>{
+  loadSaved();render();
+  try{
+   if(!window.A||!A.aladin)throw new Error('Aladin Lite failed to load. Check internet access.');
+   aladin=A.aladin('#aladin-lite-div',{survey:'P/DSS2/color',fov:180,target:'0 0',cooFrame:'ICRSd',showCooGrid:true,showCooGridControl:true,showReticle:true,showZoomControl:true,showFullscreenControl:true});
+   $('applyBtn').disabled=false;$('measureBtn').disabled=false;$('saveBtn').disabled=false;$('nextBtn').disabled=false;
+   $('applyBtn').addEventListener('click',apply);$('measureBtn').addEventListener('click',measure);$('saveBtn').addEventListener('click',save);$('nextBtn').addEventListener('click',next);
+   $('downloadJson').addEventListener('click',exportJson);$('downloadCsv').addEventListener('click',exportCsv);
+   $('clearBtn').addEventListener('click',()=>{if(confirm('Clear all saved calibration settings from this browser?')){saved=[];persist();render();status('Temporary dataset cleared.');}});
+   if(aladin.on){aladin.on('zoomChanged',()=>{const m=getMeasure();if(m)show(m);});aladin.on('positionChanged',()=>{const m=getMeasure();if(m)show(m);});}
+   setTimeout(()=>{const m=getMeasure();if(m){show(m);status('Ready. Default center 0°, 0° ICRSd and 180° FOV. Apply a setting, then Save this setting.');}},1800);
+  }catch(e){status('Aladin initialization failed: '+e.message);}
+ });
+})();
+</script>
+</body>
+</html>
