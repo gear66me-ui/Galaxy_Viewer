@@ -1,4 +1,5 @@
 name: Repair NGC 5775 distance and FLRW redshift in AVM runtime 0004
+# Trigger refresh: adopt 85.0 Mly and matching flat-LCDM redshift for the two guarded catalog records.
 on:
   push:
     branches: [release]
