@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Aladin Scale Calibration — v0002</title>
+<link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.css">
+<script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"></script>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#07111f;color:#f2f7ff}
+*{box-sizing:border-box}body{margin:0 auto;padding:14px;max-width:1100px}h1{font-size:1.4rem;margin:0 0 8px}
+p{color:#c5d4e6;line-height:1.45}.panel{background:#101e30;border:1px solid #304965;border-radius:14px;padding:14px;margin:12px 0}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}label{display:flex;gap:8px;align-items:center}
+input,button{font:inherit;border-radius:9px;border:1px solid #536d8b;background:#172d46;color:#fff;padding:10px}
+button{cursor:pointer}#aladin-lite-div{height:min(70vh,760px);min-height:420px;border-radius:12px;overflow:hidden;background:#000}
+#rulerBox{background:#050a12;border:1px solid #31465f;border-radius:12px;padding:18px 10px;text-align:center;margin-top:12px}
+#ruler{height:12px;width:300px;max-width:78%;margin:0 auto 10px;position:relative;border-top:4px solid #ffd76a}
+#ruler:before,#ruler:after{content:"";position:absolute;top:-8px;height:14px;border-left:3px solid #ffd76a}
+#ruler:before{left:0}#ruler:after{right:0}
+#rulerText{font-size:clamp(20px,4.5vw,28px);font-weight:800;line-height:1.25;color:#ffe18b;overflow-wrap:anywhere}
+#equation{font-size:16px;color:#d3e2f5;margin-top:9px;overflow-wrap:anywhere}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}.stat{background:#091626;padding:12px;border-radius:10px}
+.label{font-size:.95rem;color:#b7c9df}.value{font-size:clamp(19px,3vw,25px);font-weight:800;color:#7ee4c0;overflow-wrap:anywhere}
+.note{font-size:.95rem}
+</style></head>
+<body>
+<h1>🔭 Aladin Scale Calibration — v0002</h1>
+<p>All-sky calibration test. Starts at ICRS RA 0°, Dec 0° with a 180° field of view. The cosmic-span number is the chord subtended on a sphere of radius 46.5 billion light-years; it is a model comparison, not a galaxy's physical diameter.</p>
+<div class="panel controls">
+<label>Ruler length (pixels) <input id="rulerPx" type="number" min="20" max="1200" step="10" value="300" style="width:110px"></label>
+<label>Cosmic radius (billion ly) <input id="radius" type="number" min="1" max="100" step=".1" value="46.5" style="width:110px"></label>
+<button id="reset">Reset to RA 0°, Dec 0°, FOV 180°</button>
+</div>
+<div id="aladin-lite-div"></div>
+<div id="rulerBox"><div id="ruler"></div><div id="rulerText">Calculating ruler…</div><div id="equation">Chord equation: L = 2R sin(θ/2)</div></div>
+<div class="panel"><div class="stats">
+<div class="stat"><div class="label">FOV width</div><div class="value" id="fw">—</div></div>
+<div class="stat"><div class="label">FOV height</div><div class="value" id="fh">—</div></div>
+<div class="stat"><div class="label">Measured ruler angle</div><div class="value" id="angle">—</div></div>
+<div class="stat"><div class="label">Cosmic chord span</div><div class="value" id="chord">—</div></div>
+</div><p class="note" id="status">Loading Aladin Lite…</p></div>
+<div class="panel"><b>Calculation details</b><p class="note">For angle θ in degrees and cosmic radius R = 46.5 billion light-years, the model chord is <b>L = 2 × R × sin(θ × π / 360)</b>. The angle is measured from the ruler endpoints using Aladin's pixel-to-sky conversion when available. If that API method is unavailable, the display explicitly marks its FOV-based estimate as approximate. At 180°, the maximum chord is 93 billion light-years.</p></div>
+<script>
+let aladin=null;
+const $=id=>document.getElementById(id);
+const deg=v=>Number(v).toFixed(5)+'°';
+function rulerWidth(){return Math.min(Math.max(Number($('rulerPx').value)||300,20),1200)}
+function update(){
+ if(!aladin)return;
+ const f=aladin.getFov(), fovX=Number(f[0]),fovY=Number(f[1]);
+ const rect=$('aladin-lite-div').getBoundingClientRect();
+ const width=rulerWidth(), centerX=rect.width/2, centerY=rect.height/2;
+ const x1=centerX-width/2,x2=centerX+width/2;
+ let theta=NaN, method='FOV-based estimate (approximate)';
+ try{
+   if(typeof aladin.pix2world==='function' && typeof aladin.angularDist==='function'){
+     const a=aladin.pix2world(x1,centerY),b=aladin.pix2world(x2,centerY);
+     if(a&&b&&a.length>=2&&b.length>=2&&a.every(Number.isFinite)&&b.every(Number.isFinite)){
+       theta=Number(aladin.angularDist(a[0],a[1],b[0],b[1]));
+       if(Number.isFinite(theta))method='Measured between ruler endpoints on the sky';
+     }
+   }
+ }catch(e){}
+ if(!Number.isFinite(theta)){theta=fovX*(width/rect.width);method='FOV-based estimate (approximate)';}
+ const R=Number($('radius').value), chord=2*R*Math.sin(theta*Math.PI/360);
+ $('ruler').style.width=Math.min(width,rect.width*.78)+'px';
+ $('fw').textContent=deg(fovX);$('fh').textContent=deg(fovY);
+ $('angle').textContent=Number.isFinite(theta)?deg(theta):'—';
+ $('chord').textContent=Number.isFinite(chord)?chord.toFixed(5)+' billion ly':'—';
+ $('rulerText').textContent=Number.isFinite(theta)?rulerWidth()+' px ≈ '+deg(theta)+' — '+chord.toFixed(5)+' billion ly':'Could not calculate ruler';
+ $('equation').textContent='L = 2 × '+R.toFixed(2)+' × sin('+theta.toFixed(5)+'° / 2) = '+chord.toFixed(5)+' billion ly';
+ $('status').textContent=method+'. Center: ICRS RA 0°, Dec 0° requested; actual FOV reported by Aladin above.';
+}
+function reset(){if(!aladin)return;aladin.gotoRaDec(0,0);aladin.setFov(180);setTimeout(update,700)}
+window.addEventListener('load',()=>{
+ try{
+  aladin=A.aladin('#aladin-lite-div',{survey:'P/DSS2/color',fov:180,target:'0 0',showReticle:true,showZoomControl:true,showFullscreenControl:true});
+  $('status').textContent='Viewer initialized; setting requested center and 180° FOV…';
+  setTimeout(()=>{try{aladin.gotoRaDec(0,0);aladin.setFov(180)}catch(e){}update()},900);
+  aladin.on('positionChanged',update);aladin.on('zoomChanged',update);
+  $('reset').onclick=reset;$('rulerPx').oninput=update;$('radius').oninput=update;
+  setInterval(update,700);window.addEventListener('resize',update);
+ }catch(e){$('status').textContent='Aladin failed to initialize: '+e.message+'. Check internet connection.';}
+});
+</script></body></html>
