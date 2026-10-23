@@ -192,7 +192,7 @@ jobs:
           assert 'gvNavigationTravelActive=false;' in rc, 'Distance display lifecycle must reopen on arrival and reset on navigation failure'
           assert "aladin.on('positionChanged'" in rc and "aladin.on('zoomChanged'" in rc, 'Earth-distance banner must refresh on pan and zoom events'
           assert 'if(window.GV_NAV_BACKGROUND_SUSPENDED||gvEarthDistanceSyncBusy)return;' not in rc, 'Earth-distance refresh must not be blocked by background suspension'
-          if active_build in ('0007', '0008', '0009', '0010', '0011', '0012'):
+          if active_build in ('0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014'):
               assert 'gvShowEarthDistance(nearest,true);' in rc and 'alreadyResolvedRuntimeRecord?destination:await gvRuntimeAvmRecord(destination)' in rc, f'Build {active_build} must display the exact live-center runtime record'
           else:
               assert 'gvShowEarthDistance(nearest);' in rc and 'const record=await gvRuntimeAvmRecord(destination);' in rc, 'Live-center matching must resolve the runtime catalog 0004 record'
@@ -230,7 +230,7 @@ jobs:
           assert all(token in module for token in ("const pointerPair=", "const clampTransform=", "const applyTransform=", "const resetTransform=")), 'HD pan/pinch handlers call missing transform helpers'
           assert '2*distanceMly*1_000_000*Math.sin(theta/2)' in module, 'HD physical scale must use spherical chord equation'
           assert 'const maxBarPx=Math.max(1,Math.min(144,viewport.clientWidth-160))' in module and 'fraction<.55' not in module, 'HD ruler must remain in the free central gap and must not disappear due to full-image fraction checks'
-          if active_build in ('0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012'):
+          if active_build in ('0005', '0006', '0007', '0008', '0009', '0010', '0011', '0012', '0013', '0014'):
               assert 'const angle=2*Math.asin(Math.sqrt(q)),ly=2*distanceMly*1e6*Math.sin(angle/2);' in rc, f'Build {active_build} live physical scale must use spherical chord distance from actual Aladin endpoint separation'
           elif active_build == '0004':
               assert 'const theta=Math.min(180,fovX)*Math.PI/180;' in rc and 'const lyPerPx=2*(distanceMly*1e6)*Math.sin(theta/2)/width;' in rc, 'Build 0004 live physical scale must match its released FOV-based implementation'
@@ -240,7 +240,7 @@ jobs:
               assert 'GV0007 EARTH DISTANCE NO CATALOG MATCH — CLEARED STALE DISTANCE' in rc and 'RETAINED LAST VALID DISTANCE' not in rc, f'Build {active_build} must clear stale Earth distance when the current field has no catalog match'
           if active_build == '0007':
               assert 'gvShowEarthDistance(nearest,true);' in rc and 'alreadyResolvedRuntimeRecord?destination:await gvRuntimeAvmRecord(destination)' in rc, 'Build 0007 must render the exact matched runtime record without ambiguous second lookup'
-          if active_build in ('0009', '0010', '0011', '0012'):
+          if active_build in ('0009', '0010', '0011', '0012', '0013', '0014'):
               assert ('gvShowEarthDistance(presentationAvmRecord,true);' in rc if active_build in ('0009','0010') else 'gvShowEarthDistance(presentationDestination,true);' in rc), 'Arrival Earth distance must use the exact validated destination runtime record'
               assert 'gvShowEarthDistance(presentationDestination);' not in rc, 'Arrival Earth distance must not perform a second ambiguous AVM lookup'
               if active_build == '0012':
