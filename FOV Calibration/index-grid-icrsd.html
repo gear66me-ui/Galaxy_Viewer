@@ -1,56 +1,49 @@
 <!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>FOV Calibration — ICRS Grid</title>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FOV Calibration — ICRS</title>
 <link rel="stylesheet" href="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.css">
 <script src="https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"></script>
 <style>
-:root{color-scheme:dark;font:16px system-ui,sans-serif;background:#07111f;color:#eaf3ff}*{box-sizing:border-box}body{margin:0 auto;padding:12px;max-width:1250px}h1{font-size:1.4rem;margin:0 0 5px}p{color:#b9cbe0;line-height:1.4}.panel{background:#101e30;border:1px solid #29425e;border-radius:12px;padding:12px;margin:10px 0}.controls{display:flex;gap:8px;flex-wrap:wrap;align-items:end}label{display:grid;gap:4px;font-size:.84rem;color:#c5d6e9}button,input,select{font:inherit;border-radius:8px;border:1px solid #47617e;background:#142942;color:#fff;padding:8px;max-width:100%}button{cursor:pointer}#viewer-wrap{position:relative}#aladin-lite-div{height:62vh;min-height:360px;max-height:720px;border-radius:10px;overflow:hidden;background:#000}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px}.stat{background:#091626;padding:10px;border-radius:9px;min-width:0}.value{font-size:1.05rem;font-weight:700;color:#7ee4c0;overflow-wrap:anywhere}.label{font-size:.78rem;color:#adc0d6}#overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}#overlay .axis{stroke:#7deaff;stroke-width:1.3;filter:drop-shadow(0 0 3px #00bfff)}#overlay .tick{stroke:#c2f8ff;stroke-width:1;filter:drop-shadow(0 0 2px #00bfff)}#overlay .major{stroke:#fff;stroke-width:1.6}#overlay .scale-line{stroke:#ffd166;stroke-width:3;filter:drop-shadow(0 0 3px #ffb000)}#overlay .scale-cap{stroke:#ffd166;stroke-width:2}#overlay .scale-label{fill:#ffe7a6;font:bold 13px system-ui,sans-serif}#overlay text{fill:#e1fbff;font:12px system-ui,sans-serif;paint-order:stroke;stroke:#06101a;stroke-width:3px;stroke-linejoin:round}.note{font-size:.88rem}
-</style>
-</head>
-<body>
-<h1>🔭 FOV Calibration — ICRS Coordinate Grid</h1>
-<p>New test page: Aladin coordinate grid enabled by default, ICRS coordinate frame, plus a fixed center reticle and graduated crosshair for comparing the grid against screen width.</p>
+:root{color-scheme:dark;font:16px system-ui,sans-serif;background:#07111f;color:#eff6ff}*{box-sizing:border-box}body{margin:0 auto;padding:12px;max-width:1100px}h1{font-size:1.35rem;margin:0 0 8px}.panel{background:#101e30;border:1px solid #29425e;border-radius:12px;padding:12px;margin:10px 0}.controls{display:flex;gap:9px;flex-wrap:wrap;align-items:end}label{display:grid;gap:4px;font-size:.9rem;color:#c5d6e9}button,input,select{font:inherit;border-radius:8px;border:1px solid #47617e;background:#142942;color:#fff;padding:9px}button{cursor:pointer}#viewer-wrap{position:relative}#aladin-lite-div{height:62vh;min-height:390px;max-height:760px;border-radius:10px;overflow:hidden;background:#000}#overlay{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5}#overlay .axis{stroke:#7deaff;stroke-width:1.3}#overlay .tick{stroke:#c2f8ff;stroke-width:1}#overlay .major{stroke:#fff;stroke-width:1.7}#overlay .ruler{stroke:#ffd166;stroke-width:3;filter:drop-shadow(0 0 4px #ffb000)}#overlay .cap{stroke:#ffd166;stroke-width:2}#overlay text{paint-order:stroke;stroke:#06101a;stroke-width:4px;stroke-linejoin:round}#rulerLabel{fill:#ffe7a6;font:700 25px system-ui,sans-serif}#rulerSub{fill:#fff;font:700 20px system-ui,sans-serif}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:9px}.stat{background:#091626;padding:12px;border-radius:9px}.k{font-size:.85rem;color:#b7c9df}.v{font-size:1.2rem;font-weight:750;color:#7ee4c0;overflow-wrap:anywhere}.note{font-size:.9rem;line-height:1.45;color:#c1d0e2}
+</style></head><body>
+<h1>🔭 FOV Calibration — ICRS Grid + Corrected Distance Ruler</h1>
 <div class="panel"><div class="controls">
-<label>Target<select id="target"><option value="NGC 4214">NGC 4214</option><option value="M 31">M31 / Andromeda</option><option value="M 51">M51 / Whirlpool</option><option value="NGC 5775">NGC 5775</option></select></label>
-<label>Reference distance (million ly)<input id="dist" type="number" value="10" min="0.001" step="any" style="width:150px"></label>
-<label>Reference diameter (thousand ly)<input id="diam" type="number" value="30" min="0.001" step="any" style="width:160px"></label>
+<label>Target<select id="target"><option>NGC 4214</option><option>M 31</option><option>M 51</option><option>NGC 5775</option></select></label>
 <button id="go">Go to target</button><button id="zin">Zoom in ×2</button><button id="zout">Zoom out ×2</button><button id="reset">Reset FOV</button>
-<label style="display:flex;align-items:center;gap:6px"><input id="grid" type="checkbox" checked style="width:auto"> Sky coordinate grid</label>
-<label style="display:flex;align-items:center;gap:6px"><input id="ruler" type="checkbox" checked style="width:auto"> Center ruler</label>
+<label style="display:flex;align-items:center;gap:6px"><input id="grid" type="checkbox" checked> Coordinate grid</label>
+<label style="display:flex;align-items:center;gap:6px"><input id="ruler" type="checkbox" checked> Ruler</label>
 </div></div>
-<div id="viewer-wrap"><div id="aladin-lite-div" aria-label="Interactive sky viewer with ICRS coordinate grid"></div>
+<div id="viewer-wrap"><div id="aladin-lite-div"></div>
 <svg id="overlay" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true">
-<line class="axis" x1="500" y1="0" x2="500" y2="600"/><line class="axis" x1="0" y1="300" x2="1000" y2="300"/>
-<g id="ticks"></g><circle cx="500" cy="300" r="13" fill="none" stroke="#8df6ff" stroke-width="1.6"/><circle cx="500" cy="300" r="3" fill="#fff"/><g id="distance-scale"><line id="scale-main" class="scale-line" x1="350" y1="345" x2="650" y2="345"/><line id="scale-left" class="scale-cap" x1="350" y1="337" x2="350" y2="353"/><line id="scale-right" class="scale-cap" x1="650" y1="337" x2="650" y2="353"/><text id="scale-text" class="scale-label" x="500" y="369" text-anchor="middle">300 px scale · calculating…</text></g>
-<text x="512" y="286">CENTER</text><text x="18" y="286">−FOV/2</text><text x="982" y="286" text-anchor="end">+FOV/2</text>
+<line class="axis" x1="500" y1="0" x2="500" y2="600"/><line class="axis" x1="0" y1="300" x2="1000" y2="300"/><g id="ticks"></g>
+<circle cx="500" cy="300" r="13" fill="none" stroke="#8df6ff" stroke-width="1.7"/><circle cx="500" cy="300" r="3" fill="#fff"/>
+<line class="ruler" x1="350" y1="345" x2="650" y2="345"/><line class="cap" x1="350" y1="333" x2="350" y2="357"/><line class="cap" x1="650" y1="333" x2="650" y2="357"/>
+<text id="rulerLabel" x="500" y="405" text-anchor="middle">300 px · calculating…</text><text id="rulerSub" x="500" y="438" text-anchor="middle">calculating distance…</text>
+<text x="512" y="284" fill="#e1fbff" font-size="12">CENTER</text><text x="18" y="286" fill="#e1fbff" font-size="12">−FOV/2</text><text x="982" y="286" text-anchor="end" fill="#e1fbff" font-size="12">+FOV/2</text>
 </svg></div>
 <div class="panel"><div class="stats">
-<div class="stat"><div class="label">FOV width</div><div id="fw" class="value">—</div></div>
-<div class="stat"><div class="label">FOV height</div><div id="fh" class="value">—</div></div>
-<div class="stat"><div class="label">Observable-universe chord across full FOV</div><div id="linear" class="value">—</div></div><div class="stat"><div class="label">Live distance scale (300 px)</div><div id="scale-value" class="value">—</div></div>
-<div class="stat"><div class="label">Transverse span at entered distance</div><div id="span" class="value">—</div></div>
-<div class="stat"><div class="label">Expected angular diameter</div><div id="ang" class="value">—</div></div>
-<div class="stat"><div class="label">FOV / galaxy diameter</div><div id="ratio" class="value">—</div></div>
+<div class="stat"><div class="k">Horizontal FOV</div><div id="fw" class="v">—</div></div>
+<div class="stat"><div class="k">Vertical FOV</div><div id="fh" class="v">—</div></div>
+<div class="stat"><div class="k">Actual angle across yellow ruler</div><div id="seg" class="v">—</div></div>
+<div class="stat"><div class="k">Full-width chord in 46.5-billion-ly-radius model</div><div id="full" class="v">—</div></div>
+<div class="stat"><div class="k">Ruler chord distance</div><div id="distance" class="v">—</div></div>
+<div class="stat"><div class="k">Screen width</div><div id="pixels" class="v">—</div></div>
 </div><p id="status" class="note">Loading Aladin Lite…</p></div>
-<div class="panel"><b>How to compare</b><p class="note">The coordinate grid is enabled initially and uses the ICRS frame. The ruler overlay is a screen-fixed reference, not a replacement for the celestial coordinate grid. The yellow ruler is fixed at 300 of 1000 SVG units (30% of viewer width). Its live angular span is estimated from the current horizontal FOV and its displayed cosmic chord uses 93 × sin(angle/2) billion light-years (observable-universe radius 46.5 billion ly). This is a geometric comparison model, not a cosmological distance law. At very wide FOVs the sky projection is nonlinear, so use narrow/mid FOVs for the cleanest pixel-to-angle check.</p></div>
+<div class="panel"><p class="note"><b>Correction:</b> the previous page showed 22.826 million light-years for a 1.6875° ruler. That is wrong by a factor of about 60. With the model you asked to test, the chord is W = 2R sin(θ/2), where R = 46.5 billion light-years. At θ = 1.6875°, the chord is about 1.369 billion light-years, not 22.826 million. This ruler now measures the actual angle between screen pixels through Aladin's coordinate transformation, rather than assuming a perfectly linear FOV-to-pixel scale. The cosmic chord is a geometric calibration model, not the real distance to NGC 4214.</p></div>
 <script>
-(function(){
-const $=id=>document.getElementById(id);let aladin=null;
-function fmtAngle(d){if(!Number.isFinite(d)||d<=0)return '—';if(d>=1)return d.toFixed(5)+'°';if(d>=1/60)return (d*60).toFixed(4)+'′';return (d*3600).toFixed(3)+'″';}
-function fmtLen(ly){if(!Number.isFinite(ly))return '—';if(ly>=1e9)return (ly/1e9).toFixed(4)+' billion ly';if(ly>=1e6)return (ly/1e6).toFixed(4)+' million ly';return (ly/1e3).toFixed(2)+' thousand ly';}
-function drawTicks(){const g=$('ticks'),ns='http://www.w3.org/2000/svg';g.innerHTML='';for(let i=-10;i<=10;i++){if(!i)continue;const x=500+i*22,major=i%5===0,len=major?13:6;let l=document.createElementNS(ns,'line');l.setAttribute('x1',x);l.setAttribute('x2',x);l.setAttribute('y1',300-len);l.setAttribute('y2',300+len);l.setAttribute('class',major?'tick major':'tick');g.appendChild(l);let v=document.createElementNS(ns,'line');v.setAttribute('x1',500-len);v.setAttribute('x2',500+len);v.setAttribute('y1',300-i*13);v.setAttribute('y2',300-i*13);v.setAttribute('class',major?'tick major':'tick');g.appendChild(v);}}
-function update(){if(!aladin)return;try{const f=aladin.getFov(),w=Number(f[0]),h=Number(f[1]),D=Number($('dist').value)*1e6,L=Number($('diam').value)*1e3,theta=w*Math.PI/180; $('fw').textContent=fmtAngle(w);$('fh').textContent=fmtAngle(h);const segmentDeg=w*0.30;const chordGly=93*Math.sin(Math.min(180,segmentDeg)*Math.PI/360);$('linear').textContent=(93*Math.sin(Math.min(180,w)*Math.PI/360)).toFixed(4)+' billion ly';$('scale-value').textContent=chordGly>=1?chordGly.toFixed(4)+' billion ly':(chordGly*1000).toFixed(3)+' million ly';$('scale-text').textContent='300 px ≈ '+fmtAngle(segmentDeg)+' · '+(chordGly>=1?chordGly.toFixed(4)+' billion ly':(chordGly*1000).toFixed(3)+' million ly');$('span').textContent=D>0?fmtLen(D*theta):'Enter distance';const a=D>0&&L>0?L/D*180/Math.PI:NaN;$('ang').textContent=fmtAngle(a);$('ratio').textContent=a>0?(w/a).toFixed(3)+'×':'—';const p=aladin.getRaDec();$('status').textContent='ICRS center: RA '+Number(p[0]).toFixed(5)+'° · Dec '+Number(p[1]).toFixed(5)+'° · coordinate grid '+($('grid').checked?'ON':'OFF');}catch(e){$('status').textContent='Viewer update error: '+e.message;}}
-function gridToggle(){if(!aladin)return;try{if(aladin.showCooGrid)aladin.showCooGrid($('grid').checked);else if(aladin.setShowCooGrid)aladin.setShowCooGrid($('grid').checked);$('status').textContent='Grid toggle requested; grid is '+($('grid').checked?'ON':'OFF')+'.';}catch(e){$('status').textContent='Grid toggle error: '+e.message;}}
-function go(){if(!aladin)return;try{aladin.gotoObject($('target').value);setTimeout(update,1600);}catch(e){$('status').textContent='Navigation error: '+e.message;}}
-function setFov(f){if(!aladin)return;try{aladin.setFov(Math.max(.00001,Math.min(179,f)));setTimeout(update,300);}catch(e){$('status').textContent='Zoom error: '+e.message;}}
-window.addEventListener('load',function(){if(!window.A||!A.aladin){$('status').textContent='Aladin Lite failed to load. Check internet access.';return;}try{
-aladin=A.aladin('#aladin-lite-div',{survey:'P/DSS2/color',fov:12,target:'NGC 4214',cooFrame:'ICRSd',showCooGrid:true,showReticle:true,showZoomControl:true,showFullscreenControl:true});
-$('go').onclick=go;$('target').onchange=go;$('zin').onclick=()=>setFov(Number(aladin.getFov()[0])/2);$('zout').onclick=()=>setFov(Number(aladin.getFov()[0])*2);$('reset').onclick=()=>setFov(12);
-$('grid').onchange=gridToggle;$('ruler').onchange=()=>{$('overlay').style.display=$('ruler').checked?'block':'none';};$('dist').oninput=update;$('diam').oninput=update;$('overlay').style.display='block';drawTicks();setInterval(update,700);setTimeout(update,1500);
-}catch(e){$('status').textContent='Aladin initialization failed: '+e.message;}});})();
-</script>
-</body>
-</html>
+(()=>{const $=id=>document.getElementById(id);let aladin=null;
+const angleFmt=d=>Number.isFinite(d)?d.toFixed(6)+'°':'—';
+const distFmt=b=>b>=1?b.toFixed(4)+' billion ly':(b*1000).toFixed(3)+' million ly';
+function ticks(){const g=$('ticks'),ns='http://www.w3.org/2000/svg';for(let i=-10;i<=10;i++){if(!i)continue;const x=500+i*22,major=i%5===0,len=major?13:6;for(const [x1,x2,y1,y2] of [[x,x,300-len,300+len],[500-len,500+len,300-i*13,300-i*13]]){const l=document.createElementNS(ns,'line');l.setAttribute('x1',x1);l.setAttribute('x2',x2);l.setAttribute('y1',y1);l.setAttribute('y2',y2);l.setAttribute('class',major?'tick major':'tick');g.appendChild(l)}}}
+function update(){if(!aladin)return;try{const f=aladin.getFov(),fw=+f[0],fh=+f[1],size=aladin.getSize(),width=+size[0],height=+size[1];const y=height/2,x1=width*.35,x2=width*.65;let deg;
+try{deg=aladin.angularDist(x1,y,x2,y,'ICRS')}catch(e){const p1=aladin.pix2world(x1,y),p2=aladin.pix2world(x2,y);deg=aladin.angularDist(x1,y,x2,y)}
+if(!Number.isFinite(deg)||deg<=0)deg=fw*.3;
+const fullB=93*Math.sin(Math.min(180,fw)*Math.PI/360),segmentB=93*Math.sin(Math.min(180,deg)*Math.PI/360);
+$('fw').textContent=angleFmt(fw);$('fh').textContent=angleFmt(fh);$('seg').textContent=angleFmt(deg);$('full').textContent=distFmt(fullB);$('distance').textContent=distFmt(segmentB);$('pixels').textContent=Math.round(width)+' × '+Math.round(height)+' px';
+$('rulerLabel').textContent='300 px = '+angleFmt(deg);$('rulerSub').textContent='CHORD: '+distFmt(segmentB);
+const p=aladin.getRaDec();$('status').textContent='ICRS center RA '+(+p[0]).toFixed(5)+'° · Dec '+(+p[1]).toFixed(5)+'° · grid '+($('grid').checked?'ON':'OFF')+' · angle measured between viewer pixels.';
+}catch(e){$('status').textContent='Measurement error: '+e.message}}
+function gridToggle(){try{if(aladin.showCooGrid)aladin.showCooGrid($('grid').checked);else if(aladin.setShowCooGrid)aladin.setShowCooGrid($('grid').checked)}catch(e){}}
+function setFov(v){aladin.setFov(Math.max(.00001,Math.min(179,v)));setTimeout(update,350)}
+window.addEventListener('load',()=>{if(!window.A||!A.aladin){$('status').textContent='Aladin Lite failed to load. Check internet connection.';return}try{aladin=A.aladin('#aladin-lite-div',{survey:'P/DSS2/color',fov:12,target:'NGC 4214',cooFrame:'ICRSd',showCooGrid:true,showReticle:true,showZoomControl:true,showFullscreenControl:true});$('go').onclick=()=>{aladin.gotoObject($('target').value);setTimeout(update,1500)};$('target').onchange=$('go').onclick;$('zin').onclick=()=>setFov(+aladin.getFov()[0]/2);$('zout').onclick=()=>setFov(+aladin.getFov()[0]*2);$('reset').onclick=()=>setFov(12);$('grid').onchange=gridToggle;$('ruler').onchange=()=>{$('overlay').style.display=$('ruler').checked?'block':'none'};ticks();setInterval(update,600);setTimeout(update,1400)}catch(e){$('status').textContent='Initialization error: '+e.message}})})();
+</script></body></html>
