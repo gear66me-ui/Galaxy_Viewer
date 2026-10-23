@@ -1,0 +1,269 @@
+name: Repair NGC 5668 distance, measured redshift, and duplicate observation entries
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/repair-ngc5668-distance-redshift-deduplicate.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: repair-ngc5668-distance-redshift-deduplicate
+  cancel-in-progress: false
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Repair and audit NGC 5668 records
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import csv, json, math
+          from pathlib import Path
+
+          ROOT = Path("viewer/image-databases")
+          TARGET_ID = "potw2437a"
+          TARGET_PROVIDER = "hubble"
+          DISTANCE_MLY = 90.0
+          # Published heliocentric spectroscopic redshift: 0.005277 +/- 0.000017.
+          # Source: NGC 5668 literature summary citing NED; see evidence URL below.
+          REDSHIFT_Z = 0.005277
+          DISTANCE_URL = "https://esahubble.org/images/potw2437a/"
+          REDSHIFT_EVIDENCE = (
+              "Heliocentric spectroscopic redshift z=0.005277 +/- 0.000017; "
+              "NGC 5668 literature summary citing NED: "
+              "https://guaix.fis.ucm.es/~raffaella/paper_v11_2.pdf"
+          )
+          DISTANCE_METHOD = "published_distance_ESA_Hubble_potw2437a_90_Mly"
+
+          def norm(value):
+              return " ".join(str(value or "").strip().casefold().replace("_", " ").split())
+
+          def record_id(record):
+              for key in ("archiveId", "archive_id", "observationId", "imageId", "id"):
+                  if record.get(key) is not None and norm(record[key]) == TARGET_ID:
+                      return True
+              return False
+
+          def provider(record):
+              return norm(record.get("providerKey") or record.get("provider") or record.get("survey"))
+
+          def target(record):
+              return isinstance(record, dict) and record_id(record) and provider(record) in (
+                  TARGET_PROVIDER, "hubble space telescope", ""
+              )
+
+          def walk(node, path="$"):
+              if isinstance(node, dict):
+                  yield path, node
+                  for key, value in node.items():
+                      yield from walk(value, f"{path}.{key}")
+              elif isinstance(node, list):
+                  for i, value in enumerate(node):
+                      yield from walk(value, f"{path}[{i}]")
+
+          def dedupe_target_siblings(node, path="$"):
+              removed = 0
+              if isinstance(node, dict):
+                  for key, value in list(node.items()):
+                      node[key], n = dedupe_target_siblings(value, f"{path}.{key}")
+                      removed += n
+              elif isinstance(node, list):
+                  seen = False
+                  new_items = []
+                  for i, item in enumerate(node):
+                      if target(item):
+                          if seen:
+                              removed += 1
+                              continue
+                          seen = True
+                      item, n = dedupe_target_siblings(item, f"{path}[{i}]")
+                      removed += n
+                      new_items.append(item)
+                  node = new_items
+              return node, removed
+
+          json_files = sorted(ROOT.rglob("*.json"))
+          loaded = {}
+          before = []
+          for path in json_files:
+              try:
+                  data = json.loads(path.read_text(encoding="utf-8"))
+              except Exception as exc:
+                  raise SystemExit(f"STOP: invalid JSON {path}: {exc}")
+              loaded[path] = data
+              for record_path, record in walk(data):
+                  if target(record):
+                      before.append({"file": str(path), "record_path": record_path})
+
+          if not before:
+              raise SystemExit("STOP: no exact Hubble archiveId potw2437a record found; no changes made.")
+
+          # Deduplicate only repeated exact potw2437a/Hubble objects that are siblings in the same
+          # JSON array. Separate source catalogs and runtime representations are retained.
+          changed_json = set()
+          duplicate_entries_removed = 0
+          updated_record_locations = []
+          for path, data in loaded.items():
+              deduped, removed = dedupe_target_siblings(data)
+              if removed:
+                  duplicate_entries_removed += removed
+                  loaded[path] = deduped
+                  changed_json.add(path)
+
+          # Re-scan records after deduplication. Update every exact target record in each JSON
+          # representation, preserving unrelated observations and fields.
+          for path, data in loaded.items():
+              for record_path, record in walk(data):
+                  if not target(record):
+                      continue
+                  science = record.get("science")
+                  if not isinstance(science, dict):
+                      # Do not guess at an unknown schema; stop before writing any files.
+                      raise SystemExit(f"STOP: matched record has no science object: {path} {record_path}")
+                  if not isinstance(science.get("distanceMly"), (int, float)) or isinstance(science.get("distanceMly"), bool):
+                      raise SystemExit(f"STOP: matched record has no numeric science.distanceMly: {path} {record_path}")
+
+                  science["distanceMly"] = DISTANCE_MLY
+                  science["distanceMethod"] = DISTANCE_METHOD
+                  science["distanceEvidence"] = (
+                      "ESA/Hubble Picture of the Week potw2437a; About the Object states "
+                      "90 million light-years; " + DISTANCE_URL
+                  )
+                  science["distanceEstimated"] = False
+                  science["distanceDisplay"] = "90 million light-years"
+
+                  # Update the schema's existing redshift key; if none exists, stop rather than
+                  # invent a key the live viewer may not consume.
+                  redshift_keys = [k for k in ("redshiftZ", "redshift", "z") if k in science]
+                  if not redshift_keys:
+                      raise SystemExit(f"STOP: no recognized redshift key in science object: {path} {record_path}")
+                  for key in redshift_keys:
+                      science[key] = REDSHIFT_Z
+                  science["redshiftMethod"] = "published_heliocentric_spectroscopic_redshift"
+                  science["redshiftEvidence"] = REDSHIFT_EVIDENCE
+                  science["redshiftFrame"] = "heliocentric"
+                  if isinstance(record.get("distance"), str) and "light-year" in record["distance"].casefold():
+                      record["distance"] = "90 million light-years"
+                  updated_record_locations.append({"file": str(path), "record_path": record_path})
+                  changed_json.add(path)
+
+          # Keep the runtime distance map's exact observation row singular and consistent.
+          csv_path = ROOT / "master-database/avm-metadata/avm-runtime-distance-map-0004.csv"
+          csv_rows_updated = 0
+          if csv_path.is_file():
+              with csv_path.open("r", encoding="utf-8", newline="") as f:
+                  reader = csv.DictReader(f)
+                  fields = reader.fieldnames
+                  rows = list(reader)
+              if not fields or not {"providerKey", "archiveId", "distanceMly"}.issubset(fields):
+                  raise SystemExit(f"STOP: unexpected CSV schema in {csv_path}")
+              matching = [r for r in rows if norm(r.get("providerKey")) == TARGET_PROVIDER and norm(r.get("archiveId")) == TARGET_ID]
+              if len(matching) > 1:
+                  first = matching[0]
+                  rows = [r for r in rows if not (norm(r.get("providerKey")) == TARGET_PROVIDER and norm(r.get("archiveId")) == TARGET_ID)]
+                  rows.append(first)
+                  # Preserve the canonical row once; retain its original catalog record number.
+                  matching = [first]
+              if not matching:
+                  raise SystemExit(f"STOP: exact Hubble/{TARGET_ID} row missing from {csv_path}")
+              matching[0]["distanceMly"] = "90"
+              csv_rows_updated = 1
+              with csv_path.open("w", encoding="utf-8", newline="") as f:
+                  writer = csv.DictWriter(f, fieldnames=fields, lineterminator="\n")
+                  writer.writeheader()
+                  writer.writerows(rows)
+
+          # Persist modified JSONs only after all target records passed schema validation.
+          for path in sorted(changed_json):
+              path.write_text(json.dumps(loaded[path], indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+
+          # Post-write verification: valid JSON, target distance/redshift consistent, and no repeated
+          # exact target entries as siblings within any one JSON array.
+          verified_locations = []
+          for path in sorted(changed_json):
+              data = json.loads(path.read_text(encoding="utf-8"))
+              for record_path, record in walk(data):
+                  if target(record):
+                      science = record.get("science", {})
+                      assert math.isclose(float(science["distanceMly"]), DISTANCE_MLY, abs_tol=1e-9)
+                      rz_keys = [k for k in ("redshiftZ", "redshift", "z") if k in science]
+                      assert rz_keys and all(math.isclose(float(science[k]), REDSHIFT_Z, abs_tol=1e-12) for k in rz_keys)
+                      verified_locations.append({"file": str(path), "record_path": record_path})
+
+          map_count = 0
+          if csv_path.is_file():
+              with csv_path.open("r", encoding="utf-8", newline="") as f:
+                  map_count = sum(
+                      1 for row in csv.DictReader(f)
+                      if norm(row.get("providerKey")) == TARGET_PROVIDER and norm(row.get("archiveId")) == TARGET_ID
+                  )
+              assert map_count == 1, f"Expected exactly one runtime distance-map row, found {map_count}"
+
+          report = {
+              "object": "NGC 5668",
+              "providerKey": TARGET_PROVIDER,
+              "archiveId": TARGET_ID,
+              "distance_Mly": DISTANCE_MLY,
+              "distance_source": DISTANCE_URL,
+              "heliocentric_spectroscopic_redshift_z": REDSHIFT_Z,
+              "redshift_uncertainty": 0.000017,
+              "redshift_source": "https://guaix.fis.ucm.es/~raffaella/paper_v11_2.pdf (literature summary citing NED)",
+              "target_record_locations_before": before,
+              "target_record_locations_after": verified_locations,
+              "duplicate_sibling_entries_removed": duplicate_entries_removed,
+              "runtime_distance_map_matching_rows_after": map_count,
+              "json_files_updated": sorted(str(p) for p in changed_json),
+              "note": "Different catalog/source representations are intentionally retained. Deduplication removes only repeated exact Hubble/potw2437a siblings inside one JSON array; the runtime distance map must contain exactly one matching row."
+          }
+          Path("ngc5668-distance-redshift-repair-report.json").write_text(
+              json.dumps(report, indent=2) + "\n", encoding="utf-8"
+          )
+          print(json.dumps(report, indent=2))
+          PY
+
+      - name: Validate patch and report
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          r = json.loads(Path("ngc5668-distance-redshift-repair-report.json").read_text())
+          assert r["distance_Mly"] == 90.0
+          assert r["heliocentric_spectroscopic_redshift_z"] == 0.005277
+          assert r["runtime_distance_map_matching_rows_after"] == 1
+          assert r["target_record_locations_after"]
+          print("PASS: NGC 5668 distance/redshift repair and duplicate audit.")
+          PY
+          git diff --check
+
+      - name: Commit only catalog changes
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases
+          if git diff --cached --quiet; then
+            echo "No catalog changes to commit."
+          else
+            git diff --cached --stat
+            git commit -m "Correct NGC 5668 distance and measured redshift"
+            git push origin HEAD:release
+          fi
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ngc5668-distance-redshift-repair-report
+          path: ngc5668-distance-redshift-repair-report.json
+          if-no-files-found: warn
