@@ -1,0 +1,51 @@
+name: Build AVM Runtime Catalog 0006 from 0004 using provider-published distances
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/update-runtime-published-distances-0006.yml"
+      - ".github/scripts/update_runtime_published_distances_0006.py"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-runtime-published-distances-0006
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build catalog 0006 from catalog 0004
+        run: python .github/scripts/update_runtime_published_distances_0006.py
+      - name: Validate catalog and 400-record allocation
+        run: |
+          python - <<'PY'
+          import json
+          p="viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json"
+          d=json.load(open(p,encoding="utf-8"))
+          r=d.get("records",[])
+          assert len(r)==1847, f"Expected 1847 records, got {len(r)}"
+          assert d.get("schema")=="gv-avm-runtime-catalog-0006", "Wrong catalog schema"
+          assert d.get("distanceRedshiftUpdate",{}).get("changedRecords")==400, "Expected 400 updated records"
+          print("Catalog 0006 validated:",len(r),"records; 400 distance/redshift updates.")
+          PY
+      - name: Commit catalog and evidence report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json distance-source-wording-0006-report.json
+          git commit -m "Build AVM runtime catalog 0006 from 0004 using provider-published distances"
+          git push origin HEAD:release
