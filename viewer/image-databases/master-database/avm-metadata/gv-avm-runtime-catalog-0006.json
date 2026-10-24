@@ -60031,9 +60031,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 32.9418,
+      "distanceMly": 49,
       "science": {},
-      "redshift": 0.002279
+      "redshift": 0.003390353
     },
     {
       "providerKey": "noirlab",
@@ -60066,9 +60066,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 32.9418,
+      "distanceMly": 49,
       "science": {},
-      "redshift": 0.002279
+      "redshift": 0.003390353
     },
     {
       "providerKey": "noirlab",
@@ -70661,5 +70661,6 @@
       "jwst": 20,
       "noirlab": 27
     }
-  }
+  },
+  "changeNote": "M77 distance corrected to 49.00 Mly; redshift recomputed from flat Lambda-CDM comoving distance (H0=67.6 km/s/Mpc, Omega_m=0.315)."
 }
