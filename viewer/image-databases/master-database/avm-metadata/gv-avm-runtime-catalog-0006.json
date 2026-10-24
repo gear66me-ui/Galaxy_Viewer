@@ -1017,9 +1017,28 @@
       ],
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 16.4383,
-      "science": {},
-      "redshift": 0.001137
+      "distanceMly": 43,
+      "science": {
+        "distanceMly": 43,
+        "distanceDisplay": "43 million light-years",
+        "distanceMethod": "published_provider_page_distance",
+        "distanceSource": "https://chandra.harvard.edu/photo/2011/n4151/",
+        "distanceEvidence": "Adopted NASA Chandra published distance: 43 million light-years.",
+        "distanceVerified": true,
+        "redshift": 0.002972,
+        "redshiftDisplay": "z = 0.002972",
+        "redshiftEstimated": true,
+        "redshiftMethod": "flat_LCDM_from_published_distance_H0_67.6_Om_0.315",
+        "redshiftSource": "https://chandra.harvard.edu/photo/2011/n4151/",
+        "redshiftEvidence": "Approximate cosmological redshift derived from 43.0 Mly using flat Lambda-CDM with H0=67.6 km/s/Mpc and Omega_m=0.315; not a substitute for measured spectroscopic redshift."
+      },
+      "redshift": 0.002972,
+      "redshiftDisplay": "z = 0.002972",
+      "redshiftEstimated": true,
+      "redshiftMethod": "flat_LCDM_from_published_distance_H0_67.6_Om_0.315",
+      "redshiftSource": "https://chandra.harvard.edu/photo/2011/n4151/",
+      "distanceDisplay": "43 million light-years",
+      "distanceEstimated": false
     },
     {
       "providerKey": "chandra",
