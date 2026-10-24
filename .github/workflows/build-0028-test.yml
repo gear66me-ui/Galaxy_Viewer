@@ -1,0 +1,80 @@
+name: Galaxy Viewer Build 0028 Test
+
+on:
+  push:
+    branches:
+      - resource-efficiency-test-0028
+    paths:
+      - 'viewer/RC-V1.0.0.9-BLD-0028.py'
+      - 'viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
+      - 'viewer/gv-current-viewer.json'
+      - '.github/workflows/build-0028-test.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: galaxy-viewer-build-0028-test
+  cancel-in-progress: true
+
+jobs:
+  validate-and-package:
+    name: Validate and package isolated Build 0028
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout test branch only
+        uses: actions/checkout@v4
+        with:
+          ref: resource-efficiency-test-0028
+          fetch-depth: 1
+
+      - name: Validate Build 0028 pointer and resource changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, re
+          root = pathlib.Path('.')
+          pointer = json.loads((root/'viewer/gv-current-viewer.json').read_text())
+          assert pointer.get('build') == '0028', f"Expected pointer build 0028, got {pointer.get('build')}"
+          assert pointer.get('viewer') == 'RC-V1.0.0.9-BLD-0028.py', 'Pointer filename mismatch'
+          viewer_path = root/'viewer'/pointer['viewer']
+          assert viewer_path.is_file() and viewer_path.stat().st_size > 0, 'Build 0028 source missing'
+          source = viewer_path.read_text(encoding='utf-8')
+          assert 'BUILD_NUMBER = "0028"' in source, 'Build number constant mismatch'
+          assert "const GV200001_BUILD='0028';" in source, 'Runtime cache identity mismatch'
+          assert 'current*Math.exp(-zoomCommand*.018)' in source, 'Expected Build 0027 zoom equation was changed'
+          assert 'gvInstallEarthDistanceInteractionListeners();' in source, 'Earth-distance listeners are not installed'
+          assert 'setInterval(()=>{gvInstallEarthDistanceInteractionListeners();' not in source, 'Listener installer still runs from polling interval'
+          assert 'HD_MEMORY_CACHE_LIMIT=2' in (root/'viewer/modules/destination-presentation/gv-destination-presentation-0061.js').read_text(encoding='utf-8'), 'HD cache limit is not 2'
+          assert pointer.get('build') == '0028'
+          print('BUILD 0028 SOURCE VALIDATION PASSED')
+          print('This is a source validation/package job; it does not claim an Android APK build.')
+          PY
+
+      - name: Package isolated Build 0028 test files
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p build-0028-test
+          cp viewer/RC-V1.0.0.9-BLD-0028.py build-0028-test/
+          cp viewer/gv-current-viewer.json build-0028-test/
+          mkdir -p build-0028-test/modules/destination-presentation
+          cp viewer/modules/destination-presentation/gv-destination-presentation-0061.js build-0028-test/modules/destination-presentation/
+          cat > build-0028-test/README.txt <<'EOF'
+          Galaxy Viewer Build 0028 isolated test package.
+          This package contains the viewer source, active test pointer, and destination-presentation module.
+          It is not an APK and is not deployed to production GitHub Pages.
+          EOF
+          cd build-0028-test
+          zip -r ../galaxy-viewer-build-0028-test.zip .
+          cd ..
+
+      - name: Upload Build 0028 test package
+        uses: actions/upload-artifact@v4
+        with:
+          name: galaxy-viewer-build-0028-test
+          path: galaxy-viewer-build-0028-test.zip
+          if-no-files-found: error
+          retention-days: 14
