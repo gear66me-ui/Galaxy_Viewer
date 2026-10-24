@@ -1,0 +1,152 @@
+name: Fix GB 1428+4217 C2 Distance and Redshift
+
+# Chandra describes 12.4 billion light-years as a lookback/light-travel distance
+# and independently gives the measured spectroscopic redshift z=4.72.
+# The runtime catalog's distanceMly convention for this record is FLRW comoving
+# distance, so convert the measured redshift to comoving distance consistently.
+# Do NOT store 12,400 Mly as comoving distance: those distance definitions differ.
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/fix-gb1428-c2-distance-redshift.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: fix-gb1428-c2-distance-redshift
+  cancel-in-progress: false
+
+jobs:
+  fix-gb1428:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 0
+
+      - name: Calculate and apply verified distance/redshift
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import math
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json")
+          H0 = 67.6                 # km s^-1 Mpc^-1
+          OMEGA_M = 0.315
+          C_KM_S = 299792.458
+          MLY_PER_MPC = 3.261563777
+          SOURCE_REDSHIFT = 4.72    # published spectroscopic redshift
+          SOURCE_LOOKBACK_BLY = 12.4  # Chandra's approximate light-travel distance
+          TARGET_ID = "chandra-2012-gb1428"
+          TARGET_NAME = "gb 1428+4217"
+
+          def E(z):
+              omega_lambda = 1.0 - OMEGA_M
+              return math.sqrt(OMEGA_M * (1.0 + z)**3 + omega_lambda)
+
+          def comoving_distance_mly(z, n=20000):
+              # Simpson integration of c/H0 * integral[0,z] dz'/E(z')
+              if z <= 0:
+                  return 0.0
+              if n % 2:
+                  n += 1
+              h = z / n
+              total = 1.0 / E(0.0) + 1.0 / E(z)
+              for i in range(1, n):
+                  total += (4 if i % 2 else 2) / E(i * h)
+              integral = total * h / 3.0
+              d_mpc = (C_KM_S / H0) * integral
+              return d_mpc * MLY_PER_MPC
+
+          def redshift_from_comoving_distance_mly(distance_mly):
+              lo, hi = 0.0, 20.0
+              for _ in range(100):
+                  mid = (lo + hi) / 2.0
+                  if comoving_distance_mly(mid, n=4000) < distance_mly:
+                      lo = mid
+                  else:
+                      hi = mid
+              return (lo + hi) / 2.0
+
+          data = json.loads(path.read_text(encoding="utf-8"))
+          target = []
+          def walk(node, p="$"):
+              if isinstance(node, dict):
+                  yield node, p
+                  for k, v in node.items():
+                      if isinstance(v, (dict, list)):
+                          yield from walk(v, f"{p}.{k}")
+              elif isinstance(node, list):
+                  for i, v in enumerate(node):
+                      yield from walk(v, f"{p}[{i}]")
+
+          for obj, p in walk(data):
+              vals = [
+                  str(v).strip().lower()
+                  for v in obj.values()
+                  if isinstance(v, (str, int, float)) and not isinstance(v, bool)
+              ]
+              id_match = any(v == TARGET_ID or v.endswith("/" + TARGET_ID) for v in vals)
+              name_match = any(TARGET_NAME in v for v in vals)
+              distance_key = next((k for k in obj if k.lower() in ("distancemly", "distance_mly")), None)
+              redshift_key = next((k for k in obj if k.lower() in ("redshift", "z", "redshiftz")), None)
+              if id_match and name_match and distance_key and redshift_key:
+                  target.append((obj, p, distance_key, redshift_key))
+
+          # Avoid changing an ambiguous or duplicate target record.
+          target = [
+              item for item in target
+              if not any(item[1].startswith(other[1] + ".") or item[1].startswith(other[1] + "[")
+                         for other in target if other[1] != item[1])
+          ]
+          if len(target) != 1:
+              raise SystemExit(f"STOP: expected exactly one GB 1428+4217 record; found {len(target)}. No changes written.")
+
+          distance_mly = round(comoving_distance_mly(SOURCE_REDSHIFT), 3)
+          checked_z = redshift_from_comoving_distance_mly(distance_mly)
+          if abs(checked_z - SOURCE_REDSHIFT) > 0.0001:
+              raise SystemExit(f"STOP: redshift round-trip check failed: z={checked_z:.6f}")
+
+          obj, record_path, distance_key, redshift_key = target[0]
+          old_distance, old_redshift = obj[distance_key], obj[redshift_key]
+          obj[distance_key] = distance_mly
+          obj[redshift_key] = SOURCE_REDSHIFT
+
+          encoded = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
+          json.loads(encoded)  # validate before writing
+          path.write_text(encoded, encoding="utf-8")
+
+          print("GB 1428+4217 C2 correction validated")
+          print(f"Record: {record_path}")
+          print(f"Chandra approximate lookback distance: {SOURCE_LOOKBACK_BLY:.1f} billion light-years (source description)")
+          print(f"Published spectroscopic redshift: z={SOURCE_REDSHIFT:.6f}")
+          print(f"Flat Lambda-CDM parameters: H0={H0}, Omega_m={OMEGA_M}")
+          print(f"Comoving distance stored: {distance_mly:.3f} Mly ({distance_mly/1000:.6f} billion light-years)")
+          print(f"Redshift recovered from comoving distance: z={checked_z:.6f}")
+          print(f"Old catalog values: distanceMly={old_distance}, redshift={old_redshift}")
+          print(f"New catalog values: distanceMly={distance_mly}, redshift={SOURCE_REDSHIFT}")
+          PY
+
+      - name: Validate JSON and commit catalog correction
+        run: |
+          set -euo pipefail
+          python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json >/dev/null
+          git diff --check
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0004.json
+          if git diff --cached --quiet; then
+            echo "Catalog already has the calculated comoving distance and measured redshift; no commit needed."
+            exit 0
+          fi
+          git commit -m "Correct GB 1428+4217 C2 distance and redshift"
+          git push origin HEAD:release
