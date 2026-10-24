@@ -150,7 +150,7 @@ jobs:
           assert stable_pins.issubset(set(pins)), f'missing stable immutable production dependency pins: {stable_pins-set(pins)}'
           target_pin=re.search(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})/viewer/modules/target-simbad/gv-target-simbad-0007\.js',rc)
           assert target_pin, 'active target calculator module must use an immutable full-commit CDN pin'
-          destination_pin=re.search(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})/viewer/modules/destination-presentation/gv-destination-presentation-0060\.js',rc)
+          destination_pin=re.search(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})/viewer/modules/destination-presentation/gv-destination-presentation-0061\.js',rc)
           assert destination_pin, 'active destination presentation module must use an immutable full-commit CDN pin'
           assert len(pins)==9, f'unexpected number of immutable production dependency pins: {pins}'
           assert 'Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
