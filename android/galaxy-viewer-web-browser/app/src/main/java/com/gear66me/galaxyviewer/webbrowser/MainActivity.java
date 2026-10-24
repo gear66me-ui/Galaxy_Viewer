@@ -36,7 +36,8 @@ import java.net.URL;
 
 public final class MainActivity extends Activity {
   private static final String POINTER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
-  private WebView top, web, bottom, viewerWeb, providerPopup;
+  private WebView top, web, bottom, viewerWeb;
+  private WebView providerPopup;
   private FrameLayout rootFrame;
   private LinearLayout browserLayer;
   private FrameLayout providerFrame;
