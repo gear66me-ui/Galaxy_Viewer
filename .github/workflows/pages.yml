@@ -1,7 +1,9 @@
 name: Deploy GitHub Pages
 
 # Production Pages runner plus an isolated temporary-review bypass.
-# Normal pushes still validate the release runtime. Changes scoped only to the
+# Normal pushes still validate the release runtime, including the corrected NGC 4680
+# runtime-catalog record and the destination-distance unit formatter.
+# Changes scoped only to the
 # Chandra review site bypass RC/build/pointer validation so the review can be
 # published independently of Galaxy Viewer production state.
 on:
