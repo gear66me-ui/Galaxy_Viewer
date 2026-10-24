@@ -5073,8 +5073,8 @@
         "distanceDisplay": "11,300 light-years",
         "distanceEstimated": true,
         "sizeKly": [
-          1.4139278870563423e-05,
-          1.4523017261124225e-05
+          0.000014139278870563423,
+          0.000014523017261124225
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
@@ -5501,15 +5501,15 @@
         "WFPC2"
       ],
       "science": {
-        "distanceMly": 4.2999999999999995e-06,
+        "distanceMly": 0.0000042999999999999995,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "4.3 light-years",
         "distanceRangeMly": null,
         "distanceDisplay": "4 light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          1.5647411166075474e-06,
-          1.5002494233547163e-06
+          0.0000015647411166075474,
+          0.0000015002494233547163
         ],
         "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
         "sizeEstimated": true,
@@ -11058,7 +11058,7 @@
         "Mosaic I"
       ],
       "science": {
-        "distanceMly": 1e-05,
+        "distanceMly": 0.00001,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 light-years",
         "distanceRangeMly": null,
@@ -11137,8 +11137,8 @@
         "distanceDisplay": "1500 light-years",
         "distanceEstimated": false,
         "sizeKly": [
-          3.5e-05,
-          3.5e-05
+          0.000035,
+          0.000035
         ],
         "sizeMethod": "image_footprint_fov_distance_estimate_0035",
         "sizeEstimated": true,
@@ -17161,7 +17161,7 @@
       "title": "NGC 6814",
       "ra": 295.664484146,
       "dec": -10.3380462758,
-      "distance": "29.191 million light-years",
+      "distance": "68 million light-years",
       "constellation": "Aquila",
       "fieldOfView": "11.3531 x 7.0331 arcminutes",
       "orientation": "AVM/WCS rotation 48.932818 degrees",
@@ -17182,19 +17182,19 @@
         "Other CCD"
       ],
       "science": {
-        "distanceMly": 29.190996,
-        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
-        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified",
+        "distanceMly": 68,
+        "distanceMethod": "published_NOIRLab_page_distance_text",
+        "distanceEvidence": "NOIRLab image description states NGC 6814 lies some 68 million light years away.",
         "distanceRangeMly": null,
-        "distanceDisplay": "29.191 million light-years",
-        "distanceEstimated": true,
+        "distanceDisplay": "68 million light-years",
+        "distanceEstimated": false,
         "sizeKly": [
-          96.40273211898156,
-          59.72045306407069
+          224.569,
+          139.117
         ],
-        "sizeMethod": "derived_from_avm_wcs_fov_and_distance",
+        "sizeMethod": "derived_from_published_distance_and_AVM_WCS_FOV",
         "sizeEstimated": true,
-        "sizeDisplay": "EST. 96 × 60 LY",
+        "sizeDisplay": "EST. 225 × 139 KLY",
         "ageGyr": 13.398983947,
         "ageMethod": "cosmic_age_at_emission_from_existing_lookback_flat_lcdm_H0_70_Om_0.3_0001",
         "ageMinGyr": null,
@@ -17202,10 +17202,12 @@
         "ageEstimated": true,
         "ageDisplay": "EST. 13.40 GYR",
         "ageEvidence": null,
-        "redshift": null,
-        "redshiftDisplay": null,
-        "redshiftEstimated": null,
-        "redshiftMethod": null
+        "redshift": 0.00468448,
+        "redshiftDisplay": "EST. z 0.00468448",
+        "redshiftEstimated": true,
+        "redshiftMethod": "flat_LCDM_from_published_distance_H0_67.6_Om_0.315",
+        "redshiftEvidence": "Calculated from NOIRLab-published distance 68.000000 Mly assuming luminosity distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315).",
+        "redshiftSource": "https://noirlab.edu/public/images/noao-n6814africa/"
       },
       "constellationMethod": "IAU_from_AVM_ICRS_RA_DEC",
       "designation": "NGC 6814",
@@ -21927,7 +21929,7 @@
         "None"
       ],
       "science": {
-        "distanceMly": 1e-05,
+        "distanceMly": 0.00001,
         "distanceMethod": "astropix_description",
         "distanceEvidence": "10 light-years",
         "distanceRangeMly": null,
