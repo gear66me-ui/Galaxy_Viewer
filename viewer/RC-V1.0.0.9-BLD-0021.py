@@ -6,8 +6,8 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.9"
-BUILD_NUMBER = "0021"
-# Build 0021: persistent slider command with smooth frame-based zoom; retain Build 0018 HiPS suspension behavior.
+BUILD_NUMBER = "0022"
+# Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
@@ -2958,24 +2958,28 @@ async function gvPresentationDestination(destination){
         }
         const science=source?.science||{};
         // Distance always comes from the single top-level distanceMly field in runtime catalog 0004.
-        // Keep the special 3C 321 exception only for its cosmic-age convention.
-        const is3C321=[source?.archiveId,source?.id,source?.name,source?.designation,source?.displayName,source?.title,destination?.archiveId,destination?.id,destination?.name,destination?.designation,destination?.displayName,destination?.title]
-            .some(value=>/3c\s*[- ]?321/i.test(String(value||'')));
-        // Single source of truth: the matched record in runtime catalog 0004, field distanceMly.
-        // Never fall back to provider, route, or legacy distance values.
-        // Runtime catalog distance and redshift were validated before any provider-catalog lookup.
-        // Canonical convention for all six provider catalogs:
-        // science.ageGyr means cosmic age at emission, never lookback time or stellar age.
-        // Legacy rows are normalized by their explicit ageMethod; never guess from the number.
-        const ageMethod=String(science?.ageMethod||'').toLowerCase();
-        const presentCosmicAgeGyr=13.8;
-        const rawAgeGyr=validNumber(science?.cosmicAgeGyr)?Number(science.cosmicAgeGyr):(validNumber(science?.ageGyr)?Number(science.ageGyr):null);
-        const ageIsStellar=/stellar|population/.test(ageMethod);
-        const ageIsLookback=/lookback|light.?travel/.test(ageMethod);
-        const ageIsCosmic=/cosmic.?age|age.?at.?emission/.test(ageMethod)||validNumber(science?.cosmicAgeGyr);
-        const canonicalCosmicAgeGyr=is3C321?12.1334:(ageIsStellar||rawAgeGyr===null?null:(ageIsCosmic?rawAgeGyr:(ageIsLookback?Math.max(0,presentCosmicAgeGyr-rawAgeGyr):null)));
+        // Canonical emission age for every galaxy: cosmic age of the Universe at the observed redshift.
+        // One equation for all records; distance and provider-specific age fields are not inputs.
+        // Flat Lambda-CDM parameters: H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685.
+        // Catalog redshifts may be model-derived from distance; the resulting age is then an estimate.
+        const emissionAgeGyrFromRedshift=z=>{
+            const redshift=Number(z);
+            if(!Number.isFinite(redshift)||redshift<0)return null;
+            const H0=67.6;
+            const omegaM=0.315;
+            const omegaLambda=0.685;
+            const mpcKm=3.0856775814913673e19;
+            const secondsPerGyr=365.25*24*60*60*1e9;
+            const hubblePerSecond=H0/mpcKm;
+            const argument=Math.sqrt(omegaLambda/omegaM)/Math.pow(1+redshift,1.5);
+            const asinh=Math.log(argument+Math.sqrt(argument*argument+1));
+            const ageSeconds=(2/(3*hubblePerSecond*Math.sqrt(omegaLambda)))*asinh;
+            const ageGyr=ageSeconds/secondsPerGyr;
+            return Number.isFinite(ageGyr)&&ageGyr>0?ageGyr:null;
+        };
+        const canonicalCosmicAgeGyr=emissionAgeGyrFromRedshift(runtimeRedshift);
         const canonicalCosmicAgeYears=canonicalCosmicAgeGyr===null?null:canonicalCosmicAgeGyr*1e9;
-        const formatCosmicAgeGyr=value=>value===null?'':('EST. '+value.toFixed(2)+' GYR');
+        const formatCosmicAgeGyr=value=>value===null?'UNAVAILABLE':('EST. '+value.toFixed(2)+' GYR');
         const sizeKly=Array.isArray(science?.sizeKly)
             ?science.sizeKly.filter(validNumber).map(Number)
             :(Array.isArray(source?.sizeKly)?source.sizeKly.filter(validNumber).map(Number):[]);
