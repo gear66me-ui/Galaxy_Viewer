@@ -120,8 +120,14 @@ jobs:
           assert 'GV HD STAGED LAYER ACTIVATED AT ARRIVAL' in rc, 'staged AVM layer must activate at arrival'
           assert 'GV T-MINUS-EIGHT WORK WINDOW OPEN' in rc, 'T-minus-eight transition must be instrumented'
           assert 'window.GV_NAV_BACKGROUND_SUSPENDED=true; // Preserve the verified zero-stutter rule' in rc, 'application polling must stay suspended through travel'
-          assert 'window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<tMinusEightThreshold;' in rc, 'first-trip polling must stay suspended through arrival'
-          assert 'window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<tMinusEightThreshold);' in rc, 'HiPS traffic must remain suspended until T-8'
+          # Build 0018 deliberately resumes HiPS tile requests during the final
+          # two seconds of travel; older builds retain the verified T-8 gate.
+          if active_build == '0018':
+              assert 'window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<(1-2/durationSeconds);' in rc, 'Build 0018 first-trip HiPS gate must resume only for the final two seconds'
+              assert 'window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<(1-2/duration));' in rc, 'Build 0018 direct-trip HiPS gate must resume only for the final two seconds'
+          else:
+              assert 'window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<tMinusEightThreshold;' in rc, 'first-trip polling must stay suspended through arrival'
+              assert 'window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<tMinusEightThreshold);' in rc, 'HiPS traffic must remain suspended until T-8'
           assert 'onZoomOutComplete:startTravelWork' not in rc, 'destination work must not begin at T-11.9'
           assert 'GV DIRECT HD T-MINUS-EIGHT STAGE FAILED' in rc, 'T-8 staging fallback must be logged'
           # BUILD 0028 release contract: validate the active runtime catalog.
