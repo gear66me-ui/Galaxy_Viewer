@@ -142,7 +142,7 @@ jobs:
           # BUILD 0028 release contract: validate the active runtime catalog.
           assert 'gv-avm-runtime-catalog-0006.json' in rc
 
-          pins=sorted(set(re.findall(r'https://(?:cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@|raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/)([0-9a-f]{40})',rc)))
+          pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
           # Keep the route engine, coordinate overlay, constellation overlay, navigator,
           # provider artwork, and HUD pins stable. Target and destination modules may advance
           # only through immutable full-commit URLs so feature fixes can be deployed safely.
