@@ -70,7 +70,7 @@ function normalizeRaw(r,i,catalogKey,meta){
   physicalSizeLy,
   sizeEstimated:science.sizeEstimated??null,
   sizeMethod:clean(science.sizeMethod),
-  redshift:finite(science.redshift??r?.redshift),
+  redshift:finite(r?.redshift),
   redshiftDisplay:clean(science.redshiftDisplay),
   description:clean(r?.description),
   credit:clean(r?.credit),
