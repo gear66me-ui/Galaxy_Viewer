@@ -979,7 +979,7 @@ if(window.GVProviderArtwork?.VERSION!=='0004')throw new Error('PROVIDER ARTWORK 
 // ECO: GV200-001
 // ============================================================================
 if(window.GalaxyViewerHamburgerMenu?.version!=='0012')throw new Error('HAMBURGER 0012 EXPORT MISSING');
-if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0019'||typeof window.GalaxyViewerConstellationOverlay.mount!=='function')throw new Error('CONSTELLATION OVERLAY 0015 EXPORT MISSING');
+if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0018'||typeof window.GalaxyViewerConstellationOverlay.mount!=='function')throw new Error('CONSTELLATION OVERLAY 0015 EXPORT MISSING');
 if(!window.GalaxyCoordinateOverlay||window.GalaxyCoordinateOverlay.VERSION!=='0008'||typeof window.GalaxyCoordinateOverlay.mount!=='function')throw new Error('COORDINATE OVERLAY 0008 EXPORT MISSING');
 if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
@@ -2286,12 +2286,12 @@ let gvAutoZoom=null;
 let gvHdTravelHoldAt=0;
 function gvHoldDirectHdDuringTravel(now){
     if(!directHdOverlay)return;
-    // BUILD 0019: a registered Aladin image layer must not be re-added as a
+    // BUILD 0018: a registered Aladin image layer must not be re-added as a
     // keep-alive. setOverlayImageLayer() replaces/reprocesses the image layer.
     // Keep the existing layer registered; only refresh its opacity.
     try{applyDirectHdOpacity()}catch(_){ }
 }
-// RELEASE BUILD 0019: suspend HiPS tile traffic synchronously at navigation start and for slider, wheel, and pinch zoom.
+// RELEASE BUILD 0018: suspend HiPS tile traffic synchronously at navigation start and for slider, wheel, and pinch zoom.
 function gvSuspendHiPSForManualZoom(){
     if(window.GV_NAV_HIPS_ZOOM_RESUME_TIMER){clearTimeout(window.GV_NAV_HIPS_ZOOM_RESUME_TIMER);window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;}
     window.GV_NAV_HIPS_ZOOM_SUSPENDED=true;
@@ -2419,7 +2419,7 @@ function releaseZoom(){
 for(const ev of ['pointerdown','pointermove'])zoomControl.hit.addEventListener(ev,e=>{if(ev==='pointermove'&&e.buttons===0)return;e.preventDefault();e.stopPropagation();setZoomCommandFromY(e.clientY)},{passive:false});
 for(const ev of ['pointerup','pointercancel','pointerleave'])zoomControl.hit.addEventListener(ev,e=>{e.stopPropagation();releaseZoom()},{passive:true});
 
-// BUILD 0019: extend the existing HiPS fetch gate to native Aladin wheel and pinch zoom.
+// BUILD 0018: extend the existing HiPS fetch gate to native Aladin wheel and pinch zoom.
 // Capture only zoom gestures inside the Aladin viewer; do not intercept clicks or panning.
 // Debounced resume is handled by gvResumeHiPSAfterManualZoom() (350 ms after the last gesture).
 let gvNativePinchZoomActive=false;
