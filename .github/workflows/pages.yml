@@ -124,7 +124,7 @@ jobs:
           # two seconds of travel; older builds retain the verified T-8 gate.
           if active_build == '0018':
               assert 'window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<(1-2/durationSeconds);' in rc, 'Build 0018 first-trip HiPS gate must resume only for the final two seconds'
-              assert 'window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<(1-2/duration));' in rc, 'Build 0018 direct-trip HiPS gate must resume only for the final two seconds'
+              assert 'window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<(1-2/durationSeconds));' in rc, 'Build 0018 direct-trip HiPS gate must resume only for the final two seconds'
           else:
               assert 'window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<tMinusEightThreshold;' in rc, 'first-trip polling must stay suspended through arrival'
               assert 'window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<tMinusEightThreshold);' in rc, 'HiPS traffic must remain suspended until T-8'
