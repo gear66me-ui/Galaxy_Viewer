@@ -587,15 +587,18 @@ jobs:
 
 
       - name: Configure Pages
+        if: ${{ steps.scope.outputs.workflow_only != 'true' }}
         uses: actions/configure-pages@v5
 
       - name: Upload site artifact
+        if: ${{ steps.scope.outputs.workflow_only != 'true' }}
         uses: actions/upload-pages-artifact@v3
         with:
           name: galaxy-pages-${{ github.run_id }}-${{ github.run_attempt }}
           path: .
 
       - name: Remove orphaned GitHub Pages deployment record
+        if: ${{ steps.scope.outputs.workflow_only != 'true' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -648,6 +651,7 @@ jobs:
           echo "Orphaned deployment record cleanup complete."
 
       - name: Deploy to GitHub Pages
+        if: ${{ steps.scope.outputs.workflow_only != 'true' }}
         id: deployment
         uses: actions/deploy-pages@v4
         with:
