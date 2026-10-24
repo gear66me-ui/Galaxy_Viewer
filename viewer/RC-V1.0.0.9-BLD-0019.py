@@ -7,7 +7,7 @@ import json
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.9"
 BUILD_NUMBER = "0019"
-# Build 0019: keep HiPS tile traffic suspended until the final two seconds of travel (first trip and direct trip). Release gate also validates the inherited distance/scale contracts.
+# Build 0019: cap manual zoom FOV sampling at 10 Hz; retain Build 0018 HiPS suspension behavior.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
 
