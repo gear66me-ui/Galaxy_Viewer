@@ -36,7 +36,8 @@ import java.net.URL;
 
 public final class MainActivity extends Activity {
   private static final String POINTER="https://gear66me-ui.github.io/Galaxy_Viewer/viewer/Web-Browser/web-browser-current.json";
-  private WebView top, web, bottom, viewerWeb;
+  private WebView top, web, bottom, viewerWeb, providerPopup;
+  private FrameLayout rootFrame;
   private LinearLayout browserLayer;
   private FrameLayout providerFrame;
   private View navigationCover=null;
@@ -51,7 +52,7 @@ public final class MainActivity extends Activity {
     super.onCreate(b); immersive();
     assetLoader=new WebViewAssetLoader.Builder().addPathHandler("/assets/",new WebViewAssetLoader.AssetsPathHandler(this)).build();
 
-    FrameLayout root=new FrameLayout(this); root.setBackgroundColor(Color.BLACK);
+    FrameLayout root=new FrameLayout(this); rootFrame=root; root.setBackgroundColor(Color.BLACK);
     viewerWeb=viewer();
     viewerWeb.addJavascriptInterface(new ViewerBridge(),"GVNative");
     root.addView(viewerWeb,new FrameLayout.LayoutParams(-1,-1));
@@ -84,7 +85,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(false); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setAllowFileAccess(false); s.setAllowContentAccess(false);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0058");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0059");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
@@ -131,25 +132,21 @@ public final class MainActivity extends Activity {
   // Destroy the old WebView to release its page/renderer references; do not purge the
   // app-wide HTTP cache here, because that creates avoidable repeat downloads and is not
   // a reliable way to release renderer/GPU memory. Cookies and DOM storage are preserved.
-  private void retireProviderWebView(){
+  private void disposePopupWebView(){
+    WebView old=providerPopup; providerPopup=null;
+    if(old!=null){try{old.stopLoading();}catch(Exception ignored){} try{ViewGroup parent=(ViewGroup)old.getParent();if(parent!=null)parent.removeView(old);}catch(Exception ignored){} try{old.removeAllViews();}catch(Exception ignored){} try{old.destroy();}catch(Exception ignored){}}
+  }
+  private void disposeProviderWebView(){
     if(pendingProviderLaunch!=null&&web!=null)web.removeCallbacks(pendingProviderLaunch);
     pendingProviderLaunch=null;
     if(prerenderSignal!=null){try{prerenderSignal.cancel();}catch(Exception ignored){}prerenderSignal=null;}
-    WebView old=web;
-    web=null;
-    if(old!=null){
-      try{old.stopLoading();}catch(Exception ignored){}
-      try{old.clearHistory();}catch(Exception ignored){}
-      try{ViewGroup parent=(ViewGroup)old.getParent();if(parent!=null)parent.removeView(old);}catch(Exception ignored){}
-      try{old.removeAllViews();}catch(Exception ignored){}
-      try{old.destroy();}catch(Exception ignored){}
-    }
-    pageReadyUrl="";
-    loadingProviderUrl="";
-    prewarmReadyUrl="";
-    providerHandoffElapsed=false;
-    web=createProviderWebView();
+    disposePopupWebView();
+    WebView old=web; web=null;
+    if(old!=null){try{old.stopLoading();}catch(Exception ignored){} try{old.clearHistory();}catch(Exception ignored){} try{ViewGroup parent=(ViewGroup)old.getParent();if(parent!=null)parent.removeView(old);}catch(Exception ignored){} try{old.removeAllViews();}catch(Exception ignored){} try{old.destroy();}catch(Exception ignored){}}
+    pageReadyUrl=""; loadingProviderUrl=""; prewarmReadyUrl=""; providerHandoffElapsed=false;
   }
+  private void ensureProviderWebView(){if(web==null)web=createProviderWebView();}
+  private void retireProviderWebView(){disposeProviderWebView();ensureProviderWebView();}
   private WebView provider(){
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
@@ -158,15 +155,17 @@ public final class MainActivity extends Activity {
     s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0057");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
-        WebView popup=new WebView(MainActivity.this); WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);
+        disposePopupWebView();
+        WebView popup=new WebView(MainActivity.this); providerPopup=popup; WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);
         popup.setWebViewClient(new WebViewClient(){
           private boolean handedOff=false;
-          private boolean handoff(String url){ if(handedOff||url==null||url.isEmpty()||"about:blank".equals(url))return false; handedOff=true; web.loadUrl(url); popup.destroy(); return true; }
+          private boolean handoff(String url){ if(handedOff||url==null||url.isEmpty()||"about:blank".equals(url))return false; handedOff=true; if(web!=null)web.loadUrl(url); return true; }
           @Override public boolean shouldOverrideUrlLoading(WebView v,WebResourceRequest r){ return handoff(r.getUrl()==null?null:r.getUrl().toString()); }
           @Override public boolean shouldOverrideUrlLoading(WebView v,String url){ return handoff(url); }
         });
         WebView.WebViewTransport transport=(WebView.WebViewTransport)resultMsg.obj; transport.setWebView(popup); resultMsg.sendToTarget(); return true;
       }
+      @Override public void onCloseWindow(WebView window){ if(window==providerPopup)disposePopupWebView(); }
       @Override public void onShowCustomView(View view,CustomViewCallback callback){
         if(fullscreenView!=null){callback.onCustomViewHidden();return;}
         fullscreenView=view; fullscreenCallback=callback;
@@ -187,9 +186,13 @@ public final class MainActivity extends Activity {
       @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){
         if(browserMode&&url!=null&&!"about:blank".equals(url))loadingProviderUrl=url;
       }
+      @Override public void onRenderProcessGone(WebView view,android.webkit.RenderProcessGoneDetail detail){
+        if(view==web){ disposeProviderWebView(); if(browserMode&&sourceUrl!=null&&(sourceUrl.startsWith("https://")||sourceUrl.startsWith("http://"))){ensureProviderWebView();web.loadUrl(sourceUrl);} }
+      }
       @Override public void onPageFinished(WebView view,String url){
         if(url!=null){
           pageReadyUrl=url;
+          if(providerPopup!=null)disposePopupWebView();
           if(!browserMode&&url.equals(prewarmedUrl))prewarmReadyUrl=url;
         }
         if(browserMode){
@@ -228,6 +231,7 @@ public final class MainActivity extends Activity {
   private boolean launchPrewarm(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); return d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())&&"prewarm".equalsIgnoreCase(d.getQueryParameter("mode")); }catch(Exception ignored){} return false; }
   private void prewarmProvider(String u){
     if(u==null||!u.startsWith("https://"))return;
+    ensureProviderWebView();
     if(u.equals(prewarmedUrl)&&web!=null&&(u.equals(web.getUrl())||u.equals(prewarmReadyUrl)))return;
     if(prerenderSignal!=null){ try{prerenderSignal.cancel();}catch(Exception ignored){} prerenderSignal=null; }
     // A newer galaxy supersedes the previous page. Recreate the hidden provider WebView,
@@ -259,6 +263,7 @@ public final class MainActivity extends Activity {
   // Reveal no earlier than 2,000 ms after the button action, and only after the destination finishes.
   // Preserve WebView cache, cookies, and storage.
   private void openProvider(String u,String icon){
+    ensureProviderWebView();
     browserMode=true;
     clearProviderEntryHistory=true;
     pendingProviderUrl=u;
@@ -295,7 +300,7 @@ public final class MainActivity extends Activity {
   private void notifyViewerResumed(){
     if(viewerWeb!=null)viewerWeb.evaluateJavascript("window.dispatchEvent(new CustomEvent('gv-native-viewer-resumed'))",null);
   }
-  private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); notifyViewerResumed(); }
+  private void returnToViewer(){ browserMode=false; if(browserLayer!=null)browserLayer.setVisibility(View.GONE); disposeProviderWebView(); notifyViewerResumed(); }
   private void escapeToFreshViewer(){
     if(fullscreenView!=null){
       try{ ViewGroup parent=(ViewGroup)fullscreenView.getParent(); if(parent!=null)parent.removeView(fullscreenView); }catch(Exception ignored){}
@@ -307,7 +312,7 @@ public final class MainActivity extends Activity {
     pendingProviderUrl="";
     pendingProviderIcon="";
     sourceUrl="";
-    if(web!=null){ try{web.stopLoading();}catch(Exception ignored){} }
+    disposeProviderWebView();
     if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
     launchGalaxyViewer();
   }
@@ -321,7 +326,7 @@ public final class MainActivity extends Activity {
     while((x=r.readLine())!=null)b.append(x); r.close(); return new JSONObject(b.toString());
   }
   private void syncShell(){
-    if(top==null)return; String js="javascript:if(window.setBrowserState)window.setBrowserState("+JSONObject.quote(sourceUrl)+","+JSONObject.quote(providerIcon)+","+(web.canGoBack()?"true":"false")+","+(web.canGoForward()?"true":"false")+")";
+    if(top==null)return; String js="javascript:if(window.setBrowserState)window.setBrowserState("+JSONObject.quote(sourceUrl)+","+JSONObject.quote(providerIcon)+","+(web!=null&&web.canGoBack()?"true":"false")+","+(web!=null&&web.canGoForward()?"true":"false")+")";
     top.loadUrl(js);
   }
   public final class ViewerBridge{
@@ -338,7 +343,7 @@ public final class MainActivity extends Activity {
     if(prerenderSignal!=null){try{prerenderSignal.cancel();}catch(Exception ignored){}prerenderSignal=null;}
     prewarmedUrl="";
     prewarmReadyUrl="";
-    if(!browserMode&&web!=null)retireProviderWebView();
+    if(!browserMode&&web!=null)disposeProviderWebView();
   }
   public final class Bridge{
     @JavascriptInterface public void back(){runOnUiThread(()->{restoreProviderHome();});}
@@ -357,6 +362,12 @@ public final class MainActivity extends Activity {
     web.loadUrl(providerHomeUrl);
   }
   private void immersive(){getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}
+  @Override protected void onDestroy(){
+    browserMode=false; disposeProviderWebView();
+    WebView[] others={top,bottom,viewerWeb};
+    for(WebView v:others)if(v!=null){try{v.stopLoading();}catch(Exception ignored){} try{ViewGroup parent=(ViewGroup)v.getParent();if(parent!=null)parent.removeView(v);}catch(Exception ignored){} try{v.removeAllViews();}catch(Exception ignored){} try{v.destroy();}catch(Exception ignored){}}
+    top=null;bottom=null;viewerWeb=null;super.onDestroy();
+  }
   @Override public void onWindowFocusChanged(boolean h){super.onWindowFocusChanged(h);if(h)immersive();}
   @Override public void onBackPressed(){if(browserMode){escapeToFreshViewer();}else{launchGalaxyViewer();}}
   private int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);}
