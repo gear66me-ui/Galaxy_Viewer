@@ -2314,15 +2314,11 @@ function gvSetZoomCommand(command){
     zoomCommand=requested;
     zoomControl.thumb.style.top=`${zoomControl.rail.offsetTop+((zoomCommand+1)/2)*zoomControl.rail.offsetHeight}px`;
 }
-let gvLastZoomFrameAt=0;
-const GV_ZOOM_RATE_PER_SECOND=.6; // exponential FOV change per second at full slider deflection
+// BUILD 0026 TEST: archive-style fixed exponential step per animation frame.
 function zoomStep(){
     zoomFrame=0;
     if(!zoomCommand)return;
     try{
-        const now=performance.now();
-        const dt=Math.min(50,Math.max(0,gvLastZoomFrameAt?now-gvLastZoomFrameAt:0));
-        gvLastZoomFrameAt=now;
         const raw=aladin.getFov?.(),current=Number(Array.isArray(raw)?raw[0]:raw);
         if(Number.isFinite(current)&&current>0){
             if(gvAutoZoom){
