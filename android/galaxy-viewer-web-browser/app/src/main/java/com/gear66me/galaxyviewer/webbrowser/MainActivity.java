@@ -186,8 +186,9 @@ public final class MainActivity extends Activity {
       @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){
         if(browserMode&&url!=null&&!"about:blank".equals(url))loadingProviderUrl=url;
       }
-      @Override public void onRenderProcessGone(WebView view,android.webkit.RenderProcessGoneDetail detail){
+      @Override public boolean onRenderProcessGone(WebView view,android.webkit.RenderProcessGoneDetail detail){
         if(view==web){ disposeProviderWebView(); if(browserMode&&sourceUrl!=null&&(sourceUrl.startsWith("https://")||sourceUrl.startsWith("http://"))){ensureProviderWebView();web.loadUrl(sourceUrl);} }
+        return true;
       }
       @Override public void onPageFinished(WebView view,String url){
         if(url!=null){
@@ -357,7 +358,8 @@ public final class MainActivity extends Activity {
       if(fullscreenCallback!=null){ try{fullscreenCallback.onCustomViewHidden();}catch(Exception ignored){} fullscreenCallback=null; }
       if(browserMode&&browserLayer!=null)browserLayer.setVisibility(View.VISIBLE);
     }
-    if(web==null||providerHomeUrl==null||providerHomeUrl.isEmpty()){syncShell();return;}
+    if(providerHomeUrl==null||providerHomeUrl.isEmpty()){syncShell();return;}
+    ensureProviderWebView();
     web.stopLoading();
     web.loadUrl(providerHomeUrl);
   }
