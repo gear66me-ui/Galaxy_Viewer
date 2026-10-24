@@ -1622,7 +1622,7 @@
       "dec": 39.4058333333,
       "raText": "12 10 32.6",
       "decText": "+39 24 21",
-      "distance": "16.438 million light-years",
+      "distance": "43 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": 0.09087328233251941,
       "orientation": 327,
@@ -1646,8 +1646,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 16.438281,
-        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceMly": 43,
+        "distanceMethod": "Chandra NASA publication; 43 million light-years",
         "sizeKly": [
           53.866,
           53.866
@@ -1663,11 +1663,11 @@
         "redshiftDisplay": "EST. z 0.004443",
         "redshiftEstimated": true,
         "redshiftMethod": "inverted_comoving_distance_flat_lcdm_H0_70_Om_0.3",
-        "distanceDisplay": "16.438 million light-years",
+        "distanceDisplay": "43 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
         "sizeDisplay": "EST. 53.9 × 53.9 KLY",
-        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
+        "distanceEvidence": "NASA Chandra 2011 NGC 4151 source publication; adopted user-approved value of 43 million light-years"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "NGC 4151",
