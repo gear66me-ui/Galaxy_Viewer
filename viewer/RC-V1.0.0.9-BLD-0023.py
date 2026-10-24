@@ -6,7 +6,7 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.9"
-# Release validation: HD cache module 0061
+# Release validation: HD cache module 0061; immutable raw source URL validated
 BUILD_NUMBER = "0023"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
