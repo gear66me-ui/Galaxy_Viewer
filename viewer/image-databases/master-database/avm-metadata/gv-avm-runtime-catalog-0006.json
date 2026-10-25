@@ -11645,9 +11645,21 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 300,
-      "science": {},
-      "redshift": 0.020844
+      "distanceMly": 290,
+      "science": {
+        "distanceMly": 290,
+        "distanceDisplay": "290.00 million light-years",
+        "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+        "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+        "redshift": 0.020145,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
+      },
+      "redshift": 0.020145,
+      "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+      "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
     },
     {
       "providerKey": "hubble",
@@ -23527,9 +23539,21 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 300,
-      "science": {},
-      "redshift": 0.020844
+      "distanceMly": 290,
+      "science": {
+        "distanceMly": 290,
+        "distanceDisplay": "290.00 million light-years",
+        "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+        "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+        "redshift": 0.020145,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
+      },
+      "redshift": 0.020145,
+      "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+      "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
     },
     {
       "providerKey": "hubble",
@@ -36313,9 +36337,21 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 300,
-      "science": {},
-      "redshift": 0.020844
+      "distanceMly": 290,
+      "science": {
+        "distanceMly": 290,
+        "distanceDisplay": "290.00 million light-years",
+        "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+        "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+        "redshift": 0.020145,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
+      },
+      "redshift": 0.020145,
+      "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+      "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
     },
     {
       "providerKey": "hubble",
@@ -40725,20 +40761,24 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 300,
+      "distanceMly": 290,
       "science": {
-        "distanceMly": 300,
-        "distanceDisplay": "300.00 million light-years",
-        "distanceMethod": "published_provider_page_distance_from_saved_audit_csv",
-        "distanceSource": "https://esahubble.org/images/opo0122f/",
+        "distanceMly": 290,
+        "distanceDisplay": "290.00 million light-years",
+        "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+        "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
         "distanceEvidence": "Distance: 300 million light years",
         "distanceVerified": true,
-        "redshift": 0.0204244,
-        "redshiftMethod": "flat_LCDM_from_published_distance_H0_67.6_Om_0.315",
-        "redshiftSource": "https://esahubble.org/images/opo0122f/",
+        "redshift": 0.020145,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance",
         "redshiftEvidence": "Calculated from provider-published distance 300.000000 Mly assuming luminosity distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315)."
       },
-      "redshift": 0.0204244
+      "redshift": 0.020145,
+      "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+      "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
     },
     {
       "providerKey": "hubble",
@@ -40911,9 +40951,21 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 300,
-      "science": {},
-      "redshift": 0.020844
+      "distanceMly": 290,
+      "science": {
+        "distanceMly": 290,
+        "distanceDisplay": "290.00 million light-years",
+        "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+        "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+        "redshift": 0.020145,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
+      },
+      "redshift": 0.020145,
+      "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+      "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
     },
     {
       "providerKey": "hubble",
@@ -48703,9 +48755,21 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.01,
-      "science": {},
-      "redshift": 0.000001
+      "distanceMly": 0.008,
+      "science": {
+        "distanceMly": 0.008,
+        "distanceDisplay": "8,000 light-years",
+        "distanceMethod": "published_distance_8000_light_years",
+        "distanceSource": "User-provided source record: NGC 5307 / IRAS 13478-5057 distance 8,000 light-years",
+        "redshift": 0.000001,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 0.008 Mly comoving distance"
+      },
+      "redshift": 0.000001,
+      "distanceMethod": "published_distance_8000_light_years",
+      "distanceSource": "User-provided source record: NGC 5307 / IRAS 13478-5057 distance 8,000 light-years",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 0.008 Mly comoving distance"
     },
     {
       "providerKey": "hubble",
@@ -50041,9 +50105,21 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 3.170319,
-      "science": {},
-      "redshift": 0.000219
+      "distanceMly": 0.008,
+      "science": {
+        "distanceMly": 0.008,
+        "distanceDisplay": "8,000 light-years",
+        "distanceMethod": "published_distance_8000_light_years",
+        "distanceSource": "User-provided source record: IRAS 13478-5057 / NGC 5307 distance 8,000 light-years",
+        "redshift": 0.000001,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 0.008 Mly comoving distance"
+      },
+      "redshift": 0.000001,
+      "distanceMethod": "published_distance_8000_light_years",
+      "distanceSource": "User-provided source record: IRAS 13478-5057 / NGC 5307 distance 8,000 light-years",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 0.008 Mly comoving distance"
     },
     {
       "providerKey": "hubble",
@@ -52791,9 +52867,21 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.01,
-      "science": {},
-      "redshift": 0.000001
+      "distanceMly": 0.008,
+      "science": {
+        "distanceMly": 0.008,
+        "distanceDisplay": "8,000 light-years",
+        "distanceMethod": "published_distance_8000_light_years",
+        "distanceSource": "User-provided source record: NGC 5307 / IRAS 13478-5057 distance 8,000 light-years",
+        "redshift": 0.000001,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 0.008 Mly comoving distance"
+      },
+      "redshift": 0.000001,
+      "distanceMethod": "published_distance_8000_light_years",
+      "distanceSource": "User-provided source record: NGC 5307 / IRAS 13478-5057 distance 8,000 light-years",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 0.008 Mly comoving distance"
     },
     {
       "providerKey": "hubble",
@@ -53622,20 +53710,24 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 40,
+      "distanceMly": 290,
       "science": {
-        "distanceMly": 40,
-        "distanceDisplay": "40.00 million light-years",
-        "distanceMethod": "published_provider_page_distance_from_saved_audit_csv",
-        "distanceSource": "https://esawebb.org/images/potm2207a/",
+        "distanceMly": 290,
+        "distanceDisplay": "290.00 million light-years",
+        "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+        "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
         "distanceEvidence": "resides 40 million light-years from Earth",
         "distanceVerified": true,
-        "redshift": 0.0027596,
-        "redshiftMethod": "flat_LCDM_from_published_distance_H0_67.6_Om_0.315",
-        "redshiftSource": "https://esawebb.org/images/potm2207a/",
+        "redshift": 0.020145,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance",
         "redshiftEvidence": "Calculated from provider-published distance 40.000000 Mly assuming luminosity distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315)."
       },
-      "redshift": 0.0027596
+      "redshift": 0.020145,
+      "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+      "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
     },
     {
       "providerKey": "jwst",
@@ -69869,9 +69961,21 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 300,
-      "science": {},
-      "redshift": 0.020844
+      "distanceMly": 290,
+      "science": {
+        "distanceMly": 290,
+        "distanceDisplay": "290.00 million light-years",
+        "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+        "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+        "redshift": 0.020145,
+        "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+        "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
+      },
+      "redshift": 0.020145,
+      "distanceMethod": "adopted_290_Mly_corrected_runtime_value",
+      "distanceSource": "ESA/Webb JWST archive page for Stephan's Quintet; user-confirmed adopted distance 290 Mly",
+      "redshiftMethod": "flat_LCDM_comoving_distance_inversion_H0_67.6_Om_0.315",
+      "redshiftSource": "Galaxy Viewer FLRW back-calculation from adopted 290 Mly comoving distance"
     },
     {
       "providerKey": "spitzer",
@@ -70679,7 +70783,30 @@
       "hubble": 295,
       "jwst": 20,
       "noirlab": 27
+    },
+    "lastTargetedCorrection": {
+      "stephanQuintet": {
+        "distanceMly": 290,
+        "redshift": 0.020145,
+        "recordsUpdated": 7
+      },
+      "iras13478_5057": {
+        "distanceMly": 0.008,
+        "redshift": 0.000001,
+        "recordsUpdated": 1
+      },
+      "ngc5307": {
+        "distanceMly": 0.008,
+        "redshift": 0.000001,
+        "recordsUpdated": 2
+      },
+      "cosmology": {
+        "H0_km_s_Mpc": 67.6,
+        "OmegaM": 0.315,
+        "OmegaLambda": 0.685,
+        "distanceInterpretation": "comoving radial distance"
+      }
     }
   },
-  "changeNote": "M77 distance corrected to 49.00 Mly; redshift recomputed from flat Lambda-CDM comoving distance (H0=67.6 km/s/Mpc, Omega_m=0.315)."
+  "changeNote": "Corrected Stephan's Quintet to 290 Mly and corrected IRAS 13478-5057 / NGC 5307 to 8,000 light-years; redshifts recomputed from flat Lambda-CDM comoving distances (H0=67.6 km/s/Mpc, Omega_m=0.315)."
 }
