@@ -7,7 +7,7 @@ import json
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.9"
 # BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
-BUILD_NUMBER = "0032"
+BUILD_NUMBER = "0033"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
@@ -30,7 +30,7 @@ COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc3
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7dcd8a191372e112b07bb20d0518a739a7c05865/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0003"
-GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
+GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@34d6f9b9417438afd56317bc838b93eb655c7d15/viewer/modules/galaxy-navigator/gv-galaxy-navigator-014.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js"
 
 # ============================================================================
@@ -89,7 +89,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.9';
-const GV200001_BUILD='0032';
+const GV200001_BUILD='0033';
 const GV_RUNTIME='0133';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.9-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -109,7 +109,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
-    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@10ae327ec7ab126627cc1e482e27828075bbf4f4/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
+    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@34d6f9b9417438afd56317bc838b93eb655c7d15/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@08e7c8cae3f90fc66b0e9a4925d70047c98854d1/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1295c0303335bf990ef3c01b64f95e40697bfc6d/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
 });
@@ -2016,7 +2016,7 @@ function gvMemoryDiagnosticSnapshot(reason='periodic'){
     let imageNodes=0,canvasNodes=0,searchThumbnails=0;
     try{imageNodes=document.querySelectorAll('img').length;canvasNodes=document.querySelectorAll('canvas').length;searchThumbnails=document.querySelectorAll('.gv-search-result-thumb img').length}catch(_){}
     let pendingPrewarm=!!gvNextTripPrewarm;
-    const snapshot={build:GV200001_BUILD,reason,at:Math.round(performance.now()),heap,hd:typeof gvHdResourceSnapshot==='function'?gvHdResourceSnapshot():null,prewarm:pendingPrewarm,prewarmGeneration:typeof gvNextTripPrewarmGeneration!=='undefined'?gvNextTripPrewarmGeneration:null,prewarmPrepared:typeof gvNextTripPrewarm!=='undefined'&&!!gvNextTripPrewarm?.preparedValue,objectUrls:typeof gvHdObjectUrls!=='undefined'?gvHdObjectUrls.length:null,cleanObjectUrls:typeof gvCleanImageObjectUrls!=='undefined'?gvCleanImageObjectUrls.length:null,constellationArtwork:typeof gvConstellationArtworkPrewarm!=='undefined'?gvConstellationArtworkPrewarm.size:null,providerOrigins:typeof gvProviderPortalOrigins!=='undefined'?gvProviderPortalOrigins.length:null,images:imageNodes,searchThumbnails,canvases:canvasNodes,travel:!!gvNavigationTravelActive,hipsSuspended:!!window.GV_NAV_HIPS_FETCH_SUSPENDED};
+    let navigatorThumbnails=null,providerArtworkCache=null;try{if(typeof window.GV_NAVIGATOR_MEMORY_SNAPSHOT==='function')navigatorThumbnails=window.GV_NAVIGATOR_MEMORY_SNAPSHOT()}catch(_){}try{if(window.GVProviderArtwork&&typeof window.GVProviderArtwork.cacheDiagnostics==='function')providerArtworkCache=window.GVProviderArtwork.cacheDiagnostics()}catch(_){}const snapshot={build:GV200001_BUILD,reason,at:Math.round(performance.now()),heap,hd:typeof gvHdResourceSnapshot==='function'?gvHdResourceSnapshot():null,prewarm:pendingPrewarm,prewarmGeneration:typeof gvNextTripPrewarmGeneration!=='undefined'?gvNextTripPrewarmGeneration:null,prewarmPrepared:typeof gvNextTripPrewarm!=='undefined'&&!!gvNextTripPrewarm?.preparedValue,objectUrls:typeof gvHdObjectUrls!=='undefined'?gvHdObjectUrls.length:null,cleanObjectUrls:typeof gvCleanImageObjectUrls!=='undefined'?gvCleanImageObjectUrls.length:null,constellationArtwork:typeof gvConstellationArtworkPrewarm!=='undefined'?gvConstellationArtworkPrewarm.size:null,providerOrigins:typeof gvProviderPortalOrigins!=='undefined'?gvProviderPortalOrigins.length:null,images:imageNodes,searchThumbnails,canvases:canvasNodes,navigatorThumbnails,providerArtworkCache,travel:!!gvNavigationTravelActive,hipsSuspended:!!window.GV_NAV_HIPS_FETCH_SUSPENDED};
     console.info('GV MEMORY WORKLOAD SNAPSHOT',snapshot);
     return snapshot;
 }
@@ -2048,7 +2048,7 @@ function gvMandatoryImageMemorySweep(reason='galaxy-arrival'){
         for(const canvas of document.querySelectorAll('canvas[data-gv-transient="1"]')){canvas.width=0;canvas.height=0;canvas.remove()}
     }catch(_){}
     gvMemoryDiagnosticSnapshot('arrival:'+reason);
-    void gvClearObsoleteImageCaches(reason);
+    gvClearObsoleteImageCaches(reason).then(result=>console.info('GV MEMORY SWEEP CACHE OUTCOME',{reason,...result})).catch(error=>console.warn('GV MEMORY SWEEP CACHE OUTCOME FAILED',{reason,error:String(error)}));
 }
 
 function gvStartMemoryDiagnostics(){
