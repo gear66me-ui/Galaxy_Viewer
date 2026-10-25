@@ -2106,8 +2106,17 @@ async function gvRuntimeAvmRecord(destination){
     const record=catalog.byUrl.get(url)||catalog.byId.get(id);
     if(!record)throw new Error('GV AVM RUNTIME RECORD MISSING: '+(url||id));
     // BUILD 0035 targeted correction: ESO potw1007a / NGC 4945 is rendered 90 deg off.
-    // Apply the camera-convention correction only to this archive image; preserve source AVM metadata.
-    const effectiveRecord=id==='potw1007a'?{...record,aladinRotation:45}:record;
+    // Apply the camera-convention correction only to this archive image.
+    // NGC 7331 Spitzer ssc2004-12a1: published source image is 1239x805 px and 12.6x8.2 arcmin.
+    // The catalog's 2.68x2.01 arcmin describes the galaxy footprint, not the full image footprint;
+    // the runtime scalar FOV had been copied to both axes, causing a horizontally compressed registration.
+    const effectiveRecord=id==='potw1007a'
+        ?{...record,aladinRotation:45}
+        :(id==='ssc2004-12a1'||/ssc2004-12a1/i.test(url))
+            ?{...record,fovXDegrees:0.21,fovYDegrees:8.2/60,fovDegrees:0.21,
+                fieldOfViewDegrees:{widthDegrees:0.21,heightDegrees:8.2/60,effectiveDegrees:Math.sqrt(0.21*(8.2/60))},
+                referenceDimension:[1239,805]}
+            :record;
     const recordUrl=gvCanonicalAvmImageUrl(effectiveRecord?.imageUrl).toLowerCase();
     if(url&&recordUrl!==url)throw new Error('GV AVM RUNTIME IMAGE MISMATCH: destination='+url+' record='+recordUrl);
     return effectiveRecord;
