@@ -154,6 +154,10 @@ jobs:
               assert 'const GV_MEMORY_DIAGNOSTIC_MS=30*1000' in rc, 'Roll 0032 memory diagnostics must run every 30 seconds'
               assert 'async function gvClearObsoleteImageCaches' in rc, 'Roll 0032 targeted CacheStorage purge missing'
               assert "cache:'no-store'" in rc, 'Roll 0032 HD image requests must bypass HTTP cache reads'
+              warm_start=rc.find('async function gvWarmSurveyThumbnailPack')
+              warm_end=rc.find('const gvSurveyThumbnailPackReady', warm_start)
+              assert warm_start>=0 and warm_end>warm_start and "cache:'force-cache'" not in rc[warm_start:warm_end], 'Roll 0032 survey thumbnail image warming must not repopulate HTTP cache'
+
 
 
           pins=sorted(set(re.findall(r'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})',rc)))
