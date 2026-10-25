@@ -573,7 +573,7 @@
       "decText": "34° 24' 31.42\"",
       "distance": "45 million light years",
       "constellation": "Pegasus",
-      "fieldOfView": "2.68 x 2.01 arcminutes",
+      "fieldOfView": "12.6 x 8.2 arcminutes",
       "orientation": "North is 56.3° right of vertical",
       "imageType": "Observation",
       "releaseDate": "2004-06-28",
@@ -648,12 +648,12 @@
       "creditExact": true,
       "navigationStatus": "complete",
       "fieldOfViewDegrees": {
-        "widthDegrees": 0.04466666666666667,
-        "heightDegrees": 0.033499999999999995,
-        "effectiveDegrees": 0.16436829551609933
+        "widthDegrees": 0.21,
+        "heightDegrees": 0.13666666666666666,
+        "effectiveDegrees": 0.169411...?
       },
       "orientationDegrees": 56.3,
-      "fovDegrees": 0.16436829551609933,
+      "fovDegrees": 0.21,
       "aladinRotation": 102.89999999999998
     },
     {
