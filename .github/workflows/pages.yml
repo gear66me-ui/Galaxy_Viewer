@@ -218,7 +218,7 @@ jobs:
           else:
               assert 'gvShowEarthDistance(nearest);' in rc and 'const record=await gvRuntimeAvmRecord(destination);' in rc, 'Live-center matching must resolve the runtime catalog 0006 record'
           assert "return (v/1000).toFixed(2)+' BLY'" in rc and "return v.toFixed(2)+' MLY'" in rc and "return (v*1000).toFixed(2)+' KLY'" in rc and 'destination?.distanceMly' in rc and "const text=gvFormatEarthDistance(runtimeDestination);" in rc, 'Earth banner must display runtime distance only; redshift remains catalog metadata'
-          if active_build == '0028':
+          if active_build in ('0028', '0029'):
               assert 'gvInstallEarthDistanceInteractionListeners();' in rc and 'setInterval(()=>{gvInstallEarthDistanceInteractionListeners();' not in rc, 'Build 0028 must install Earth-distance listeners once, not from a polling loop'
               assert "setInterval(()=>{if(document.visibilityState==='visible'&&!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},250)" in rc, 'Build 0028 Earth-distance fallback must run every 250 ms only while visible'
           else:
