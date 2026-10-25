@@ -90,21 +90,30 @@ jobs:
                       dk = next((k for k in obj if k.lower() in ("distancemly","distance_mly")), None)
                       zk = next((k for k in obj if k.lower() in ("redshift","redshiftz")), None)
                       if dk and zk: matches.append((obj,p,dk,zk,True,False))
-          if len(matches) != 1:
-              raise SystemExit(f"STOP: expected exactly one NGC 1300 runtime record with distance/redshift fields; found {len(matches)}. No catalog file changed.")
-          obj,p,dk,zk,_,_ = matches[0]
-          old_d, old_z = obj[dk], obj[zk]
-          obj[dk], obj[zk] = round(target_mly, 6), round(z, 8)
-          # Keep any duplicated standard science distance field consistent within this record.
-          for k in list(obj):
-              if k.lower() in ("sciencedistancemly", "distance_mly", "distancemly"):
-                  obj[k] = round(target_mly, 6)
+          if len(matches) < 1:
+              raise SystemExit("STOP: no NGC 1300 records with distance/redshift fields found; catalog unchanged.")
+          # Runtime catalog contains provider-specific records for this same galaxy.
+          # Update each matched NGC 1300 record, while avoiding duplicate nested containers.
+          seen = set()
+          changed = []
+          for obj,p,dk,zk,_,_ in matches:
+              if id(obj) in seen:
+                  continue
+              seen.add(id(obj))
+              old_d, old_z = obj[dk], obj[zk]
+              obj[dk], obj[zk] = round(target_mly, 6), round(z, 8)
+              for k in list(obj):
+                  if k.lower() in ("sciencedistancemly", "distance_mly", "distancemly"):
+                      obj[k] = round(target_mly, 6)
+              changed.append((p, old_d, old_z))
           encoded = json.dumps(data, ensure_ascii=False, indent=2) + "\n"
           json.loads(encoded)
           path.write_text(encoded, encoding="utf-8")
-          print(f"Updated NGC 1300 at {p}")
-          print(f"Distance: {old_d} -> {target_mly:.6f} Mly ({target_mpc:.6f} Mpc)")
-          print(f"Redshift: {old_z} -> {z:.8f} (flat LCDM; H0={H0}, Omega_m={omega_m})")
+          print(f"Updated {len(changed)} NGC 1300 records:")
+          for p,old_d,old_z in changed:
+              print(f"- {p}: distance {old_d} -> {target_mly:.6f} Mly; redshift {old_z} -> {z:.8f}")
+          print(f"Adopted distance: {target_mly:.6f} Mly ({target_mpc:.6f} Mpc)")
+          print(f"Flat LCDM parameters: H0={H0}, Omega_m={omega_m}")
           print("JSON serialization validation passed.")
           PY
       - name: Validate and commit repaired catalog
