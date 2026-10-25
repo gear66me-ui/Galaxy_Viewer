@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
-  "sourceCommit": "9fd29a891589677ff6e1092343a7d4b5af4d042f",
-  "build": "0029",
+  "sourceCommit": "1c7d23ba2e2f933e95973c50f11f83884c92b983",
+  "build": "0030",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.9-BLD-0029.py",
+    "viewer/RC-V1.0.0.9-BLD-0030.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -16,7 +16,7 @@
     "viewer/modules/random-galaxy/gv-random-travel-presentation-005.js",
     "viewer/modules/destination-presentation/gv-destination-presentation-0061.js",
     "viewer/modules/about/gv-about-presentation-0013.js",
-    "viewer/modules/hud/gv-heads-up-display-0003.js",
+    "viewer/modules/hud/gv-heads-up-display-0004.js",
     "viewer/gv-current-viewer.json"
   ],
   "catalogs": [
@@ -167,7 +167,7 @@
     "2b6b4c213eff923f89d41c148ad8d44699de0290",
     "83dbd940db9adf7933dbbbb80b6bd5a5c0bf2791",
     "1295c0303335bf990ef3c01b64f95e40697bfc6d",
-    "05bbc05de64ec46855f8a967bd9c8d80a6a3f690"
+    "3f370a1e93a83f18f484e348db65ca57d9aceb8d"
   ],
-  "validationProfile": "production-release-gate-1.0.0.9-build-0029-hud-false-negative-fix"
+  "validationProfile": "production-release-gate-1.0.0.9-build-0030-lightweight-hud-image-readiness"
 }
