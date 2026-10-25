@@ -2,17 +2,17 @@
   "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
   "sourceCommit": "2a16af437c6d9ab9e834a78f3a91dd78731b34bb",
-  "build": "0032",
+  "build": "0033",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.9-BLD-0032.py",
-    "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
+    "viewer/RC-V1.0.0.9-BLD-0033.py",
+    "viewer/modules/provider-artwork/gv-provider-artwork-0005.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
     "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js",
-    "viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js",
+    "viewer/modules/galaxy-navigator/gv-galaxy-navigator-014.js",
     "viewer/modules/random-galaxy/gv-random-travel-presentation-005.js",
     "viewer/modules/destination-presentation/gv-destination-presentation-0061.js",
     "viewer/modules/about/gv-about-presentation-0013.js",
@@ -167,7 +167,8 @@
     "2b6b4c213eff923f89d41c148ad8d44699de0290",
     "83dbd940db9adf7933dbbbb80b6bd5a5c0bf2791",
     "1295c0303335bf990ef3c01b64f95e40697bfc6d",
-    "acd66e473d4d3021b5f7915bb12898d863a489b8"
+    "acd66e473d4d3021b5f7915bb12898d863a489b8",
+    "34d6f9b9417438afd56317bc838b93eb655c7d15"
   ],
-  "validationProfile": "production-release-gate-1.0.0.9-build-0032-mandatory-image-memory-cleanup"
+  "validationProfile": "production-release-gate-1.0.0.9-build-0033-strict-memory-mitigation"
 }
