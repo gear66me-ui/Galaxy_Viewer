@@ -20407,7 +20407,7 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 100,
+      "distanceMly": 100.0,
       "science": {
         "distanceMly": 100,
         "distanceDisplay": "100.00 million light-years",
@@ -20420,7 +20420,7 @@
         "redshiftSource": "https://esahubble.org/images/potw2109a/",
         "redshiftEvidence": "Calculated from provider-published distance 100.000000 Mly assuming luminosity distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315)."
       },
-      "redshift": 0.0068775
+      "redshift": 0.00687751
     },
     {
       "providerKey": "hubble",
@@ -61745,9 +61745,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 102.4131,
+      "distanceMly": 100.0,
       "science": {},
-      "redshift": 0.007092
+      "redshift": 0.00687751
     },
     {
       "providerKey": "noirlab",
