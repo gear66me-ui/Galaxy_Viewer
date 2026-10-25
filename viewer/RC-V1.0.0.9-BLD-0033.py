@@ -974,7 +974,7 @@ const gvCosmicReveal=(()=>{
 // cache-busting query strings. Start the complete module set in parallel so a
 // cold CDN fetch for one module cannot serialize the entire boot sequence.
 await gvModuleLoadPromise;
-if(window.GVProviderArtwork?.VERSION!=='0004')throw new Error('PROVIDER ARTWORK 0004 EXPORT MISSING');
+if(window.GVProviderArtwork?.VERSION!=='0005')throw new Error('PROVIDER ARTWORK 0005 EXPORT MISSING');
 
 
 // ============================================================================
