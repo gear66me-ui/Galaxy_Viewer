@@ -1,13 +1,13 @@
 {
   "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
-  "sourceCommit": "af3ceddf244011bc529e39ecbecaa75ef6e02585",
-  "build": "0031",
+  "sourceCommit": "95cc05854b7396f081062dae43dc69c06f7fb5a9",
+  "build": "0032",
   "policy": "allowlist-only; no production runtime dependency may point to beta",
   "runtime": [
     "viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js",
     "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js",
-    "viewer/RC-V1.0.0.9-BLD-0031.py",
+    "viewer/RC-V1.0.0.9-BLD-0032.py",
     "viewer/modules/provider-artwork/gv-provider-artwork-0004.js",
     "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js",
     "viewer/modules/target-simbad/gv-target-simbad-0007.js",
@@ -169,5 +169,5 @@
     "1295c0303335bf990ef3c01b64f95e40697bfc6d",
     "acd66e473d4d3021b5f7915bb12898d863a489b8"
   ],
-  "validationProfile": "production-release-gate-1.0.0.9-build-0031-three-galaxy-hud-trip-planner"
+  "validationProfile": "production-release-gate-1.0.0.9-build-0032-mandatory-image-memory-cleanup"
 }
