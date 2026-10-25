@@ -62255,9 +62255,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 58.382,
+      "distanceMly": 80.0,
       "science": {},
-      "redshift": 0.00404
+      "redshift": 0.00550771
     },
     {
       "providerKey": "noirlab",
