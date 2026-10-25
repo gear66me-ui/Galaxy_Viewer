@@ -41105,7 +41105,7 @@
       "coordinateFrame": "ICRS",
       "distanceMly": 18,
       "science": {},
-      "redshift": 0.01
+      "redshift": 0.001245
     },
     {
       "providerKey": "hubble",
