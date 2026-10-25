@@ -2112,8 +2112,8 @@ async function gvRuntimeAvmRecord(destination){
 }
 function gvSyntheticWcsFromRuntimeRecord(record,width,height){
     const ra=Number(record?.ra),dec=Number(record?.dec);
-    const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
-    const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
+    const fovX=Number(record?.fovXDegrees??record?.fieldOfViewDegrees?.widthDegrees??record?.fovDegrees);
+    const fovY=Number(record?.fovYDegrees??record?.fieldOfViewDegrees?.heightDegrees??record?.fovHeightDegrees??record?.fovDegrees);
     const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg);
     if(!Number.isFinite(ra)||!Number.isFinite(dec))throw new Error('GV JSON WCS CENTER INVALID');
     if(!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0)throw new Error('GV JSON WCS FOV INVALID');
@@ -2146,8 +2146,8 @@ function gvTanPixelToWorld(wcs,x,y){
 }
 function gvRegisteredTravelStateFromRecord(record){
     const ra=Number(record?.ra),dec=Number(record?.dec);
-    const fovX=Number(record?.fovXDegrees??record?.fovDegrees);
-    const fovY=Number(record?.fovYDegrees??record?.fovDegrees);
+    const fovX=Number(record?.fovXDegrees??record?.fieldOfViewDegrees?.widthDegrees??record?.fovDegrees);
+    const fovY=Number(record?.fovYDegrees??record?.fieldOfViewDegrees?.heightDegrees??record?.fovHeightDegrees??record?.fovDegrees);
     const rotation=Number(record?.aladinRotation??record?.spatialRotationDeg);
     if(!Number.isFinite(ra)||!Number.isFinite(dec)||!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0||!Number.isFinite(rotation))throw new Error('GV REGISTERED TRAVEL METADATA INVALID');
     let imageCenter=[ra,dec];
@@ -2596,8 +2596,8 @@ async function gvPrepareDirectHdUnlocked(destination,recordPromise=gvRuntimeAvmR
     const record=await recordPromise;
     const url=directHdUrl(destination);
     if(!url)throw new Error('GV DESTINATION IMAGE URL MISSING');
-    const fovX=Number(record.fovXDegrees??record.fovDegrees);
-    const fovY=Number(record.fovYDegrees??record.fovDegrees);
+    const fovX=Number(record.fovXDegrees??record.fieldOfViewDegrees?.widthDegrees??record.fovDegrees);
+    const fovY=Number(record.fovYDegrees??record.fieldOfViewDegrees?.heightDegrees??record.fovHeightDegrees??record.fovDegrees);
     const rotation=Number(record.aladinRotation??record.spatialRotationDeg);
     const prepStarted=performance.now();
     const raster=await gvLoadGate2MImage(url,destination,record,signal);
