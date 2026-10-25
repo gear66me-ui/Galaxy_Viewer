@@ -1608,7 +1608,7 @@ async function gvWarmSurveyThumbnailPack(pack){
             if(index>=urls.length)return;
             const url=urls[index];
             try{
-                const response=await fetch(url,{cache:'force-cache'});
+                const response=await fetch(url,{cache:'no-store'});
                 if(!response.ok)throw new Error('HTTP '+response.status);
                 await response.blob();
                 gvSurveyThumbnailWarmState.loaded++;
