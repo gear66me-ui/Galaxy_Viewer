@@ -1828,7 +1828,7 @@ const headsUpDisplay=window.GalaxyViewerHeadsUpDisplay.mount(document.getElement
     routeEngine:navigationRuntime,
     randomGalaxy:randomGalaxyBridge
 });
-// GV028: move the existing five-row HUD as one untouched unit and add TRIP as a sibling.
+// GV028: move the existing three-row HUD as one untouched unit and add TRIP as a sibling.
 // The HUD's render() owns its children, so the label must never be inserted inside the HUD.
 const gvTripHud=headsUpDisplay.root;
 if(gvTripHud){
