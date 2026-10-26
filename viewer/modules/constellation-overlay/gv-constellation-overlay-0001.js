@@ -3,10 +3,10 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0019";
+  const VERSION = "0020";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
-  const COLOR = "#8EDCFF", WIDTH = 0.5, HIGHLIGHT_COLOR = "#FFF1D6", HIGHLIGHT_WIDTH = 0.7;
+  const COLOR = "#8EDCFF", WIDTH = 0.5, HIGHLIGHT_COLOR = "#AEEBFF", HIGHLIGHT_WIDTH = 0.7;
   async function csv(url) { const r=await fetch(url,{cache:"force-cache"}); if(!r.ok)throw Error("CONSTELLATION DATA HTTP "+r.status); return r.text(); }
   function parseStars(text) {
     const map=new Map();
@@ -67,7 +67,7 @@
     for(const e of overlays.values()){e.obj.hide();e.highlight.hide();}
     let enabled=false,highlightEntry=null;
     function stopGlow(){
-      if(highlightEntry){highlightEntry.highlight.hide();highlightEntry.obj.hide();}
+      if(highlightEntry){highlightEntry.highlight.hide();if(!enabled)highlightEntry.obj.hide();}
       highlightEntry=null;
     }
     function setEnabled(next){
