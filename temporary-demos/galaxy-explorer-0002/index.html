@@ -47,22 +47,25 @@ const galaxies=[
 function message(text,isError){status.textContent=text;status.classList.toggle('error',!!isError);activity.classList.toggle('failed',!!isError)}
 function enable(){busy=false;button.disabled=!ready}
 function flyTo(g,first){
- if(!wwt||busy)return;busy=true;button.disabled=true;label.textContent='Travelling to '+g.name+'…';
- try{
-  message('Zooming out to reveal the wider sky…');
-  wwt.gotoRADecZoom(g.ra,g.dec,first?360:360,false);
-  window.setTimeout(()=>{
-   try{
-    message('Flying across the sky to '+g.name+'…');
-    wwt.gotoRADecZoom(g.ra*15,g.dec,first?Math.max(12,g.zoom*10):Math.max(12,g.zoom*10),false);
-    window.setTimeout(()=>{
-     try{wwt.gotoRADecZoom(g.ra*15,g.dec,g.zoom,false);label.textContent=g.name;message('Viewing '+g.name+'. Select Random Galaxy for another journey.')}
-     catch(e){message('Could not zoom to galaxy: '+(e.message||e),true)}
-     enable();
-    },900);
-   }catch(e){message('Sky navigation failed: '+(e.message||e),true);enable()}
-  },first?100:650);
- }catch(e){message('Camera control failed: '+(e.message||e),true);enable()}
+ if(!wwt||busy)return;
+ busy=true;button.disabled=true;label.textContent='Travelling to '+g.name+'…';
+ // This legacy WWTControl API accepts RA in degrees and Dec in degrees.
+ // Convert the catalog's RA-hours once and use the same coordinate pair for every step.
+ const raDeg=((g.ra*15)%360+360)%360, decDeg=g.dec;
+ (async()=>{
+  try{
+   message('Zooming out…');
+   await Promise.resolve(wwt.gotoRADecZoom(raDeg,decDeg,360,false));
+   message('Flying to '+g.name+'…');
+   await Promise.resolve(wwt.gotoRADecZoom(raDeg,decDeg,Math.max(1.5,g.zoom*10),false));
+   message('Framing '+g.name+'…');
+   await Promise.resolve(wwt.gotoRADecZoom(raDeg,decDeg,Math.max(0.15,g.zoom),false));
+   label.textContent=g.name;
+   message('Camera reached '+g.name+'. If no galaxy is visible, the sky survey may not resolve it at this scale.');
+  }catch(e){
+   message('Navigation failed for '+g.name+': '+(e&&e.message?e.message:String(e)),true);
+  }finally{enable()}
+ })();
 }
 function randomGalaxy(){if(!ready||busy)return;let n;do{n=Math.floor(Math.random()*galaxies.length)}while(n===last&&galaxies.length>1);last=n;flyTo(galaxies[n],false)}
 function init(){
