@@ -40,6 +40,7 @@ jobs:
         run: |
           set -euo pipefail
           echo "review_only=false" >> "$GITHUB_OUTPUT"
+          echo "explorer_only=false" >> "$GITHUB_OUTPUT"
           echo "workflow_only=false" >> "$GITHUB_OUTPUT"
 
           if [[ "${GITHUB_EVENT_NAME}" != "push" ]]; then
@@ -50,6 +51,14 @@ jobs:
           # to the production viewer validation gate.
           if [[ "${HEAD_MESSAGE}" == CHANDRA\ REVIEW* ]]; then
             echo "review_only=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          # Galaxy Explorer is an independent static demo; publish the repository
+          # site without running the unrelated Chandra review queue generator.
+          if [[ "${HEAD_MESSAGE}" == GALAXY\ EXPLORER\ REVIEW* ]]; then
+            echo "review_only=true" >> "$GITHUB_OUTPUT"
+            echo "explorer_only=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
 
@@ -318,7 +327,7 @@ jobs:
           console.log('DESTINATION MODULE SYNTAX PASSED:',modulePath);
           NODE
       - name: Build standalone Chandra review
-        if: ${{ steps.scope.outputs.review_only == 'true' }}
+        if: ${{ steps.scope.outputs.review_only == 'true' && steps.scope.outputs.explorer_only != 'true' }}
         shell: bash
         run: |
           set -euo pipefail
