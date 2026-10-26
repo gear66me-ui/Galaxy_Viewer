@@ -1,4 +1,4 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0040
+name: Validate and Deploy RC-V1.0.0.9 Build 0041
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0040 and bundled IAU boundaries
+      - name: Validate Build 0041 and bundled closed IAU constellation polygons
         shell: bash
         run: |
           set -euo pipefail
@@ -36,18 +36,18 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0040.py","build":"0040"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0040", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0040.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0041.py","build":"0041"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0041", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0041.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0040"' in rc
-          assert "const GV200001_BUILD='0040';" in rc
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0041"' in rc
+          assert "const GV200001_BUILD='0041';" in rc
           assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc
           assert "const data=JSON.parse(" in rc, "Boundary data must be bundled, not fetched at runtime"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess the already J2000-aligned GeoJSON"
           assert "GV_IAU_BOUNDARY_WIDTH=1.25" in rc and "GV_IAU_BOUNDARY_OPACITY=0.58" in rc
-          assert "rendered<200||vertices<1000||validFeatures<200" in rc
+          assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
           assert len(pins) == 10, f"Expected 10 immutable dependency pins; found {len(pins)}"
@@ -59,7 +59,7 @@ jobs:
             "e38bfcc36a2f156517f9a77865da0c1c13d49175",
           }
           assert required.issubset(pins), f"Required stable dependency pin missing: {sorted(required-pins)}"
-          print("BUILD 0040 STATIC VALIDATION PASSED: release identity, bundled IAU data, no runtime fetch, no double precession, overlay attach/show, geometry thresholds, Random Galaxy handler, and immutable pins.")
+          print("BUILD 0041 STATIC VALIDATION PASSED: release identity, bundled closed IAU polygon data, no runtime fetch, no double precession, overlay attach/show, closed-ring geometry validation, Random Galaxy handler, and immutable pins.")
           PY
 
       - name: Configure GitHub Pages
