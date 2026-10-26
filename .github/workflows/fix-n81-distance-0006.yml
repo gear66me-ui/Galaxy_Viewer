@@ -1,0 +1,65 @@
+name: Fix N 81 distance — catalog 0006
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/fix-n81-distance-0006.yml
+      - viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-n81-only:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Correct and validate only N 81
+        shell: python
+        run: |
+          import json
+          import subprocess
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          matches = [
+              r for r in data.get("records", [])
+              if r.get("providerKey") == "hubble"
+              and r.get("archiveId", "").casefold() == "opo0030a"
+              and r.get("name", "").casefold() == "n 81"
+          ]
+          if len(matches) != 1:
+              raise SystemExit(f"Expected exactly one Hubble opo0030a / N 81 record; found {len(matches)}.")
+          record = matches[0]
+          old = record.get("distanceMly")
+          record["distanceMly"] = 0.2
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          check = json.loads(path.read_text(encoding="utf-8"))
+          verified = [
+              r for r in check["records"]
+              if r.get("providerKey") == "hubble"
+              and r.get("archiveId", "").casefold() == "opo0030a"
+              and r.get("name", "").casefold() == "n 81"
+          ]
+          assert len(verified) == 1 and verified[0].get("distanceMly") == 0.2
+          print(f"N 81 distanceMly: {old} -> 0.2 (200,000 light-years)")
+          print("Only the target record's distanceMly field is assigned.")
+
+          subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+          subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
+          subprocess.run(["git", "add", str(path)], check=True)
+          diff = subprocess.run(["git", "diff", "--cached", "--quiet"])
+          if diff.returncode == 0:
+              print("Catalog already correct; no commit needed.")
+          elif diff.returncode == 1:
+              subprocess.run(["git", "commit", "-m", "Fix N 81 distance in AVM runtime catalog 0006"], check=True)
+              subprocess.run(["git", "push", "origin", "HEAD:release"], check=True)
+          else:
+              raise SystemExit("Unable to determine whether the catalog changed.")
