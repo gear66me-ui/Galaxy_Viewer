@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Explorer — WorldWide Telescope</title>
+<script src="https://web.wwtassets.org/engine/7/wwtsdk.js"></script>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#050812;color:#edf4ff;font:16px/1.45 system-ui,-apple-system,sans-serif}
+header{padding:15px 18px;background:#10192b;border-bottom:1px solid #28354b}h1{font-size:1.35rem;margin:0 0 3px}header p,.note{margin:0;color:#aebbd0;font-size:.9rem}
+main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-bottom:10px;border:1px solid #30415a;border-radius:8px;background:#10192b;overflow-wrap:anywhere}
+.controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 10px}button{background:#68b7ff;color:#07111e;border:0;border-radius:9px;padding:12px 18px;font-size:1rem;font-weight:750;cursor:pointer}button:disabled{opacity:.45;cursor:wait}
+#target{color:#e4edff}#wwtcanvas{position:relative;height:min(72vh,760px);min-height:360px;width:100%;background:#000;border:1px solid #40506b;border-radius:8px;overflow:hidden}
+#wwtcanvas canvas{max-width:100%}.note{margin-top:10px;font-size:.82rem}.error{border-color:#9b3d4c!important;color:#ffdbe0!important}
+</style></head>
+<body>
+<header><h1>Galaxy Explorer</h1><p>Real WorldWide Telescope sky imagery · Random galaxy journeys</p></header>
+<main>
+<div id="status" role="status">Loading WorldWide Telescope engine…</div>
+<div class="controls"><button id="random" disabled>Random Galaxy</button><span id="target">Preparing the telescope…</span></div>
+<div id="wwtcanvas" aria-label="Interactive WorldWide Telescope sky viewer"></div>
+<p class="note">The sky imagery streams from WorldWide Telescope. Internet access is required. Tap Random Galaxy to fly to another destination.</p>
+</main>
+<script>
+(function(){
+'use strict';
+const status=document.getElementById('status'),button=document.getElementById('random'),label=document.getElementById('target');
+let wwt=null,scriptInterface=null,busy=false,last=-1,ready=false;
+const galaxies=[
+{name:'Andromeda Galaxy (M31)',ra:0.7123,dec:41.269,zoom:1.2},
+{name:'Whirlpool Galaxy (M51)',ra:13.4980,dec:47.1952,zoom:0.7},
+{name:'Pinwheel Galaxy (M101)',ra:14.0535,dec:54.3489,zoom:0.8},
+{name:'Sombrero Galaxy (M104)',ra:12.6665,dec:-11.6231,zoom:0.65},
+{name:'Centaurus A (NGC 5128)',ra:13.4243,dec:-43.0191,zoom:0.8},
+{name:'Triangulum Galaxy (M33)',ra:1.5641,dec:30.6602,zoom:1.1},
+{name:'Bode’s Galaxy (M81)',ra:9.9259,dec:69.0653,zoom:0.8},
+{name:'Cigar Galaxy (M82)',ra:9.9312,dec:69.6797,zoom:0.55},
+{name:'Sculptor Galaxy (NGC 253)',ra:0.7925,dec:-25.2884,zoom:0.8},
+{name:'Southern Pinwheel (M83)',ra:13.6170,dec:-29.8658,zoom:0.8},
+{name:'Leo Triplet (M66)',ra:11.3375,dec:12.9915,zoom:0.55},
+{name:'NGC 1300',ra:3.3280,dec:-19.4117,zoom:0.5},
+{name:'NGC 1365',ra:3.5601,dec:-36.1404,zoom:0.6},
+{name:'Virgo A (M87)',ra:12.5137,dec:12.3911,zoom:0.55},
+{name:'Antennae Galaxies',ra:12.0314,dec:-18.8677,zoom:0.55},
+{name:'Needle Galaxy (NGC 4565)',ra:12.6058,dec:25.9877,zoom:0.55},
+{name:'Fireworks Galaxy (NGC 6946)',ra:20.5812,dec:60.1539,zoom:0.6}
+];
+function message(text,isError){status.textContent=text;status.classList.toggle('error',!!isError)}
+function enable(){busy=false;button.disabled=!ready}
+function flyTo(g,first){
+ if(!wwt||busy)return;busy=true;button.disabled=true;label.textContent='Travelling to '+g.name+'…';
+ try{
+  message('Zooming out to reveal the wider sky…');
+  wwt.gotoRADecZoom(g.ra,g.dec,first?60:360,false);
+  window.setTimeout(()=>{
+   try{
+    message('Flying across the sky to '+g.name+'…');
+    wwt.gotoRADecZoom(g.ra,g.dec,first?Math.max(12,g.zoom*10):Math.max(12,g.zoom*10),false);
+    window.setTimeout(()=>{
+     try{wwt.gotoRADecZoom(g.ra,g.dec,g.zoom,false);label.textContent=g.name;message('Viewing '+g.name+'. Select Random Galaxy for another journey.')}
+     catch(e){message('Could not zoom to galaxy: '+(e.message||e),true)}
+     enable();
+    },900);
+   }catch(e){message('Sky navigation failed: '+(e.message||e),true);enable()}
+  },first?100:650);
+ }catch(e){message('Camera control failed: '+(e.message||e),true);enable()}
+}
+function randomGalaxy(){if(!ready||busy)return;let n;do{n=Math.floor(Math.random()*galaxies.length)}while(n===last&&galaxies.length>1);last=n;flyTo(galaxies[n],false)}
+function init(){
+ if(!window.wwtlib||!wwtlib.WWTControlBuilder){message('WorldWide Telescope engine did not load. Check your internet connection, then reload this page.',true);return}
+ try{
+  const builder=new wwtlib.WWTControlBuilder('wwtcanvas');
+  builder.startRenderLoop(true);
+  // Do not use freestandingMode: that intentionally starts with a blank sky.
+  scriptInterface=builder.create();
+  scriptInterface.add_ready(function(){
+   try{
+    wwt=wwtlib.WWTControl.singleton;
+    if(!wwt){message('WWT initialized without a camera controller.',true);return}
+    ready=true;button.disabled=false;
+    // Explicitly select a hosted all-sky image set so the view does not remain a blank canvas.
+    try{wwt.setBackgroundImageByName('DSS')}
+    catch(e){message('WWT is ready; using its default sky imagery.')}
+    message('WorldWide Telescope is ready. Loading the sky…');
+    const g=galaxies[0];last=0;label.textContent=g.name;
+    wwt.gotoRADecZoom(g.ra,g.dec,60,false);
+    window.setTimeout(()=>{if(ready)message('Sky viewer ready. If imagery is still black, your network may be blocking WWT image tiles.',false)},5000);
+   }catch(e){message('WWT setup error: '+(e.message||e),true)}
+  });
+  window.setTimeout(()=>{if(!ready)message('WWT is taking longer than expected. Check the connection to web.wwtassets.org and reload.',true)},18000);
+ }catch(e){message('Could not start WWT: '+(e.message||e),true)}
+}
+button.addEventListener('click',randomGalaxy);
+window.addEventListener('error',e=>{if(e.message)message('Browser error: '+e.message,true)});
+window.addEventListener('load',init);
+})();
+</script>
+</body></html>
