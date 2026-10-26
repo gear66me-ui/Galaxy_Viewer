@@ -10,7 +10,7 @@ header{padding:15px 18px;background:#10192b;border-bottom:1px solid #28354b}h1{f
 main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-bottom:6px;border:1px solid #30415a;border-radius:8px;background:#10192b;overflow-wrap:anywhere}#activity{height:4px;margin:0 0 12px;background:#18253a;border-radius:8px;overflow:hidden}#activitybar{display:block;height:100%;width:35%;background:#68b7ff;border-radius:8px;animation:stream 1.3s ease-in-out infinite alternate}#activity.failed #activitybar{animation:none;width:100%;background:#d85b6b}@keyframes stream{from{transform:translateX(-110%)}to{transform:translateX(310%)}}
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 10px}button{background:#68b7ff;color:#07111e;border:0;border-radius:9px;padding:12px 18px;font-size:1rem;font-weight:750;cursor:pointer}button:disabled{opacity:.45;cursor:wait}
 #target{color:#e4edff}#wwtcanvas{position:relative;height:min(72vh,760px);min-height:360px;width:100%;background:#000;border:1px solid #40506b;border-radius:8px;overflow:hidden}
-#wwtcanvas canvas{max-width:100%}.note{margin-top:10px;font-size:.82rem}.error{border-color:#9b3d4c!important;color:#ffdbe0!important}#portraitPanel{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:start;margin-top:12px;padding:12px;border:1px solid #30415a;border-radius:9px;background:#0b1220}#portraitPanel img{display:block;width:100%;max-height:560px;object-fit:contain;background:#02040a;border-radius:7px;min-height:180px}#portraitMeta{font-size:.9rem;color:#aebbd0;overflow-wrap:anywhere}#portraitMeta strong{color:#edf4ff}#catalogStatus{font-size:.82rem;color:#8ecbff;margin-top:6px}@media(max-width:680px){#portraitPanel{grid-template-columns:1fr}}
+#wwtcanvas canvas{max-width:100%}.note{margin-top:10px;font-size:.82rem}.error{border-color:#9b3d4c!important;color:#ffdbe0!important}#galleryPanel{margin-top:14px;padding:12px;border:1px solid #30415a;border-radius:9px;background:#0b1220}#galleryPanel h2{font-size:1.15rem;margin:0 0 6px}.gallery{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin-top:14px}.gal-card{min-width:0;border:1px solid #30415a;border-radius:8px;background:#10192b;overflow:hidden}.gal-card img{display:block;width:100%;height:170px;object-fit:contain;background:#02040a}.gal-card .gal-info{padding:9px;font-size:.84rem;overflow-wrap:anywhere}.gal-card .gal-title{font-weight:750;color:#edf4ff}.gal-card a{color:#8ecbff}.gal-state{color:#aebbd0;margin-top:4px}.gal-card button{padding:6px 9px;font-size:.8rem;margin-top:7px}@media(max-width:680px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}.gal-card img{height:130px}}
 </style></head>
 <body>
 <header><h1>Galaxy Explorer</h1><p>Real WorldWide Telescope sky imagery · Random galaxy journeys</p></header>
@@ -27,7 +27,7 @@ main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-
 const status=document.getElementById('status'),activity=document.getElementById('activity'),button=document.getElementById('random'),label=document.getElementById('target');
 let wwt=null,scriptInterface=null,busy=false,last=-1,ready=false,catalogReady=false;
 const raRead=document.getElementById('raread'),decRead=document.getElementById('decread'),zoomRead=document.getElementById('zoomread');
-const portrait=document.getElementById('portrait'),portraitMeta=document.getElementById('portraitMeta'),catalogStatus=document.getElementById('catalogStatus');
+const catalogStatus=document.getElementById('catalogStatus');
 const CATALOG_ROOT='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/';
 const CATALOG_PATHS=[['Hubble','viewer/image-databases/Hubble/databases/gv-hubble-galaxies-full-0035-ESA-FOV.json'],['JWST','viewer/image-databases/JWST/databases/gv-jwst-galaxies-full-0007-AVM-ESA-FOV.json'],['ESO','viewer/image-databases/ESO/databases/gv-eso-galaxies-full-0001.json'],['Chandra','viewer/image-databases/Chandra/databases/gv-chandra-galaxies-full-0007.json'],['Spitzer','viewer/image-databases/Spitzer/databases/gv-spitzer-galaxies-full-0011.json'],['NOIRLab','viewer/image-databases/NoirLab/databases/gv-noirlab-galaxies-full-0001.json']];
 let galaxies=[
@@ -68,27 +68,42 @@ async function loadAllCatalogs(){
  else{catalogStatus.textContent='Catalog load failed. Check the connection to raw.githubusercontent.com.';message('Could not load full catalogs; the small built-in fallback list remains available.',true)}
 }
 function escHtml(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+async function findHighResForCard(g,img,source,archive){
+ const q=imageQueryName(g);source.textContent='Searching NASA archive for a full-size image…';
+ try{
+  const res=await fetch('https://images-api.nasa.gov/search?q='+encodeURIComponent(q)+'&media_type=image&page_size=15');
+  if(!res.ok)throw new Error('NASA search HTTP '+res.status);
+  const items=((await res.json()).collection||{}).items||[];
+  const wanted=q.toLowerCase().replace(/[^a-z0-9]/g,'');
+  const scored=items.map(item=>{const d=(item.data&&item.data[0])||{},title=String(d.title||''),t=title.toLowerCase().replace(/[^a-z0-9]/g,'');let score=0;if(t===wanted)score=100;else if(t.includes(wanted)||wanted.includes(t))score=40;for(const token of q.toLowerCase().split(/[\\s()/-]+/).filter(v=>v.length>2))if(t.includes(token))score+=4;return {item,d,title,score}}).sort((a,b)=>b.score-a.score);
+  const best=scored.find(v=>v.score>=8&&v.d.nasa_id);
+  if(!best){source.textContent='No confident NASA match; no unrelated image substituted.';return}
+  const ar=await fetch('https://images-api.nasa.gov/asset/'+encodeURIComponent(best.d.nasa_id));
+  if(!ar.ok)throw new Error('NASA asset HTTP '+ar.status);
+  const assets=((await ar.json()).collection||{}).items||[];
+  const files=assets.filter(a=>typeof a.href==='string'&&/\\.(jpe?g|png|tif{1,2})(?:$|[?#])/i.test(a.href));
+  const chosen=files.find(a=>/~orig\\.(jpe?g|png|tif{1,2})(?:$|[?#])/i.test(a.href))||files.find(a=>/~large\\.(jpe?g|png|tif{1,2})(?:$|[?#])/i.test(a.href));
+  if(!chosen){source.textContent='NASA match found, but no original/large file was listed.';return}
+  img.onload=()=>{if(img.naturalWidth<1600){img.removeAttribute('src');source.textContent='Archive file is below 1,600 px; not displayed.';return}source.textContent=best.title+' · '+img.naturalWidth.toLocaleString()+' × '+img.naturalHeight.toLocaleString()+' px';archive.href=chosen.href;archive.textContent='Open original image'};
+  img.onerror=()=>{img.removeAttribute('src');source.textContent='High-resolution archive image could not be loaded.'};img.src=chosen.href;
+ }catch(e){source.textContent='Image search failed: '+(e.message||e)}
+}
 function renderGallery(list){
- const root=document.getElementById('gallery');root.replaceChildren();
- const frag=document.createDocumentFragment();
+ const root=document.getElementById('gallery');root.replaceChildren();const frag=document.createDocumentFragment();
  for(const g of list){
   const card=document.createElement('article');card.className='gal-card';
   const img=document.createElement('img');img.loading='lazy';img.alt='High-resolution image of '+g.name;img.decoding='async';
   const info=document.createElement('div');info.className='gal-info';
   const title=document.createElement('div');title.className='gal-title';title.textContent=g.name;
-  const source=document.createElement('div');source.className='gal-state';source.textContent=(g.provider||'Catalog')+' · checking image sources…';
-  const links=document.createElement('div');
-  const archive=document.createElement('a');archive.target='_blank';archive.rel='noopener';archive.href='https://images.nasa.gov/search?q='+encodeURIComponent(imageQueryName(g));archive.textContent='Search NASA archive';links.appendChild(archive);
-  const btn=document.createElement('button');btn.type='button';btn.textContent='Fly here';btn.addEventListener('click',()=>{const i=galaxies.indexOf(g);last=i;flyTo(g,false);window.scrollTo({top:0,behavior:'smooth'})});
+  const source=document.createElement('div');source.className='gal-state';source.textContent=(g.provider||'Catalog')+' · queued for image lookup';
+  const links=document.createElement('div');const archive=document.createElement('a');archive.target='_blank';archive.rel='noopener';archive.href='https://images.nasa.gov/search?q='+encodeURIComponent(imageQueryName(g));archive.textContent='Search archive';links.appendChild(archive);
+  const btn=document.createElement('button');btn.type='button';btn.textContent='Fly here';btn.addEventListener('click',()=>{last=galaxies.indexOf(g);flyTo(g,false);window.scrollTo({top:0,behavior:'smooth'})});
   info.append(title,source,links,btn);card.append(img,info);frag.append(card);
-  let candidates=(g.imageUrls||[]).filter(u=>/^https?:\/\//i.test(u));
-  let checked=0;
-  const tryCandidate=()=>{
-   if(checked>=candidates.length){img.removeAttribute('src');source.textContent='No verified 1,600px+ provider image; use archive search.';return}
-   const url=candidates[checked++];img.onload=()=>{if(img.naturalWidth>=1600){source.textContent=(g.provider||'Provider')+' · '+img.naturalWidth.toLocaleString()+' × '+img.naturalHeight.toLocaleString()+' px';archive.href=url;archive.textContent='Open original image';}else{img.onload=null;img.onerror=null;img.removeAttribute('src');tryCandidate()}};
-   img.onerror=()=>{img.onload=null;img.onerror=null;img.removeAttribute('src');tryCandidate()};img.src=url;
-  };
-  if(candidates.length)tryCandidate();else source.textContent='No direct image URL in this catalog record; use archive search.';
+  const candidates=(g.imageUrls||[]).filter(u=>typeof u==='string'&&(u.startsWith('https://')||u.startsWith('http://')));
+  const startSearch=()=>findHighResForCard(g,img,source,archive);
+  const tryCandidate=(ix)=>{if(ix>=candidates.length){startSearch();return}const url=candidates[ix];img.onload=()=>{if(img.naturalWidth>=1600){source.textContent=(g.provider||'Provider')+' · '+img.naturalWidth.toLocaleString()+' × '+img.naturalHeight.toLocaleString()+' px';archive.href=url;archive.textContent='Open original'}else{img.onload=null;img.onerror=null;img.removeAttribute('src');tryCandidate(ix+1)}};img.onerror=()=>{img.onload=null;img.onerror=null;img.removeAttribute('src');tryCandidate(ix+1)};img.src=url};
+  const begin=()=>{if(candidates.length)tryCandidate(0);else startSearch()};
+  if('IntersectionObserver'in window){const io=new IntersectionObserver(entries=>{if(entries.some(e=>e.isIntersecting)){io.disconnect();begin()}},{rootMargin:'300px'});io.observe(card)}else begin();
  }
  root.append(frag);
 }
@@ -159,7 +174,7 @@ function moveTo(raHours,decDeg,zoom){
 }
 async function flyTo(g,first){
  if(!wwt||busy)return;
- busy=true;button.disabled=true;label.textContent='Travelling to '+g.name+'…';loadGalaxyPortrait(g);
+ busy=true;button.disabled=true;label.textContent='Travelling to '+g.name+'…';
  try{
   message('Zooming out to the full sky (360° view)…');
   const currentRA=scriptInterface.getRA(), currentDec=scriptInterface.getDec();
