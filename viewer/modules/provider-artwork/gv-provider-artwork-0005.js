@@ -39,13 +39,16 @@ function iconSources(provider){
   const p=path(provider);
   return p?[CDN_ART+p,ART+p,PAGES_ART+p]:[];
 }
+const CONSTELLATION_ALIASES=Object.freeze({
+AND:'ANDROMEDA',ANT:'ANTLIA',APS:'APUS',AQR:'AQUARIUS',AQL:'AQUILA',ARA:'ARA',ARI:'ARIES',AUR:'AURIGA',BOO:'BOOTES',CAE:'CAELUM',CAM:'CAMELOPARDALIS',CNC:'CANCER',CVN:'CANES_VENATICI',CMA:'CANIS_MAJOR',CMI:'CANIS_MINOR',CAP:'CAPRICORNUS',CAR:'CARINA',CAS:'CASSIOPEIA',CEN:'CENTAURUS',CEP:'CEPHEUS',CET:'CETUS',CHA:'CHAMAELEON',CIR:'CIRCINUS',COL:'COLUMBA',COM:'COMA_BERENICES',CRA:'CORONA_AUSTRALIS',CRB:'CORONA_BOREALIS',CRV:'CORVUS',CRT:'CRATER',CRU:'CRUX',CYG:'CYGNUS',DEL:'DELPHINUS',DOR:'DORADO',DRA:'DRACO',EQU:'EQUULEUS',ERI:'ERIDANUS',FOR:'FORNAX',GEM:'GEMINI',GRU:'GRUS',HER:'HERCULES',HOR:'HOROLOGIUM',HYA:'HYDRA',HYI:'HYDRUS',IND:'INDUS',LAC:'LACERTA',LEO:'LEO',LMI:'LEO_MINOR',LEP:'LEPUS',LIB:'LIBRA',LUP:'LUPUS',LYN:'LYNX',LYR:'LYRA',MEN:'MENSA',MIC:'MICROSCOPIUM',MON:'MONOCEROS',MUS:'MUSCA',NOR:'NORMA',OCT:'OCTANS',OPH:'OPHIUCHUS',ORI:'ORION',PAV:'PAVO',PEG:'PEGASUS',PER:'PERSEUS',PHE:'PHOENIX',PIC:'PICTOR',PSC:'PISCES',PSA:'PISCIS_AUSTRINUS',PUP:'PUPPIS',PYX:'PYXIS',RET:'RETICULUM',SGE:'SAGITTA',SGR:'SAGITTARIUS',SCO:'SCORPIUS',SCL:'SCULPTOR',SCT:'SCUTUM',SER:'SERPENS',SEX:'SEXTANS',TAU:'TAURUS',TEL:'TELESCOPIUM',TRI:'TRIANGULUM',TRA:'TRIANGULUM_AUSTRALIS',TUC:'TUCANA',UMA:'URSA_MAJOR',UMI:'URSA_MINOR',VEL:'VELA',VIR:'VIRGO',VOL:'VOLANS',VUL:'VULPECULA'
+});
 function constellationSources(name){
-  const k=String(name??'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
-  if(!k)return[];
+  const raw=String(name??'').trim().toUpperCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  if(!raw)return[];
+  const k=CONSTELLATION_ALIASES[raw]||raw;
   const p='Constellations/'+encodeURIComponent(k)+'.SVG';
   return [CDN_ART+p,PAGES_ART+p,ART+p];
 }
-const IMAGE_CACHE_LIMIT=48,imageCache=new Map();
 function trimImageCache(){while(imageCache.size>IMAGE_CACHE_LIMIT)imageCache.delete(imageCache.keys().next().value)}
 function loadSource(url){
   if(imageCache.has(url)){const cached=imageCache.get(url);imageCache.delete(url);imageCache.set(url,cached);return cached;}
