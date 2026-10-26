@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Explorer — WWT Render Test</title>
+<script src="https://web.wwtassets.org/engine/7/wwtsdk.js"></script>
+<style>
+:root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#070b14;color:#edf4ff;font:16px/1.45 system-ui,sans-serif}
+header{padding:14px 16px;background:#10192b;border-bottom:1px solid #28354b}h1{font-size:1.25rem;margin:0 0 4px}p{margin:0;color:#aebbd0;font-size:.92rem}
+main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-bottom:10px;border:1px solid #30415a;border-radius:8px;background:#10192b;overflow-wrap:anywhere}
+#wwtcanvas{height:min(72vh,760px);min-height:340px;width:100%;background:#000;border:1px solid #40506b;border-radius:8px;overflow:hidden}
+.note{margin-top:10px;color:#9aa9bf;font-size:.82rem}
+</style>
+</head>
+<body>
+<header><h1>Galaxy Explorer — WWT Render Test</h1><p>Minimal WorldWide Telescope initialization. No custom navigation or overlays.</p></header>
+<main><div id="status" role="status">Page loaded. Waiting for the WorldWide Telescope SDK…</div><div id="wwtcanvas" aria-label="WorldWide Telescope sky view"></div><p class="note">This test is intentionally minimal. If the sky does not appear, the status below should help distinguish an SDK/network failure from a rendering problem.</p></main>
+<script>
+(function(){
+ const status=document.getElementById('status');
+ function say(s){status.textContent=s;}
+ function start(){
+  if(!window.wwtlib || !window.wwtlib.WWTControlBuilder){
+   say('ERROR: WWT SDK did not load. Check internet access and whether web.wwtassets.org is blocked.');
+   return;
+  }
+  try{
+   const builder=new wwtlib.WWTControlBuilder('wwtcanvas');
+   builder.startRenderLoop(true);
+   builder.create();
+   say('WWT SDK loaded and viewer created. Waiting for sky imagery…');
+   setTimeout(function(){
+    const canvas=document.querySelector('#wwtcanvas canvas');
+    if(canvas){say('WWT canvas detected. If the view is still black, WWT imagery/resources may be blocked or WebGL may be unavailable.');}
+    else{say('WWT initialization ran, but no canvas element was detected. Check browser console/network errors.');}
+   },8000);
+  }catch(e){say('WWT initialization error: '+(e&&e.message?e.message:String(e)));}
+ }
+ if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+ window.addEventListener('error',function(e){if(e.message)say('Browser error: '+e.message);});
+})();
+</script>
+</body></html>
