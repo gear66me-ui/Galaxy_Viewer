@@ -24,7 +24,8 @@ main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-
 (function(){
 'use strict';
 const status=document.getElementById('status'),activity=document.getElementById('activity'),button=document.getElementById('random'),label=document.getElementById('target');
-let wwt=null,scriptInterface=null,busy=false,last=-1,ready=false;\nconst raRead=document.getElementById('raread'),decRead=document.getElementById('decread'),zoomRead=document.getElementById('zoomread');
+let wwt=null,scriptInterface=null,busy=false,last=-1,ready=false;
+const raRead=document.getElementById('raread'),decRead=document.getElementById('decread'),zoomRead=document.getElementById('zoomread');
 const galaxies=[
 {name:'Andromeda Galaxy (M31)',ra:0.7123,dec:41.269,zoom:1.2},
 {name:'Whirlpool Galaxy (M51)',ra:13.4980,dec:47.1952,zoom:0.7},
@@ -121,7 +122,8 @@ function init(){
 }
 button.addEventListener('click',randomGalaxy);
 window.addEventListener('error',e=>{if(e.message)message('Browser error: '+e.message,true)});
-window.setInterval(updateCoords,300);\nwindow.addEventListener('load',init);
+window.setInterval(updateCoords,300);
+window.addEventListener('load',init);
 })();
 </script>
 </body></html>
