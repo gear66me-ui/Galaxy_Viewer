@@ -1,0 +1,72 @@
+name: Fix Markarian 848 distance — AVM catalog 0006
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/fix-markarian-848-distance-0006.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-markarian-848-only:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Correct and validate only Markarian 848 distance
+        shell: python
+        run: |
+          import json
+          import subprocess
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          records = data.get("records", [])
+          matches = [
+              r for r in records
+              if "markarian 848" in str(r.get("name", "")).casefold()
+              or "markarian 848" in str(r.get("objectName", "")).casefold()
+              or "markarian 848" in str(r.get("pseudonym", "")).casefold()
+              or "mrk 848" == str(r.get("name", "")).casefold().strip()
+          ]
+          if len(matches) != 1:
+              raise SystemExit(
+                  f"Expected exactly one Markarian 848 record in catalog 0006; found {len(matches)}. "
+                  "No catalog changes were made."
+              )
+
+          record = matches[0]
+          old = record.get("distanceMly")
+          # Catalog distanceMly is in millions of light-years: 550 Mly = 550.0.
+          record["distanceMly"] = 550.0
+
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          check = json.loads(path.read_text(encoding="utf-8"))
+          verified = [
+              r for r in check["records"]
+              if "markarian 848" in str(r.get("name", "")).casefold()
+              or "markarian 848" in str(r.get("objectName", "")).casefold()
+              or "markarian 848" in str(r.get("pseudonym", "")).casefold()
+              or "mrk 848" == str(r.get("name", "")).casefold().strip()
+          ]
+          assert len(verified) == 1 and verified[0].get("distanceMly") == 550.0
+          print(f"Markarian 848 distanceMly: {old} -> 550.0 Mly")
+          print("Only the target record's distanceMly field was assigned.")
+
+          subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+          subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
+          subprocess.run(["git", "add", str(path)], check=True)
+          diff = subprocess.run(["git", "diff", "--cached", "--quiet"])
+          if diff.returncode == 0:
+              print("Catalog already correct; no catalog commit needed.")
+          elif diff.returncode == 1:
+              subprocess.run(["git", "commit", "-m", "Fix Markarian 848 distance in AVM runtime catalog 0006"], check=True)
+              subprocess.run(["git", "push", "origin", "HEAD:release"], check=True)
+          else:
+              raise SystemExit("Unable to determine whether the catalog changed.")
