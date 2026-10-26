@@ -1,0 +1,116 @@
+name: Correct LRG 3-757 background-source redshift — AVM 0006
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/correct-lrg-3-757-avm-0006.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: correct-lrg-3-757-avm-0006
+  cancel-in-progress: false
+
+jobs:
+  correct-source:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Correct and validate the background-source record
+        run: |
+          python3 - <<'PY'
+          import json, math
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          # Flat LCDM parameters used by Galaxy Viewer.
+          H0, OM, C = 67.6, 0.315, 299792.458
+          z = 2.379
+          n = 20000
+          dz = z / n
+          integral = sum(
+              (1.0 if i in (0, n) else 4.0 if i % 2 else 2.0) /
+              math.sqrt(OM * (1 + i * dz) ** 3 + (1 - OM))
+              for i in range(n + 1)
+          ) * dz / 3.0
+          distance_mly = (C / H0) * integral * 3.261563777
+
+          # Age of the Universe at emission: present age minus lookback time.
+          def simpson(f, a, b, steps=20000):
+              h = (b - a) / steps
+              s = f(a) + f(b)
+              for i in range(1, steps):
+                  s += (4 if i % 2 else 2) * f(a + i * h)
+              return s * h / 3.0
+          h0_gyr = (1.0 / (H0 / 3.085677581491367e19)) / (365.25 * 86400 * 1e9)
+          age_now = h0_gyr * simpson(lambda a: 1 / math.sqrt(OM / a + (1-OM) * a*a), 1e-8, 1.0)
+          lookback = h0_gyr * simpson(lambda q: 1 / ((1+q) * math.sqrt(OM*(1+q)**3 + (1-OM))), 0.0, z)
+          emission_age = age_now - lookback
+
+          def walk(node, path_label="$"):
+              if isinstance(node, dict):
+                  yield node, path_label
+                  for k, v in node.items():
+                      if isinstance(v, (dict, list)):
+                          yield from walk(v, f"{path_label}.{k}")
+              elif isinstance(node, list):
+                  for i, v in enumerate(node):
+                      yield from walk(v, f"{path_label}[{i}]")
+
+          nodes = list(walk(data))
+          candidates = []
+          for obj, p in nodes:
+              vals = [str(v).strip().lower() for v in obj.values()
+                      if isinstance(v, (str, int, float)) and not isinstance(v, bool)]
+              has_id = any(v == "potw1151a" or v.endswith("/potw1151a") for v in vals)
+              has_name = any("lrg 3-757" in v or "cosmic horseshoe" in v for v in vals)
+              if has_id and has_name and any(k.lower() in ("distancemly", "distance_mly") for k in obj) and any(k.lower() in ("redshift", "z", "redshiftz") for k in obj):
+                  candidates.append((obj, p))
+          # Avoid nested duplicate matches; only use the deepest matching record.
+          candidates = [(o,p) for o,p in candidates if not any(q.startswith(p + ".") or q.startswith(p + "[") for _,q in candidates if q != p)]
+          if len(candidates) != 1:
+              raise SystemExit(f"STOP: expected exactly one LRG 3-757 record in catalog 0006; found {len(candidates)}. No changes written.")
+
+          rec, rec_path = candidates[0]
+          dkey = next(k for k in rec if k.lower() in ("distancemly", "distance_mly"))
+          zkey = next(k for k in rec if k.lower() in ("redshift", "z", "redshiftz"))
+          old = {"distanceMly": rec[dkey], "redshift": rec[zkey]}
+          rec[dkey] = round(distance_mly, 3)
+          rec[zkey] = z
+
+          # Update emission/cosmic age only if this record explicitly carries a recognized Gyr field.
+          age_keys = [k for k in rec if k.lower() in ("emissionagegyr", "cosmicagegyr", "universeageatemissiongyr", "ageatemissiongyr")]
+          for k in age_keys:
+              rec[k] = round(emission_age, 3)
+
+          assert abs(float(rec[dkey]) - 18937.483) < 0.01, rec[dkey]
+          assert float(rec[zkey]) == 2.379, rec[zkey]
+          encoded = json.dumps(data, ensure_ascii=False, indent=2) + "\\n"
+          json.loads(encoded)
+          path.write_text(encoded, encoding="utf-8")
+          print(f"Updated {rec_path}: {old} -> distanceMly={rec[dkey]}, redshift={rec[zkey]}, emission age={emission_age:.3f} Gyr")
+          print("Catalog record count:", len(data.get("records", [])))
+          PY
+
+      - name: Validate JSON and commit only the AVM catalog
+        run: |
+          python3 -m json.tool viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json >/dev/null
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json
+          if git diff --cached --quiet; then
+            echo "No catalog diff detected."
+          else
+            git commit -m "Correct LRG 3-757 background-source redshift and distance"
+            git push origin HEAD:release
+          fi
