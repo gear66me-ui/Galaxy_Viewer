@@ -78,9 +78,31 @@
     }
     function findByName(name){
       const wanted=canon(name);if(!wanted)return null;
-      const aliases={FORNAX:"FOR",FOR:"FORNAX"};
-      for(const [key,e] of overlays){const k=canon(key);if(k===wanted||aliases[wanted]===k||aliases[k]===wanted)return e;}
-      for(const [key,e] of overlays){const k=canon(key);if(k.length>3&&(k.includes(wanted)||wanted.includes(k)))return e;}
+      const aliases={
+        ANDROMEDA:"AND",ANTLIA:"ANT",APUS:"APS",AQUARIUS:"AQR",AQUILA:"AQL",
+        ARIES:"ARI",AURIGA:"AUR",BOOTES:"BOO",CAELUM:"CAE",CAMELOPARDALIS:"CAM",
+        CANCER:"CNC",CANESVENATICI:"CVN",CANISMAJOR:"CMA",CANISMINOR:"CMI",
+        CAPRICORNUS:"CAP",CARINA:"CAR",CASSIOPEIA:"CAS",CENTAURUS:"CEN",CEPHEUS:"CEP",
+        CETUS:"CET",CHAMAELEON:"CHA",CIRCINUS:"CIR",COLUMBA:"COL",COMABERENICES:"COM",
+        CORONAAUSTRALIS:"CRA",CORONABOREALIS:"CRB",CORVUS:"CRV",CRATER:"CRT",CRUX:"CRU",
+        CYGNUS:"CYG",DELPHINUS:"DEL",DORADO:"DOR",DRACO:"DRA",EQUULEUS:"EQU",ERIDANUS:"ERI",
+        FORNAX:"FOR",GEMINI:"GEM",GRUS:"GRU",HERCULES:"HER",HOROLOGIUM:"HOR",HYDRA:"HYA",
+        HYDRUS:"HYI",INDUS:"IND",LACERTA:"LAC",LEO:"LEO",LEOMINOR:"LMI",LEPUS:"LEP",LIBRA:"LIB",
+        LUPUS:"LUP",LYNX:"LYN",LYRA:"LYR",MENSA:"MEN",MICROSCOPIUM:"MIC",MONOCEROS:"MON",
+        MUSCA:"MUS",NORMA:"NOR",OCTANS:"OCT",OPHIUCHUS:"OPH",ORION:"ORI",PAVO:"PAV",
+        PEGASUS:"PEG",PERSEUS:"PER",PHOENIX:"PHE",PICTOR:"PIC",PISCES:"PSC",
+        PISCISAUSTRINUS:"PSA",PUPPIS:"PUP",PYXIS:"PYX",RETICULUM:"RET",SAGITTA:"SGE",
+        SAGITTARIUS:"SGR",SCORPIUS:"SCO",SCULPTOR:"SCL",SCUTUM:"SCT",SERPENS:"SER",
+        SEXTANS:"SEX",TAURUS:"TAU",TELESCOPIUM:"TEL",TRIANGULUM:"TRI",
+        TRIANGULUMAUSTRALIS:"TRA",TUCANA:"TUC",URSAMAJOR:"UMA",URSAMINOR:"UMI",
+        VELA:"VEL",VIRGO:"VIR",VOLANS:"VOL",VULPECULA:"VUL"
+      };
+      const alternate=aliases[wanted];
+      for(const [key,e] of overlays){
+        const k=canon(key);
+        if(k===wanted||k===alternate||(aliases[k]===wanted))return e;
+      }
+      // No substring fallback: it can select a neighboring constellation.
       return null;
     }
     // Highlight the destination with a separate 0.5px static line overlay.
