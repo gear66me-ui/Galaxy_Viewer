@@ -46,7 +46,7 @@ jobs:
           assert "const GV200001_BUILD='0033';" in rc, "Build identity does not match 0033"
           assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc, "Build 0033 baseline Random Galaxy handler is missing"
 
-          pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
+          pins = set(re.findall(r"https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
           assert len(pins) == 10, f"Restored pre-October-26 Build 0033 expected 10 actual immutable dependency pins; found {len(pins)}: {sorted(pins)}"
           required = {
             "34d6f9b9417438afd56317bc838b93eb655c7d15",
@@ -63,17 +63,17 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
-      - name: Stage production site without unrelated image mirrors
+      - name: Stage production site excluding thumbnail and mirror assets
         shell: bash
         run: |
           set -euo pipefail
           mkdir -p _site
-          rsync -a --exclude='.git/' --exclude='_site/' --exclude='viewer/artwork/runtime/survey-thumbnails/' --exclude='viewer/artwork/runtime/mirrors/' --exclude='**/mirror/' --exclude='**/mirrors/' ./ _site/
-          if find _site/viewer/artwork/runtime -type f 2>/dev/null | grep -E '/(survey-thumbnails|mirrors?)/'; then
-            echo "ERROR: mirror/thumbnail assets leaked into deployment staging"
+          rsync -a --exclude='.git/' --exclude='_site/' --exclude='viewer/artwork/runtime/survey-thumbnails/' --exclude='viewer/artwork/runtime/mirrors/' --exclude='**/[Mm]irror/' --exclude='**/[Mm]irrors/' --exclude='**/[Tt]humbnail*/' --exclude='**/[Tt]humbnails/' ./ _site/
+          if find _site -type d | grep -Ei '/(mirror|mirrors|thumbnail|thumbnails|survey-thumbnails)$'; then
+            echo "ERROR: thumbnail or mirror directories leaked into deployment staging"
             exit 1
           fi
-          echo "Staged deployment without survey-thumbnail or mirror image directories."
+          echo "Staged production site excluding thumbnail and mirror directories."
           du -sh _site
 
       - name: Upload production site
