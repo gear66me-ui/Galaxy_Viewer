@@ -102,14 +102,14 @@ window.GV_BOOT_CONFIG=Object.freeze({
     aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
     hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
-    constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@b055f1fbb43d5a2209442a1f8d4f97e3cabc91d3/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
-    constellationOverlayFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/b055f1fbb43d5a2209442a1f8d4f97e3cabc91d3/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
+    constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@42620e479e7fa719ca168dd1fbf96e924e23eb9d/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
+    constellationOverlayFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/42620e479e7fa719ca168dd1fbf96e924e23eb9d/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc36a2f156517f9a77865da0c1c13d49175/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7dcd8a191372e112b07bb20d0518a739a7c05865/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
-    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@ec86c9d192901441976cb93982360c3da1a192ad/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
+    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@34d6f9b9417438afd56317bc838b93eb655c7d15/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@08e7c8cae3f90fc66b0e9a4925d70047c98854d1/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1295c0303335bf990ef3c01b64f95e40697bfc6d/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
 });
@@ -2744,11 +2744,7 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
-let gvConstellationGlowRequestId=0;
 function gvSetTravelConstellationGlow(constellationName,ra,dec,active){
-    // Latest navigation request wins. Never let an older async overlay callback
-    // overwrite the constellation belonging to a newer destination.
-    const requestId=++gvConstellationGlowRequestId;
     // Travel beacons must not depend on the user opening the CONSTELLATIONS menu.
     // Lazily mount the overlay on the first trip; keep its ordinary line layer off.
     if(!gvConstellationPromise){
@@ -2766,19 +2762,16 @@ function gvSetTravelConstellationGlow(constellationName,ra,dec,active){
         });
     }
     gvConstellationPromise.then(layer=>{
-        // Ignore stale requests after a newer trip has started.
-        if(requestId!==gvConstellationGlowRequestId)return;
         if(!active){layer.clearTravelGlow?.();return;}
         const name=String(constellationName||'').trim();
-        const matched=name&&typeof layer.setTravelGlowByName==='function'
-            ?layer.setTravelGlowByName(name,true)===true:false;
-        // Catalog name is authoritative. Coordinates/nearest stars can select
-        // a neighboring constellation, so fail closed rather than highlight the wrong one.
+        let matched=false;
+        if(name&&typeof layer.setTravelGlowByName==='function')matched=layer.setTravelGlowByName(name,true)===true;
         if(!matched){
-            layer.clearTravelGlow?.();
-            console.error('GV CONSTELLATION CATALOG NAME DID NOT MATCH; highlight cleared',{constellationName:name,ra,dec});
+            console.warn('GV CONSTELLATION ARCHIVE NAME DID NOT MATCH; using coordinate fallback',{constellationName,ra,dec});
+            matched=layer.setTravelGlowAt?.(ra,dec,true)===true;
         }
-    }).catch(error=>{if(requestId===gvConstellationGlowRequestId)console.warn('GV CONSTELLATION TRAVEL GLOW FAILED',error)});
+        if(!matched)console.error('GV CONSTELLATION TRAVEL BEACON COULD NOT BE ACTIVATED',{constellationName,ra,dec});
+    }).catch(error=>console.warn('GV CONSTELLATION TRAVEL GLOW FAILED',error));
 }
 async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoomOutComplete=null,onTMinusEight=null,onArrival=null,registeredPromise=null,switchToSphericalAtApex=false,constellationName=''}={}){
     const initialCenter=prepared?.imageCenter;let ra1=Number(initialCenter?.[0]),dec1=Number(initialCenter?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
@@ -3208,7 +3201,7 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // Keep image objects alive while their constellation artwork warms in parallel.
 const gvConstellationArtworkPrewarm=new Map();
 gvStartMemoryDiagnostics();
-const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=12;
+const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=2;
 function gvReleaseConstellationArtwork(url){
     const image=gvConstellationArtworkPrewarm.get(url);if(!image)return;
     try{image.onload=null;image.onerror=null;image.removeAttribute?.('src')}catch(_){}
