@@ -100,7 +100,7 @@
       const alternate=aliases[wanted];
       for(const [key,e] of overlays){
         const k=canon(key);
-        if(k===wanted||k===alternate||(aliases[k]===wanted))return e;
+        if(k===wanted||k===alternate||aliases[k]===wanted||aliases[wanted]===k)return e;
       }
       // No substring fallback: it can select a neighboring constellation.
       return null;
