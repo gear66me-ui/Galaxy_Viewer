@@ -1,4 +1,4 @@
-name: Restore Build 0033 Stable Baseline
+name: Build 0037 IAU Constellation Regions Release
 
 on:
   push:
@@ -6,7 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   pages: write
   id-token: write
 
@@ -25,9 +25,104 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: release
-          fetch-depth: 1
+          fetch-depth: 0
 
-      - name: Validate Build 0033 stable baseline
+      - name: Generate Build 0037 from stable Build 0033 (once)
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, subprocess
+          root = pathlib.Path(".")
+          pointer_path = root / "viewer/gv-current-viewer.json"
+          pointer = json.loads(pointer_path.read_text())
+          if pointer.get("build") == "0037":
+              print("Build 0037 is already active; preserving it without regeneration.")
+              raise SystemExit(0)
+          assert pointer.get("build") == "0033", f"Refusing to generate from unexpected active build: {pointer.get('build')!r}"
+          source_path = root / "viewer/RC-V1.0.0.9-BLD-0033.py"
+          source = source_path.read_text()
+          original = source
+          source = source.replace('VIEWER_VERSION = "RC-V1.0.0.9"', 'VIEWER_VERSION = "RC-V1.0.0.11"', 1)
+          source = source.replace('BUILD_NUMBER = "0033"', 'BUILD_NUMBER = "0037"', 1)
+          source = source.replace("const GV200001_BUILD='0033';", "const GV200001_BUILD='0037';", 1)
+          marker = "if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 013 EXPORT MISSING');"
+          assert marker in source, "Could not locate the stable module-validation insertion point."
+          boundary_code = r"""
+          /* GV IAU CONSTELLATION REGION BOUNDARIES — BUILD 0037
+           * Official constellation boundary linework from d3-celestial's IAU boundary dataset.
+           * Rendered as a very faint red hairline; loaded asynchronously and non-fatally.
+           */
+          (function gvLoadIauConstellationRegions(){
+            const GV_IAU_BOUNDARIES_URL='https://raw.githubusercontent.com/ofrohn/d3-celestial/7e720a3de062059d4c5400a379146a601d9010e0/data/constellations.borders.json';
+            const GV_IAU_BOUNDARY_COLOR='rgba(255,55,72,0.28)';
+            const GV_IAU_BOUNDARY_WIDTH=0.35;
+            const wrapRa=ra=>((ra%360)+360)%360;
+            Promise.resolve().then(async()=>{
+              const response=await fetch(GV_IAU_BOUNDARIES_URL,{cache:'force-cache'});
+              if(!response.ok)throw new Error('HTTP '+response.status);
+              const data=await response.json();
+              if(!Array.isArray(data.features)||data.features.length<80)throw new Error('IAU boundary dataset failed validation');
+              const overlay=A.graphicOverlay({color:GV_IAU_BOUNDARY_COLOR,lineWidth:GV_IAU_BOUNDARY_WIDTH});
+              let rendered=0;
+              const addBoundaryLine=line=>{
+                let part=[];
+                const flush=()=>{
+                  if(part.length>=2){
+                    overlay.add(A.polyline(part,{color:GV_IAU_BOUNDARY_COLOR,lineWidth:GV_IAU_BOUNDARY_WIDTH}));
+                    rendered++;
+                  }
+                  part=[];
+                };
+                for(const point of line){
+                  if(!Array.isArray(point)||point.length<2)continue;
+                  const ra=wrapRa(Number(point[0])),dec=Number(point[1]);
+                  if(!Number.isFinite(ra)||!Number.isFinite(dec)||dec < -90||dec > 90)continue;
+                  if(part.length&&Math.abs(ra-part[part.length-1][0])>180)flush();
+                  part.push([ra,dec]);
+                }
+                flush();
+              };
+              for(const feature of data.features){
+                const geometry=feature&&feature.geometry;
+                if(!geometry||!Array.isArray(geometry.coordinates))continue;
+                if(geometry.type==='MultiLineString')geometry.coordinates.forEach(addBoundaryLine);
+                else if(geometry.type==='LineString')addBoundaryLine(geometry.coordinates);
+              }
+              if(rendered<80)throw new Error('Too few IAU boundary segments rendered: '+rendered);
+              aladin.addOverlay(overlay);
+              overlay.show();
+              window.GalaxyViewerConstellationRegions=Object.freeze({VERSION:'0001',featureCount:data.features.length,segmentCount:rendered,overlay});
+              console.info('GV IAU CONSTELLATION REGIONS: all official boundary lines rendered', {features:data.features.length,segments:rendered,color:GV_IAU_BOUNDARY_COLOR,width:GV_IAU_BOUNDARY_WIDTH});
+            }).catch(error=>console.error('GV IAU CONSTELLATION REGIONS FAILED (non-fatal)',error));
+          })();
+          """
+          source = source.replace(marker, marker + "\n" + boundary_code, 1)
+          assert source != original and "constellations.borders.json" in source
+          assert "rgba(255,55,72,0.28)" in source and "const GV200001_BUILD='0037';" in source
+          new_name = "RC-V1.0.0.11-BLD-0037.py"
+          (root / "viewer" / new_name).write_text(source)
+          pointer_path.write_text(json.dumps({"version":"RC-V1.0.0.11","viewer":new_name,"build":"0037"}, indent=2) + "\n")
+          manifest = {
+            "release":"RC-V1.0.0.11",
+            "sourceBranch":"release",
+            "sourceCommit":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),
+            "build":"0037",
+            "policy":"allowlist-only; no product image mirrors in deployment artifact",
+            "runtime":["viewer/" + new_name]
+          }
+          (root / "release-manifest.json").write_text(json.dumps(manifest, indent=2) + "\n")
+          print("Generated Build 0037 from the stable Build 0033 source with faint red official constellation boundary lines.")
+          PY
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add viewer/RC-V1.0.0.11-BLD-0037.py viewer/gv-current-viewer.json release-manifest.json
+          if ! git diff --cached --quiet; then
+            git commit -m "Build 0037: add faint red IAU constellation boundaries"
+            git push origin HEAD:release
+          fi
+
+      - name: Validate Build 0037 release
         shell: bash
         run: |
           set -euo pipefail
@@ -36,18 +131,18 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer.get("build") == "0033", f"Expected active build 0033, got {pointer.get('build')!r}"
-          assert pointer.get("viewer") == "RC-V1.0.0.9-BLD-0033.py", "Production pointer is not Build 0033"
-          assert manifest.get("build") == "0033", "Release manifest build does not match pointer"
+          assert pointer.get("build") == "0037", f"Expected active build 0037, got {pointer.get('build')!r}"
+          assert pointer.get("viewer") == "RC-V1.0.0.11-BLD-0037.py", "Production pointer is not Build 0037"
+          assert manifest.get("build") == "0037", "Release manifest build does not match pointer"
           assert manifest.get("sourceBranch") == "release", "Manifest source branch is not release"
           assert re.fullmatch(r"[0-9a-f]{40}", str(manifest.get("sourceCommit", ""))), "Manifest sourceCommit must be a full SHA"
-
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert "const GV200001_BUILD='0033';" in rc, "Build identity does not match 0033"
-          assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc, "Build 0033 baseline Random Galaxy handler is missing"
-
+          assert "const GV200001_BUILD='0037';" in rc, "Build identity does not match 0037"
+          assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc, "Stable Build 0033 Random Galaxy handler is missing"
+          assert "constellations.borders.json" in rc, "IAU constellation boundary dataset URL missing"
+          assert "rgba(255,55,72,0.28)" in rc, "Faint red constellation boundary style missing"
           pins = set(re.findall(r"https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 10, f"Restored pre-October-26 Build 0033 expected 10 actual immutable dependency pins; found {len(pins)}: {sorted(pins)}"
+          assert len(pins) == 10, f"Expected 10 immutable dependency pins; found {len(pins)}: {sorted(pins)}"
           required = {
             "34d6f9b9417438afd56317bc838b93eb655c7d15",
             "d85d91201ea52aa6524a62394fc81b450b15ac23",
@@ -56,8 +151,8 @@ jobs:
             "e38bfcc36a2f156517f9a77865da0c1c13d49175",
           }
           assert required.issubset(pins), f"Required stable dependency pin missing: {sorted(required-pins)}"
-          print("BUILD 0033 BASELINE VALIDATION PASSED")
-          print("Verified: release pointer, manifest, baseline Random Galaxy handler, 10 immutable dependency pins from the restored source.")
+          print("BUILD 0037 IAU CONSTELLATION REGIONS VALIDATION PASSED")
+          print("Verified release pointer, manifest, stable Random Galaxy handler, official boundary linework, faint red style, and 10 immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
