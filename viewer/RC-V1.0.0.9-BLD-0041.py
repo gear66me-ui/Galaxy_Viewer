@@ -1057,7 +1057,7 @@ if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!
     if(registered===false)throw new Error('Aladin did not register the constellation polygon overlay');
     const visibleProbe=data.features.slice(0,20).flatMap(feature=>{
       const rings=feature.geometry?.coordinates||[];
-      return rings.flatMap(ring=>ring.map(point=>aladin.world2pix(wrapRa(Number(point[0])),Number(point[1])).filter(Boolean));
+      return rings.flatMap(ring=>ring.map(point=>aladin.world2pix(wrapRa(Number(point[0])),Number(point[1]))).filter(Boolean));
     }).length;
     window.GalaxyViewerConstellationRegions=Object.freeze({
       VERSION:'0004',featureCount:data.features.length,renderedFeatureCount:validFeatures,
