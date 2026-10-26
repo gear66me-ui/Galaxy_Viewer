@@ -81,7 +81,7 @@ function renderGallery(list){
   const archive=document.createElement('a');archive.target='_blank';archive.rel='noopener';archive.href='https://images.nasa.gov/search?q='+encodeURIComponent(imageQueryName(g));archive.textContent='Search NASA archive';links.appendChild(archive);
   const btn=document.createElement('button');btn.type='button';btn.textContent='Fly here';btn.addEventListener('click',()=>{const i=galaxies.indexOf(g);last=i;flyTo(g,false);window.scrollTo({top:0,behavior:'smooth'})});
   info.append(title,source,links,btn);card.append(img,info);frag.append(card);
-  let candidates=(g.imageUrls||[]).filter(u=>/^https?:\\/\\//i.test(u));
+  let candidates=(g.imageUrls||[]).filter(u=>/^https?:\/\//i.test(u));
   let checked=0;
   const tryCandidate=()=>{
    if(checked>=candidates.length){img.removeAttribute('src');source.textContent='No verified 1,600px+ provider image; use archive search.';return}
