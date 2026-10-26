@@ -1,4 +1,4 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0039
+name: Validate and Deploy RC-V1.0.0.9 Build 0040
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0039 and IAU boundary renderer
+      - name: Validate Build 0040 and bundled IAU boundaries
         shell: bash
         run: |
           set -euo pipefail
@@ -36,19 +36,19 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0039.py","build":"0039"}, f"Unexpected production pointer: {pointer}"
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0039", "Manifest release/build mismatch"
-          assert manifest.get("sourceBranch") == "release", "Manifest source branch is not release"
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0039.py"], "Manifest runtime file mismatch"
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0040.py","build":"0040"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0040", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0040.py"], manifest
+          assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0039"' in rc
-          assert "const GV200001_BUILD='0039';" in rc, "JavaScript build identity mismatch"
-          assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc, "Stable Random Galaxy handler is missing"
-          assert "constellations.borders.json" in rc, "IAU boundary dataset URL missing"
-          assert "precessB1875ToJ2000" in rc, "B1875-to-J2000 coordinate conversion missing"
-          assert "GV_IAU_BOUNDARY_WIDTH=0.9" in rc and "GV_IAU_BOUNDARY_OPACITY=0.38" in rc, "Visible faint-red style missing"
-          assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc, "Overlay attach/show calls missing"
-          assert "rendered<80||vertices<500" in rc, "Runtime line/vertex validation missing"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0040"' in rc
+          assert "const GV200001_BUILD='0040';" in rc
+          assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc
+          assert "const data=JSON.parse(" in rc, "Boundary data must be bundled, not fetched at runtime"
+          assert "precessB1875ToJ2000" not in rc, "Do not double-precess the already J2000-aligned GeoJSON"
+          assert "GV_IAU_BOUNDARY_WIDTH=1.25" in rc and "GV_IAU_BOUNDARY_OPACITY=0.58" in rc
+          assert "rendered<200||vertices<1000||validFeatures<200" in rc
+          assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
           assert len(pins) == 10, f"Expected 10 immutable dependency pins; found {len(pins)}"
           required = {
@@ -59,7 +59,7 @@ jobs:
             "e38bfcc36a2f156517f9a77865da0c1c13d49175",
           }
           assert required.issubset(pins), f"Required stable dependency pin missing: {sorted(required-pins)}"
-          print("BUILD 0039 VALIDATION PASSED: release identity, stable Random Galaxy handler, B1875→J2000 conversion, line style, overlay attachment, runtime geometry checks, and immutable dependency pins.")
+          print("BUILD 0040 STATIC VALIDATION PASSED: release identity, bundled IAU data, no runtime fetch, no double precession, overlay attach/show, geometry thresholds, Random Galaxy handler, and immutable pins.")
           PY
 
       - name: Configure GitHub Pages
@@ -70,7 +70,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _site
-          rsync -a --exclude='.git/' --exclude='_site/' --exclude='viewer/artwork/runtime/survey-thumbnails/' --exclude='viewer/artwork/runtime/mirrors/' --exclude='**/[Mm]irror/' --exclude='**/[Mm]irrors/' --exclude='**/[Tt]humbnail*/' --exclude='**/[Tt]humbnails/' --exclude='**/[Tt]humbnails/' --exclude='**/[Tt]humbnails/' ./ _site/
+          rsync -a --exclude='.git/' --exclude='_site/' --exclude='viewer/artwork/runtime/survey-thumbnails/' --exclude='viewer/artwork/runtime/mirrors/' --exclude='**/[Mm]irror/' --exclude='**/[Mm]irrors/' --exclude='**/[Tt]humbnail*/' --exclude='**/[Tt]humbnails/' ./ _site/
           if find _site -type d | grep -Ei '/(mirror|mirrors|thumbnail|thumbnails|survey-thumbnails)$'; then
             echo "ERROR: thumbnail or mirror directories leaked into deployment staging"
             exit 1
