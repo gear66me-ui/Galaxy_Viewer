@@ -177,7 +177,7 @@ jobs:
           assert target_pin, 'active target calculator module must use an immutable full-commit CDN pin'
           destination_pin=re.search(r'https://(?:cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@|raw\.githubusercontent\.com/gear66me-ui/Galaxy_Viewer/)([0-9a-f]{40})/viewer/modules/destination-presentation/gv-destination-presentation-0061\.js',rc)
           assert destination_pin, 'active destination presentation module must use an immutable full-commit CDN pin'
-          assert len(pins)==(10 if active_build in ('0029', '0030', '0031', '0032', '0033', '0034') else 9), f'unexpected number of immutable production dependency pins: {pins}'
+          assert len(pins)==(11 if active_build == '0034' else 10 if active_build in ('0029', '0030', '0031', '0032', '0033') else 9), f'unexpected number of immutable production dependency pins: {pins}'
           assert 'Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js' in rc
           assert 'Galaxy_Viewer@a328fb7d9f9b4ebc12d5ad97d64da5324e169111/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js' in rc
           assert "GalaxyViewerConstellationOverlay?.VERSION!=='0018'" in rc
