@@ -119,6 +119,9 @@ jobs:
           git add viewer/RC-V1.0.0.11-BLD-0037.py viewer/gv-current-viewer.json release-manifest.json
           if ! git diff --cached --quiet; then
             git commit -m "Build 0037: add faint red IAU constellation boundaries"
+            # A concurrent catalog-fix workflow may update release while this job runs.
+            # Rebase the generated build on the latest release head before pushing.
+            git pull --rebase origin release
             git push origin HEAD:release
           fi
 
