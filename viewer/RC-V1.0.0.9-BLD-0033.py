@@ -2744,7 +2744,11 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
+let gvConstellationGlowRequestId=0;
 function gvSetTravelConstellationGlow(constellationName,ra,dec,active){
+    // Latest navigation request wins. Never let an older async overlay callback
+    // overwrite the constellation belonging to a newer destination.
+    const requestId=++gvConstellationGlowRequestId;
     // Travel beacons must not depend on the user opening the CONSTELLATIONS menu.
     // Lazily mount the overlay on the first trip; keep its ordinary line layer off.
     if(!gvConstellationPromise){
@@ -2762,16 +2766,19 @@ function gvSetTravelConstellationGlow(constellationName,ra,dec,active){
         });
     }
     gvConstellationPromise.then(layer=>{
+        // Ignore stale requests after a newer trip has started.
+        if(requestId!==gvConstellationGlowRequestId)return;
         if(!active){layer.clearTravelGlow?.();return;}
         const name=String(constellationName||'').trim();
-        let matched=false;
-        if(name&&typeof layer.setTravelGlowByName==='function')matched=layer.setTravelGlowByName(name,true)===true;
+        const matched=name&&typeof layer.setTravelGlowByName==='function'
+            ?layer.setTravelGlowByName(name,true)===true:false;
+        // Catalog name is authoritative. Coordinates/nearest stars can select
+        // a neighboring constellation, so fail closed rather than highlight the wrong one.
         if(!matched){
-            console.warn('GV CONSTELLATION ARCHIVE NAME DID NOT MATCH; using coordinate fallback',{constellationName,ra,dec});
-            matched=layer.setTravelGlowAt?.(ra,dec,true)===true;
+            layer.clearTravelGlow?.();
+            console.error('GV CONSTELLATION CATALOG NAME DID NOT MATCH; highlight cleared',{constellationName:name,ra,dec});
         }
-        if(!matched)console.error('GV CONSTELLATION TRAVEL BEACON COULD NOT BE ACTIVATED',{constellationName,ra,dec});
-    }).catch(error=>console.warn('GV CONSTELLATION TRAVEL GLOW FAILED',error));
+    }).catch(error=>{if(requestId===gvConstellationGlowRequestId)console.warn('GV CONSTELLATION TRAVEL GLOW FAILED',error)});
 }
 async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoomOutComplete=null,onTMinusEight=null,onArrival=null,registeredPromise=null,switchToSphericalAtApex=false,constellationName=''}={}){
     const initialCenter=prepared?.imageCenter;let ra1=Number(initialCenter?.[0]),dec1=Number(initialCenter?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
@@ -3201,7 +3208,7 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // Keep image objects alive while their constellation artwork warms in parallel.
 const gvConstellationArtworkPrewarm=new Map();
 gvStartMemoryDiagnostics();
-const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=2;
+const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=12;
 function gvReleaseConstellationArtwork(url){
     const image=gvConstellationArtworkPrewarm.get(url);if(!image)return;
     try{image.onload=null;image.onerror=null;image.removeAttribute?.('src')}catch(_){}
