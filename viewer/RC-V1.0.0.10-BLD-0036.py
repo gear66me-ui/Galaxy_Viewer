@@ -5,7 +5,7 @@ import json
 # SECTION 001 — FILE IDENTITY / PYTHON IMPORTS
 # ECO: GV200-001
 # ============================================================================
-VIEWER_VERSION = "RC-V1.0.0.9"
+VIEWER_VERSION = "RC-V1.0.0.10"
 # BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
 BUILD_NUMBER = "0036"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
