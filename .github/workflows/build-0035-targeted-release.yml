@@ -69,10 +69,23 @@ jobs:
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
 
+      - name: Stage production site without unrelated image mirrors
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p _site
+          rsync -a --exclude='.git/' --exclude='_site/' --exclude='viewer/artwork/runtime/survey-thumbnails/' --exclude='viewer/artwork/runtime/mirrors/' --exclude='**/mirror/' --exclude='**/mirrors/' ./ _site/
+          if find _site/viewer/artwork/runtime -type f 2>/dev/null | grep -E '/(survey-thumbnails|mirrors?)/'; then
+            echo "ERROR: mirror/thumbnail assets leaked into deployment staging"
+            exit 1
+          fi
+          echo "Staged deployment without survey-thumbnail or mirror image directories."
+          du -sh _site
+
       - name: Upload production site
         uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - name: Deploy production site
         id: deployment
