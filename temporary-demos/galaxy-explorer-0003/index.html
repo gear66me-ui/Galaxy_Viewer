@@ -85,10 +85,21 @@ async function flyTo(g,first){
   message('Zooming out to the full sky (360° view)…');
   const currentRA=scriptInterface.getRA(), currentDec=scriptInterface.getDec();
   await moveTo(currentRA,currentDec,2160);
+  message('Switching to higher-resolution Pan-STARRS survey…');
+  // Pan-STARRS 3pi provides substantially finer survey tiles than the default DSS2 mosaic.
+  if(wwt && typeof wwt.setBackgroundImageByName==='function'){
+   wwt.setBackgroundImageByName('PanSTARRS');
+  }
   message('Flying to '+g.name+'…');
   await moveTo(g.ra,g.dec,360);
-  message('Framing '+g.name+'…');
-  await moveTo(g.ra,g.dec,Math.max(0.6,g.zoom));
+  message('Framing '+g.name+' (minimum horizontal FOV 0.8°)…');
+  // Catalog zoom values are desired vertical FOV degrees. WWT's legacy API expects 6 × vertical FOV.
+  // Keep horizontal FOV >= 0.8° so the view never zooms in tighter than requested.
+  const canvas=document.getElementById('wwtcanvas');
+  const aspect=Math.max(0.5,canvas.clientWidth/Math.max(1,canvas.clientHeight));
+  const minimumVerticalFov=0.8/aspect;
+  const targetVerticalFov=Math.max(Number(g.zoom)||0.8,minimumVerticalFov);
+  await moveTo(g.ra,g.dec,6*targetVerticalFov);
   label.textContent=g.name;
   message('Arrived at '+g.name+'. Coordinates below show the current WWT view center (ICRS/J2000-style sky coordinates).');
  }catch(e){
