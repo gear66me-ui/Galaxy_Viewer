@@ -1,4 +1,4 @@
-name: Repair NGC 7764A Runtime Catalog 0006
+name: Repair NGC 7764A Runtime Catalog 0006 (trigger)
 
 on:
   workflow_dispatch:
