@@ -5,7 +5,7 @@ on:
     branches: [release]
     paths:
       - "temporary-demos/galaxy-explorer-0001/**"
-      - "temporary-demos/galaxy-explorer-0002/**"
+      - "temporary-demos/galaxy-explorer-0002/**"\n      - "temporary-demos/galaxy-explorer-0003/**"
       - ".github/workflows/galaxy-explorer-pages.yml"
   workflow_dispatch:
 
