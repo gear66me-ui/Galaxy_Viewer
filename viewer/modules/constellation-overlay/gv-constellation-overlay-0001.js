@@ -3,10 +3,10 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0018";
+  const VERSION = "0019";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
-  const COLOR = "#8EDCFF", WIDTH = 0.25, HIGHLIGHT_WIDTH = 0.5;
+  const COLOR = "#8EDCFF", WIDTH = 0.5, HIGHLIGHT_COLOR = "#FFF1D6", HIGHLIGHT_WIDTH = 0.7;
   async function csv(url) { const r=await fetch(url,{cache:"force-cache"}); if(!r.ok)throw Error("CONSTELLATION DATA HTTP "+r.status); return r.text(); }
   function parseStars(text) {
     const map=new Map();
@@ -25,14 +25,14 @@
     if(stars.size<100||segments.length<100)throw Error("CONSTELLATIONS: source data failed validation");
     const overlays=new Map();
     for(const [name,a,b] of segments){
-      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:"#8EDCFF",lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.highlight);overlays.set(name,e);}
+      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.highlight);overlays.set(name,e);}
       const p1=stars.get(a),p2=stars.get(b);
       for(const id of [a,b]){const p=stars.get(id);if(p&&!e.starIds.has(id)){e.starIds.add(id);e.points.push(p);}}
       // Fornax is deliberately rebuilt below from its three principal stars.
       // Ignore catalogue edges for Fornax so no extra segments close or distort the V.
       if(!["FOR","FORNAX"].includes(canon(name))&&p1&&p2){
         e.obj.add(window.A.polyline([p1,p2]));
-        e.highlight.add(window.A.polyline([p1,p2],{color:"#8EDCFF",lineWidth:HIGHLIGHT_WIDTH}));
+        e.highlight.add(window.A.polyline([p1,p2],{color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}));
         e.segmentPairs.push([p1,p2]);e.segments++;
       } else if(!["FOR","FORNAX"].includes(canon(name))) {
         console.warn("GV CONSTELLATION: skipped segment with missing star coordinate",{constellation:name,start:a,end:b,hasStart:!!p1,hasEnd:!!p2});
@@ -41,7 +41,7 @@
     // The line-source CSV omits principal stars not used by its asterism segments.
     let fornax=[...overlays.values()].find(e=>["FOR","FORNAX"].includes(canon(e.name)));
     if(!fornax){
-      fornax={name:"For",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:"#8EDCFF",lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
+      fornax={name:"For",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
       aladin.addOverlay(fornax.obj);aladin.addOverlay(fornax.highlight);overlays.set(fornax.name,fornax);
     }
     const fornaxPrincipalStars=[
@@ -59,7 +59,7 @@
     fornax.segments=2;
     for(const pair of fornax.segmentPairs){
       fornax.obj.add(window.A.polyline(pair,{color:COLOR,lineWidth:WIDTH}));
-      fornax.highlight.add(window.A.polyline(pair,{color:"#8EDCFF",lineWidth:HIGHLIGHT_WIDTH}));
+      fornax.highlight.add(window.A.polyline(pair,{color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}));
     }
     console.info("GV CONSTELLATION: Fornax V registered",{stars:fornaxPrincipalStars.map(s=>s.name),edges:2,closed:false});
 
