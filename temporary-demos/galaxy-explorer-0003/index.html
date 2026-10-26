@@ -59,34 +59,47 @@ function numOf(v){if(typeof v==='number'&&Number.isFinite(v))return v;if(typeof 
 function toHours(o){let h=numOf(valueOf(o,['raHours','RAhours','rightAscensionHours','coordinates.raHours']));if(h!==null)return ((h%24)+24)%24;let d=numOf(valueOf(o,['raDeg','raDegrees','rightAscensionDeg','coordinates.raDeg','Spatial.ReferenceValue.0','spatial.ra']));if(d===null)d=numOf(valueOf(o,['ra','RA','rightAscension','RightAscension','coordinates.ra']));if(d===null)return null;if(d>24||d<0)return ((d/15%24)+24)%24;return d}
 function toDec(o){return numOf(valueOf(o,['decDeg','decDegrees','declinationDeg','dec','Dec','DEC','declination','Declination','coordinates.dec','Spatial.ReferenceValue.1']))}
 function cleanName(o){return String(valueOf(o,['objectName','targetName','commonName','name','Name','title','object','designation','preferredName','galaxyName','archiveId','targetId','id'])||'').trim()}
+function catalogImageUrls(o){const fields=['selectedImageUrl','largeUrl','hdUrl','originalUrl','imageUrl','screenUrl','avmSourceUrl','esaPublicationJpeg','sourceUrl','url','image.url','images.original','images.large'];const out=[];for(const k of fields){const v=valueOf(o,[k]);if(typeof v==='string'&&/^https?:\/\//i.test(v)&&!out.includes(v))out.push(v)}if(Array.isArray(o.jpegCandidates))for(const v of o.jpegCandidates)if(typeof v==='string'&&/^https?:\/\//i.test(v)&&!out.includes(v))out.push(v);return out}
 function imageQueryName(g){return g.name.replace(/\s*\([^)]*\)\s*/g,' ').trim()}
 async function loadAllCatalogs(){
  const results=await Promise.allSettled(CATALOG_PATHS.map(async ([provider,path])=>{const res=await fetch(CATALOG_ROOT+path,{cache:'no-store'});if(!res.ok)throw new Error(provider+' HTTP '+res.status);return {provider,records:arrFromCatalog(await res.json())}}));
  const all=[];
- for(const r of results){if(r.status!=='fulfilled')continue;for(const o of r.value.records){const name=cleanName(o),ra=toHours(o),dec=toDec(o);if(!name||ra===null||dec===null||Math.abs(dec)>90)continue;const z=numOf(valueOf(o,['zoom','fovDeg','fovDegrees','imageFovYDeg']))||0.8;all.push({name,ra,dec,zoom:z,provider:r.value.provider,source:o})}}
+ for(const r of results){if(r.status!=='fulfilled')continue;for(const o of r.value.records){const name=cleanName(o),ra=toHours(o),dec=toDec(o);if(!name||ra===null||dec===null||Math.abs(dec)>90)continue;const z=numOf(valueOf(o,['zoom','fovDeg','fovDegrees','imageFovYDeg']))||0.8;all.push({name,ra,dec,zoom:z,provider:r.value.provider,source:o,imageUrls:catalogImageUrls(o)})}}
  const dedup=new Map();for(const g of all){const key=g.name.toLowerCase().replace(/[^a-z0-9]/g,'');if(!dedup.has(key))dedup.set(key,g)}
  const full=[...dedup.values()];
  if(full.length){galaxies=full;catalogReady=true;catalogStatus.textContent='Loaded '+full.length.toLocaleString()+' unique objects from all six provider catalogs ('+results.filter(r=>r.status==='fulfilled').length+'/6 catalogs). Random Galaxy now samples the full catalog.';if(!busy&&ready)message('Full catalog loaded: '+full.length.toLocaleString()+' galaxies. Ready to explore.')}
  else{catalogStatus.textContent='Catalog load failed. Check the connection to raw.githubusercontent.com.';message('Could not load full catalogs; the small built-in fallback list remains available.',true)}
 }
 async function loadGalaxyPortrait(g){
- portraitMeta.textContent='Searching NASA’s image archive for '+g.name+'…';
- catalogStatus.textContent=(catalogReady?'Full catalog active: '+galaxies.length.toLocaleString()+' objects. ':'')+'Finding the best available image for '+g.name+'.';
+ const urls=g.imageUrls||catalogImageUrls(g.source||{});
+ const direct=urls.find(u=>/\.(jpe?g|png|tif{1,2}|webp)(?:$|[?#])/i.test(u))||urls[0];
+ if(direct){
+  portraitMeta.textContent='Loading original provider image for '+g.name+'…';
+  portrait.onload=()=>{portraitMeta.innerHTML='<strong>'+g.name+'</strong><br>Source: '+(g.provider||'Galaxy Viewer provider')+' catalog<br>Actual image dimensions: '+portrait.naturalWidth.toLocaleString()+' × '+portrait.naturalHeight.toLocaleString()+' pixels<br><a href="'+direct.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Open source image</a>';catalogStatus.textContent=portrait.naturalWidth>=1600?'High-resolution provider image loaded.':'Source image is only '+portrait.naturalWidth+' pixels wide; checking archive alternatives.';if(portrait.naturalWidth<1600)searchNasaPortrait(g)};
+  portrait.onerror=()=>searchNasaPortrait(g);
+  portrait.alt=g.name+' original provider image';portrait.src=direct;return;
+ }
+ searchNasaPortrait(g);
+}
+async function searchNasaPortrait(g){
+ portraitMeta.textContent='No direct image URL found in the provider record. Searching NASA archive for '+g.name+'…';
+ catalogStatus.textContent='Looking for a verified full-size archive asset; low-resolution previews will not be presented as high resolution.';
  const q=imageQueryName(g);
  try{
   const endpoint='https://images-api.nasa.gov/search?q='+encodeURIComponent(q)+'&media_type=image&page_size=30';
   const res=await fetch(endpoint);if(!res.ok)throw new Error('NASA search HTTP '+res.status);
   const data=await res.json(),items=(data.collection&&data.collection.items)||[];
   const wanted=q.toLowerCase().replace(/[^a-z0-9]/g,'');
-  const scored=items.map(item=>{const d=(item.data&&item.data[0])||{},title=String(d.title||'');const t=title.toLowerCase().replace(/[^a-z0-9]/g,'');let score=0;if(t===wanted)score+=100;if(t.includes(wanted)||wanted.includes(t))score+=35;for(const token of q.toLowerCase().split(/[\s()/-]+/).filter(x=>x.length>2)){if(t.includes(token))score+=4}if(/galaxy|spiral|andromeda|whirlpool|sombrero/i.test(title))score+=2;return {item,d,score,title}}).sort((a,b)=>b.score-a.score);
+  const scored=items.map(item=>{const d=(item.data&&item.data[0])||{},title=String(d.title||''),t=title.toLowerCase().replace(/[^a-z0-9]/g,'');let score=0;if(t===wanted)score+=100;if(t.includes(wanted)||wanted.includes(t))score+=35;for(const token of q.toLowerCase().split(/[\s()/-]+/).filter(x=>x.length>2)){if(t.includes(token))score+=4}if(/galaxy|spiral|andromeda|whirlpool|sombrero/i.test(title))score+=2;return {item,d,score,title}}).sort((a,b)=>b.score-a.score);
   const best=scored.find(x=>x.score>=5&&x.item.links&&x.item.links[0]&&x.item.links[0].href);
-  if(!best){portrait.removeAttribute('src');portrait.alt='No confirmed NASA image found for '+g.name;portraitMeta.innerHTML='<strong>'+g.name+'</strong><br>No confidently matched NASA portrait was found for this object. The sky-survey view remains available; no unrelated image was substituted.';catalogStatus.textContent='No confident portrait match for '+g.name+'. Try another random galaxy.';return}
-  let thumb=best.item.links[0].href,chosen=thumb;
-  try{const assetRes=await fetch('https://images-api.nasa.gov/asset/'+encodeURIComponent(best.d.nasa_id));if(assetRes.ok){const asset=await assetRes.json(),arr=(asset.collection&&asset.collection.items)||[];const files=arr.filter(x=>typeof x.href==='string'&&/\.(jpe?g|png|tif{1,2})(?:$|\?)/i.test(x.href));const full=files.find(x=>/~orig\.(jpe?g|png|tif{1,2})/i.test(x.href))||files.find(x=>/~large\.(jpe?g|png|tif{1,2})/i.test(x.href))||files.find(x=>/~medium\./i.test(x.href));if(full)chosen=full.href}}catch(e){}
-  portrait.onload=()=>{const safeTitle=best.title.replace(/&/g,'&amp;').replace(/</g,'&lt;');portraitMeta.innerHTML='<strong>'+g.name+'</strong><br>'+safeTitle+'<br>Source: NASA Image and Video Library · '+(chosen===thumb?'archive preview (full-size asset unavailable)':'largest available archive asset')+'<br><a href="'+chosen.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Open source image</a> · <a href="https://images.nasa.gov/search?q='+encodeURIComponent(q)+'" target="_blank" rel="noopener">Browse archive results</a>'};
-  portrait.onerror=()=>{if(chosen!==thumb){portrait.src=thumb;portraitMeta.textContent='Full-size image could not load; trying the archive preview…'}else{portraitMeta.textContent='NASA returned a match, but the image failed to load. Open the archive search to inspect available formats.'}};
-  portrait.alt=best.title;portrait.src=chosen;catalogStatus.textContent='Matched a NASA archive image for '+g.name+'.';
- }catch(e){portrait.removeAttribute('src');portrait.alt='Image search unavailable';portraitMeta.textContent='Image archive search failed: '+(e&&e.message||e)+'. The sky view is still available.';catalogStatus.textContent='Could not reach NASA’s image archive; try again when connected.'}
+  if(!best){portrait.removeAttribute('src');portrait.alt='No confirmed high-resolution image found for '+g.name;portraitMeta.textContent='No confident image match with a verified full-size asset was found. The sky-survey view remains available; no unrelated image was substituted.';catalogStatus.textContent='No verified high-resolution portrait available for '+g.name+'.';return}
+  let chosen=null,thumb=best.item.links[0].href;
+  try{const assetRes=await fetch('https://images-api.nasa.gov/asset/'+encodeURIComponent(best.d.nasa_id));if(assetRes.ok){const asset=await assetRes.json(),arr=(asset.collection&&asset.collection.items)||[];const files=arr.filter(x=>typeof x.href==='string'&&/\.(jpe?g|png|tif{1,2})(?:$|\?)/i.test(x.href));const full=files.find(x=>/~orig\.(jpe?g|png|tif{1,2})/i.test(x.href))||files.find(x=>/~large\.(jpe?g|png|tif{1,2})/i.test(x.href));if(full)chosen=full.href}}catch(e){}
+  if(!chosen){portrait.removeAttribute('src');portrait.alt='No verified full-size image for '+g.name;portraitMeta.innerHTML='<strong>'+g.name+'</strong><br>NASA returned a search result but no verified original/large image file. The small preview was deliberately rejected.<br><a href="https://images.nasa.gov/search?q='+encodeURIComponent(q)+'" target="_blank" rel="noopener">Inspect NASA archive results</a>';catalogStatus.textContent='No verified full-size asset available for this match.';return}
+  portrait.onload=()=>{const safeTitle=best.title.replace(/&/g,'&amp;').replace(/</g,'&lt;');portraitMeta.innerHTML='<strong>'+g.name+'</strong><br>'+safeTitle+'<br>Actual image dimensions: '+portrait.naturalWidth.toLocaleString()+' × '+portrait.naturalHeight.toLocaleString()+' pixels<br>Source: NASA Image and Video Library · verified original/large asset<br><a href="'+chosen.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Open source image</a> · <a href="https://images.nasa.gov/search?q='+encodeURIComponent(q)+'" target="_blank" rel="noopener">Browse archive results</a>';catalogStatus.textContent=portrait.naturalWidth>=1600?'Verified large image loaded.':'Full-size file loaded, but its pixel dimensions are limited.'};
+  portrait.onerror=()=>{portrait.removeAttribute('src');portraitMeta.textContent='The verified archive asset could not be loaded in this browser. Open the source link from NASA archive search.'};
+  portrait.alt=best.title;portrait.src=chosen;
+ }catch(e){portrait.removeAttribute('src');portrait.alt='Image search unavailable';portraitMeta.textContent='Archive search failed: '+(e&&e.message||e)+'. Sky view is still available.';catalogStatus.textContent='Could not reach NASA archive.'}
 }
 
 function message(text,isError){status.textContent=text;status.classList.toggle('error',!!isError);activity.classList.toggle('failed',!!isError)}
