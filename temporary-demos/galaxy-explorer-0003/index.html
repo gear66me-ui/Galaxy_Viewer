@@ -18,10 +18,7 @@ main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-
 <div id="status" role="status" aria-live="polite">Loading WorldWide Telescope engine…</div><div id="activity" aria-label="Loading activity"><span id="activitybar"></span></div>
 <div class="controls"><button id="random" disabled>Random Galaxy</button><span id="target">Preparing the telescope…</span></div><div id="coords" role="status" aria-live="polite"><span>Frame: <strong>ICRS / J2000</strong></span><span>RA: <strong id="raread">—</strong></span><span>Dec: <strong id="decread">—</strong></span><span>Zoom: <strong id="zoomread">—</strong></span></div>
 <div id="wwtcanvas" aria-label="Interactive WorldWide Telescope sky viewer"></div>
-<section id="portraitPanel" aria-label="High-resolution galaxy image">
- <div><img id="portrait" alt="High-resolution galaxy image will appear here" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs="><div id="portraitMeta">Looking for a high-resolution image from the observatory archives…</div></div>
- <div><strong>Catalog-wide image search</strong><p class="note">The galaxy list loads from all six Galaxy Viewer provider catalogs. For each selected object, the page searches the NASA image archive for the best available matching image, rather than using a fixed sample.</p><div id="catalogStatus">Loading all provider catalogs…</div><p class="note">A dedicated portrait is not available for every galaxy. If no reliable match is found, the page says so instead of silently presenting a random image.</p></div>
-</section>
+<section id="galleryPanel" aria-label="All catalog galaxy images"><h2>Galaxy image gallery</h2><p class="note">Browse every unique object loaded from the six provider catalogs. Only verified image files at least 1,600 pixels wide are displayed; entries without one link to the relevant archive search instead of showing blurry thumbnails.</p><div id="catalogStatus">Loading all provider catalogs…</div><div id="gallery" class="gallery"></div></section>
 <p class="note">The sky imagery streams from WorldWide Telescope. Internet access is required. Tap Random Galaxy to fly to another destination.</p>
 </main>
 <script>
@@ -67,8 +64,33 @@ async function loadAllCatalogs(){
  for(const r of results){if(r.status!=='fulfilled')continue;for(const o of r.value.records){const name=cleanName(o),ra=toHours(o),dec=toDec(o);if(!name||ra===null||dec===null||Math.abs(dec)>90)continue;const z=numOf(valueOf(o,['zoom','fovDeg','fovDegrees','imageFovYDeg']))||0.8;all.push({name,ra,dec,zoom:z,provider:r.value.provider,source:o,imageUrls:catalogImageUrls(o)})}}
  const dedup=new Map();for(const g of all){const key=g.name.toLowerCase().replace(/[^a-z0-9]/g,'');if(!dedup.has(key))dedup.set(key,g)}
  const full=[...dedup.values()];
- if(full.length){galaxies=full;catalogReady=true;catalogStatus.textContent='Loaded '+full.length.toLocaleString()+' unique objects from all six provider catalogs ('+results.filter(r=>r.status==='fulfilled').length+'/6 catalogs). Random Galaxy now samples the full catalog.';if(!busy&&ready)message('Full catalog loaded: '+full.length.toLocaleString()+' galaxies. Ready to explore.')}
+ if(full.length){galaxies=full;catalogReady=true;catalogStatus.textContent='Loaded '+full.length.toLocaleString()+' unique objects from all six provider catalogs ('+results.filter(r=>r.status==='fulfilled').length+'/6 catalogs).';renderGallery(full);if(!busy&&ready)message('Full catalog loaded: '+full.length.toLocaleString()+' galaxies. Ready to explore.')}
  else{catalogStatus.textContent='Catalog load failed. Check the connection to raw.githubusercontent.com.';message('Could not load full catalogs; the small built-in fallback list remains available.',true)}
+}
+function escHtml(v){return String(v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function renderGallery(list){
+ const root=document.getElementById('gallery');root.replaceChildren();
+ const frag=document.createDocumentFragment();
+ for(const g of list){
+  const card=document.createElement('article');card.className='gal-card';
+  const img=document.createElement('img');img.loading='lazy';img.alt='High-resolution image of '+g.name;img.decoding='async';
+  const info=document.createElement('div');info.className='gal-info';
+  const title=document.createElement('div');title.className='gal-title';title.textContent=g.name;
+  const source=document.createElement('div');source.className='gal-state';source.textContent=(g.provider||'Catalog')+' · checking image sources…';
+  const links=document.createElement('div');
+  const archive=document.createElement('a');archive.target='_blank';archive.rel='noopener';archive.href='https://images.nasa.gov/search?q='+encodeURIComponent(imageQueryName(g));archive.textContent='Search NASA archive';links.appendChild(archive);
+  const btn=document.createElement('button');btn.type='button';btn.textContent='Fly here';btn.addEventListener('click',()=>{const i=galaxies.indexOf(g);last=i;flyTo(g,false);window.scrollTo({top:0,behavior:'smooth'})});
+  info.append(title,source,links,btn);card.append(img,info);frag.append(card);
+  let candidates=(g.imageUrls||[]).filter(u=>/^https?:\\/\\//i.test(u));
+  let checked=0;
+  const tryCandidate=()=>{
+   if(checked>=candidates.length){img.removeAttribute('src');source.textContent='No verified 1,600px+ provider image; use archive search.';return}
+   const url=candidates[checked++];img.onload=()=>{if(img.naturalWidth>=1600){source.textContent=(g.provider||'Provider')+' · '+img.naturalWidth.toLocaleString()+' × '+img.naturalHeight.toLocaleString()+' px';archive.href=url;archive.textContent='Open original image';}else{img.onload=null;img.onerror=null;img.removeAttribute('src');tryCandidate()}};
+   img.onerror=()=>{img.onload=null;img.onerror=null;img.removeAttribute('src');tryCandidate()};img.src=url;
+  };
+  if(candidates.length)tryCandidate();else source.textContent='No direct image URL in this catalog record; use archive search.';
+ }
+ root.append(frag);
 }
 async function loadGalaxyPortrait(g){
  const urls=g.imageUrls||catalogImageUrls(g.source||{});
