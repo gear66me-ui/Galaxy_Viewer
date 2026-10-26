@@ -7,7 +7,7 @@
 <style>
 :root{color-scheme:dark}*{box-sizing:border-box}body{margin:0;background:#050812;color:#edf4ff;font:16px/1.45 system-ui,-apple-system,sans-serif}
 header{padding:15px 18px;background:#10192b;border-bottom:1px solid #28354b}h1{font-size:1.35rem;margin:0 0 3px}header p,.note{margin:0;color:#aebbd0;font-size:.9rem}
-main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-bottom:10px;border:1px solid #30415a;border-radius:8px;background:#10192b;overflow-wrap:anywhere}
+main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-bottom:6px;border:1px solid #30415a;border-radius:8px;background:#10192b;overflow-wrap:anywhere}#activity{height:4px;margin:0 0 12px;background:#18253a;border-radius:8px;overflow:hidden}#activitybar{display:block;height:100%;width:35%;background:#68b7ff;border-radius:8px;animation:stream 1.3s ease-in-out infinite alternate}#activity.failed #activitybar{animation:none;width:100%;background:#d85b6b}@keyframes stream{from{transform:translateX(-110%)}to{transform:translateX(310%)}}
 .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:0 0 10px}button{background:#68b7ff;color:#07111e;border:0;border-radius:9px;padding:12px 18px;font-size:1rem;font-weight:750;cursor:pointer}button:disabled{opacity:.45;cursor:wait}
 #target{color:#e4edff}#wwtcanvas{position:relative;height:min(72vh,760px);min-height:360px;width:100%;background:#000;border:1px solid #40506b;border-radius:8px;overflow:hidden}
 #wwtcanvas canvas{max-width:100%}.note{margin-top:10px;font-size:.82rem}.error{border-color:#9b3d4c!important;color:#ffdbe0!important}
@@ -15,7 +15,7 @@ main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-
 <body>
 <header><h1>Galaxy Explorer</h1><p>Real WorldWide Telescope sky imagery · Random galaxy journeys</p></header>
 <main>
-<div id="status" role="status">Loading WorldWide Telescope engine…</div>
+<div id="status" role="status" aria-live="polite">Loading WorldWide Telescope engine…</div><div id="activity" aria-label="Loading activity"><span id="activitybar"></span></div>
 <div class="controls"><button id="random" disabled>Random Galaxy</button><span id="target">Preparing the telescope…</span></div>
 <div id="wwtcanvas" aria-label="Interactive WorldWide Telescope sky viewer"></div>
 <p class="note">The sky imagery streams from WorldWide Telescope. Internet access is required. Tap Random Galaxy to fly to another destination.</p>
@@ -23,7 +23,7 @@ main{padding:12px;max-width:1200px;margin:auto}#status{padding:10px 12px;margin-
 <script>
 (function(){
 'use strict';
-const status=document.getElementById('status'),button=document.getElementById('random'),label=document.getElementById('target');
+const status=document.getElementById('status'),activity=document.getElementById('activity'),button=document.getElementById('random'),label=document.getElementById('target');
 let wwt=null,scriptInterface=null,busy=false,last=-1,ready=false;
 const galaxies=[
 {name:'Andromeda Galaxy (M31)',ra:0.7123,dec:41.269,zoom:1.2},
@@ -44,7 +44,7 @@ const galaxies=[
 {name:'Needle Galaxy (NGC 4565)',ra:12.6058,dec:25.9877,zoom:0.55},
 {name:'Fireworks Galaxy (NGC 6946)',ra:20.5812,dec:60.1539,zoom:0.6}
 ];
-function message(text,isError){status.textContent=text;status.classList.toggle('error',!!isError)}
+function message(text,isError){status.textContent=text;status.classList.toggle('error',!!isError);activity.classList.toggle('failed',!!isError)}
 function enable(){busy=false;button.disabled=!ready}
 function flyTo(g,first){
  if(!wwt||busy)return;busy=true;button.disabled=true;label.textContent='Travelling to '+g.name+'…';
