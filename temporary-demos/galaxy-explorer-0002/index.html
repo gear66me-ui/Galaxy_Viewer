@@ -50,7 +50,7 @@ function flyTo(g,first){
  if(!wwt||busy)return;busy=true;button.disabled=true;label.textContent='Travelling to '+g.name+'…';
  try{
   message('Zooming out to reveal the wider sky…');
-  wwt.gotoRADecZoom(g.ra*15,g.dec,first?360:360,false);
+  wwt.gotoRADecZoom(g.ra,g.dec,first?360:360,false);
   window.setTimeout(()=>{
    try{
     message('Flying across the sky to '+g.name+'…');
@@ -69,7 +69,6 @@ function init(){
  if(!window.wwtlib||!wwtlib.WWTControlBuilder){message('WorldWide Telescope engine did not load. Check your internet connection, then reload this page.',true);return}
  try{
   const builder=new wwtlib.WWTControlBuilder('wwtcanvas');
-  builder.initialMode("sky");
   builder.startRenderLoop(true);
   // Do not use freestandingMode: that intentionally starts with a blank sky.
   scriptInterface=builder.create();
@@ -78,13 +77,13 @@ function init(){
     wwt=wwtlib.WWTControl.singleton;
     if(!wwt){message('WWT initialized without a camera controller.',true);return}
     ready=true;button.disabled=false;
-    // Explicitly select a hosted all-sky image set so the view does not remain a blank canvas.
-    try{wwt.setBackgroundImageByName("DSS2")}
-    catch(e){message("WWT is ready; retaining the default sky imagery.")}
-    message('WorldWide Telescope is ready. Loading the sky…');
+    // WWT starts with its built-in DSS2 sky survey. Keep that known-good default:
+    // setBackgroundImageByName silently does nothing if the name is not in its catalog.
+    scriptInterface.add_arrived(function(){message("Camera arrived. Sky survey tiles may still be streaming in…");});
+    message("WorldWide Telescope engine initialized. Using the built-in DSS2 sky survey…");
     const g=galaxies[0];last=0;label.textContent=g.name;
     wwt.gotoRADecZoom(g.ra*15,g.dec,360,false);
-    window.setTimeout(()=>{if(ready)message('Sky viewer ready. If imagery is still black, your network may be blocking WWT image tiles.',false)},5000);
+    window.setTimeout(()=>{if(ready)message("Navigation command sent. WWT streams sky tiles progressively; if the canvas remains black, check whether web.wwtassets.org and WWT tile servers are blocked on this network.",false)},8000);
    }catch(e){message('WWT setup error: '+(e.message||e),true)}
   });
   window.setTimeout(()=>{if(!ready)message('WWT is taking longer than expected. Check the connection to web.wwtassets.org and reload.',true)},18000);
