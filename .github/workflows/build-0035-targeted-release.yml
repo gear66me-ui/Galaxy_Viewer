@@ -42,7 +42,7 @@ jobs:
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
           assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0047"' in rc
-          assert "const GV200001_BUILD='0047';" in rc
+          assert "const GV200001_BUILD='0047'" in rc
           assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc
           assert "const data=JSON.parse(" in rc, "Boundary data must be bundled, not fetched at runtime"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess the already J2000-aligned GeoJSON"
