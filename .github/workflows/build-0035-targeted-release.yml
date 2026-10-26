@@ -47,7 +47,7 @@ jobs:
           assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc, "Build 0033 baseline Random Galaxy handler is missing"
 
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Build 0033 expected 11 actual immutable dependency pins; found {len(pins)}: {sorted(pins)}"
+          assert len(pins) == 10, f"Restored pre-October-26 Build 0033 expected 10 actual immutable dependency pins; found {len(pins)}: {sorted(pins)}"
           required = {
             "34d6f9b9417438afd56317bc838b93eb655c7d15",
             "d85d91201ea52aa6524a62394fc81b450b15ac23",
@@ -57,7 +57,7 @@ jobs:
           }
           assert required.issubset(pins), f"Required stable dependency pin missing: {sorted(required-pins)}"
           print("BUILD 0033 BASELINE VALIDATION PASSED")
-          print("Verified: release pointer, manifest, baseline Random Galaxy handler, 11 immutable dependency pins.")
+          print("Verified: release pointer, manifest, baseline Random Galaxy handler, 10 immutable dependency pins from the restored source.")
           PY
 
       - name: Configure GitHub Pages
