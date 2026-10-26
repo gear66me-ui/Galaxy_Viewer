@@ -24839,9 +24839,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 1000,
-      "science": {},
-      "redshift": 0.070318
+      "distanceMly": 425.0,
+      "science": {
+        "distanceMly": 425.0,
+        "distanceDisplay": "425.00 million light-years",
+        "distanceMethod": "adopted_published_group_distance_NGC_7764A",
+        "distanceSource": "https://science.nasa.gov/missions/hubble/hubble-spots-a-starship-shaped-galactic-pair/",
+        "distanceEvidence": "NASA/ESA Hubble states that the NGC 7764A group lies about 425 million light-years from Earth.",
+        "distanceVerified": true,
+        "redshift": 0.02959056,
+        "redshiftMethod": "flat_LCDM_from_distance_H0_67.6_Om_0.315",
+        "redshiftSource": "Calculated from adopted distance using the Galaxy Viewer flat-Lambda-CDM convention (H0=67.6 km/s/Mpc, Omega_m=0.315).",
+        "redshiftEvidence": "Derived from 425.0 Mly using flat Lambda-CDM comoving distance inversion."
+      },
+      "redshift": 0.02959056
     },
     {
       "providerKey": "hubble",
