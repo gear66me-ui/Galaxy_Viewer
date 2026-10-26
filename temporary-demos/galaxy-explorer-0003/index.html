@@ -75,9 +75,9 @@ async function loadGalaxyPortrait(g){
  const direct=urls.find(u=>/\.(jpe?g|png|tif{1,2}|webp)(?:$|[?#])/i.test(u))||urls[0];
  if(direct){
   portraitMeta.textContent='Loading original provider image for '+g.name+'…';
-  portrait.onload=()=>{portraitMeta.innerHTML='<strong>'+g.name+'</strong><br>Source: '+(g.provider||'Galaxy Viewer provider')+' catalog<br>Actual image dimensions: '+portrait.naturalWidth.toLocaleString()+' × '+portrait.naturalHeight.toLocaleString()+' pixels<br><a href="'+direct.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Open source image</a>';catalogStatus.textContent=portrait.naturalWidth>=1600?'High-resolution provider image loaded.':'Source image is only '+portrait.naturalWidth+' pixels wide; checking archive alternatives.';if(portrait.naturalWidth<1600)searchNasaPortrait(g)};
-  portrait.onerror=()=>searchNasaPortrait(g);
-  portrait.alt=g.name+' original provider image';portrait.src=direct;return;
+  portrait.onload=()=>{if(portrait.naturalWidth<1600){portrait.onload=null;portrait.onerror=null;portrait.removeAttribute('src');searchNasaPortrait(g);return;}portraitMeta.innerHTML='<strong>'+g.name+'</strong><br>Source: '+(g.provider||'Galaxy Viewer provider')+' catalog<br>Verified image dimensions: '+portrait.naturalWidth.toLocaleString()+' × '+portrait.naturalHeight.toLocaleString()+' pixels<br><a href="'+direct.replace(/"/g,'&quot;')+'" target="_blank" rel="noopener">Open source image</a>';catalogStatus.textContent='High-resolution provider image loaded.'};
+  portrait.onerror=()=>{portrait.onload=null;portrait.onerror=null;portrait.removeAttribute('src');searchNasaPortrait(g)};
+  portrait.alt=g.name+' high-resolution provider image';portrait.src=direct;return;
  }
  searchNasaPortrait(g);
 }
