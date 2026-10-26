@@ -57,11 +57,9 @@ jobs:
           # Galaxy Explorer is an independent static demo; publish the repository
           # site without running the unrelated Chandra review queue generator.
           if [[ "${HEAD_MESSAGE}" == GALAXY\ EXPLORER\ REVIEW* ]]; then
-            echo "review_only=true" >> "$GITHUB_OUTPUT"
-            echo "explorer_only=true" >> "$GITHUB_OUTPUT"
+            echo "workflow_only=true" >> "$GITHUB_OUTPUT"
             exit 0
           fi
-
           files="$(jq -r '.[] | (.added[]?, .modified[]?, .removed[]?)' <<< "${COMMITS_JSON}" | sort -u)"
           if [[ -z "${files}" ]]; then
             exit 0
