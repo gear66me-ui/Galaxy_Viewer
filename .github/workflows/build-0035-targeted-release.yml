@@ -1,0 +1,78 @@
+name: Build 0035 Targeted Release Fix
+
+on:
+  push:
+    branches: [release]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: galaxy-viewer-release-pages
+  cancel-in-progress: false
+
+jobs:
+  validate-and-deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages-release
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+          fetch-depth: 1
+
+      - name: Validate only the Build 0035 constellation and Random Galaxy change
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json, pathlib, re
+          root = pathlib.Path(".")
+          pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
+          manifest = json.loads((root / "release-manifest.json").read_text())
+          assert pointer.get("build") == "0035", f"Expected active build 0035, got {pointer.get('build')!r}"
+          assert pointer.get("viewer") == "RC-V1.0.0.9-BLD-0035.py", "Production pointer is not Build 0035"
+          assert manifest.get("build") == "0035", "Release manifest build does not match pointer"
+          assert manifest.get("sourceBranch") == "release", "Manifest source branch is not release"
+          assert re.fullmatch(r"[0-9a-f]{40}", str(manifest.get("sourceCommit", ""))), "Manifest sourceCommit must be a full SHA"
+
+          rc = (root / "viewer" / pointer["viewer"]).read_text()
+          overlay_path = "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js"
+          overlay = (root / overlay_path).read_text()
+          assert "Galaxy_Viewer@a328fb7d9f9b4ebc12d5ad97d64da5324e169111/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js" in rc, "Build 0035 does not pin the corrected constellation overlay"
+          assert "aliases[wanted]===k" in overlay, "Reverse alias matching fix is absent from constellation overlay"
+          assert "const GV200001_BUILD='0035';" in rc, "Build identity does not match 0035"
+          assert "GV RANDOM GALAXY HANDLER FAILED; RESETTING BUTTON STATE" in rc, "Random Galaxy failure-state recovery handler is absent"
+
+          pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
+          assert len(pins) == 11, f"Build 0035 expected 11 actual immutable dependency pins; found {len(pins)}: {sorted(pins)}"
+          required = {
+            "34d6f9b9417438afd56317bc838b93eb655c7d15",
+            "d85d91201ea52aa6524a62394fc81b450b15ac23",
+            "f5b26bd7a317a57a76a4b68adc05b50ec3f0567e",
+            "a328fb7d9f9b4ebc12d5ad97d64da5324e169111",
+            "f7740afe20a1dccd0e58644e8c154f4e6396ed83",
+            "e38bfcc36a2f156517f9a77865da0c1c13d49175",
+          }
+          assert required.issubset(pins), f"Required stable dependency pin missing: {sorted(required-pins)}"
+          print("BUILD 0035 TARGETED VALIDATION PASSED")
+          print("Verified: release pointer, manifest, corrected constellation alias matching, Random Galaxy recovery, 11 immutable dependency pins.")
+          PY
+
+      - name: Configure GitHub Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload production site
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Deploy production site
+        id: deployment
+        uses: actions/deploy-pages@v4
