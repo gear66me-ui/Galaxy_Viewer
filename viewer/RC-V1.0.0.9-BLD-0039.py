@@ -5,9 +5,9 @@ import json
 # SECTION 001 — FILE IDENTITY / PYTHON IMPORTS
 # ECO: GV200-001
 # ============================================================================
-VIEWER_VERSION = "RC-V1.0.0.11"
+VIEWER_VERSION = "RC-V1.0.0.9"
 # BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
-BUILD_NUMBER = "0037"
+BUILD_NUMBER = "0039"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
@@ -89,7 +89,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.9';
-const GV200001_BUILD='0037';
+const GV200001_BUILD='0039';
 const GV_RUNTIME='0133';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.9-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -989,37 +989,56 @@ if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SUR
 if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 013 EXPORT MISSING');
 
-/* GV IAU CONSTELLATION REGION BOUNDARIES — BUILD 0037
- * Official constellation boundary linework from d3-celestial's IAU boundary dataset.
- * Rendered as a very faint red hairline; loaded asynchronously and non-fatally.
+/* GV IAU CONSTELLATION REGION BOUNDARIES — BUILD 0039
+ * IAU boundary linework; source coordinates are the B1875 boundary system.
+ * Precess every vertex to J2000/ICRS before handing coordinates to Aladin Lite.
+ * Use a subpixel-but-visible, faint red line at full-sky scale.
  */
 (function gvLoadIauConstellationRegions(){
   const GV_IAU_BOUNDARIES_URL='https://raw.githubusercontent.com/ofrohn/d3-celestial/7e720a3de062059d4c5400a379146a601d9010e0/data/constellations.borders.json';
-  const GV_IAU_BOUNDARY_COLOR='rgba(255,55,72,0.28)';
-  const GV_IAU_BOUNDARY_WIDTH=0.35;
+  const GV_IAU_BOUNDARY_COLOR='#ff3748';
+  const GV_IAU_BOUNDARY_WIDTH=0.9;
+  const GV_IAU_BOUNDARY_OPACITY=0.38;
   const wrapRa=ra=>((ra%360)+360)%360;
+  const degToRad=deg=>deg*Math.PI/180;
+  const radToDeg=rad=>rad*180/Math.PI;
+  const precessB1875ToJ2000=(raDeg,decDeg)=>{
+    const T=(1875.0-2000.0)/100.0;
+    const t=(2000.0-1875.0)/100.0;
+    const zeta=((2306.2181+1.39656*T-0.000139*T*T)*t+(0.30188-0.000344*T)*t*t+0.017998*t*t*t)/3600;
+    const z=((2306.2181+1.39656*T-0.000139*T*T)*t+(1.09468+0.000066*T)*t*t+0.018203*t*t*t)/3600;
+    const theta=((2004.3109-0.85330*T-0.000217*T*T)*t-(0.42665+0.000217*T)*t*t-0.041833*t*t*t)/3600;
+    const alpha=degToRad(wrapRa(raDeg)),delta=degToRad(decDeg);
+    const zr=degToRad(zeta),zz=degToRad(z),tr=degToRad(theta);
+    const a=alpha+zr;
+    const alpha2=Math.atan2(Math.cos(delta)*Math.sin(a),Math.cos(tr)*Math.cos(delta)*Math.cos(a)-Math.sin(tr)*Math.sin(delta))+zz;
+    const delta2=Math.asin(Math.sin(tr)*Math.cos(delta)*Math.cos(a)+Math.cos(tr)*Math.sin(delta));
+    return [wrapRa(radToDeg(alpha2)),radToDeg(delta2)];
+  };
   Promise.resolve().then(async()=>{
     const response=await fetch(GV_IAU_BOUNDARIES_URL,{cache:'force-cache'});
     if(!response.ok)throw new Error('HTTP '+response.status);
     const data=await response.json();
     if(!Array.isArray(data.features)||data.features.length<80)throw new Error('IAU boundary dataset failed validation');
     const overlay=A.graphicOverlay({color:GV_IAU_BOUNDARY_COLOR,lineWidth:GV_IAU_BOUNDARY_WIDTH});
-    let rendered=0;
+    let rendered=0,vertices=0;
     const addBoundaryLine=line=>{
       let part=[];
       const flush=()=>{
         if(part.length>=2){
-          overlay.add(A.polyline(part,{color:GV_IAU_BOUNDARY_COLOR,lineWidth:GV_IAU_BOUNDARY_WIDTH}));
+          overlay.add(A.polyline(part,{color:GV_IAU_BOUNDARY_COLOR,lineWidth:GV_IAU_BOUNDARY_WIDTH,opacity:GV_IAU_BOUNDARY_OPACITY}));
           rendered++;
         }
         part=[];
       };
       for(const point of line){
         if(!Array.isArray(point)||point.length<2)continue;
-        const ra=wrapRa(Number(point[0])),dec=Number(point[1]);
-        if(!Number.isFinite(ra)||!Number.isFinite(dec)||dec < -90||dec > 90)continue;
+        const raRaw=Number(point[0]),decRaw=Number(point[1]);
+        if(!Number.isFinite(raRaw)||!Number.isFinite(decRaw)||decRaw < -90||decRaw > 90)continue;
+        const [ra,dec]=precessB1875ToJ2000(raRaw,decRaw);
+        if(!Number.isFinite(ra)||!Number.isFinite(dec))continue;
         if(part.length&&Math.abs(ra-part[part.length-1][0])>180)flush();
-        part.push([ra,dec]);
+        part.push([ra,dec]);vertices++;
       }
       flush();
     };
@@ -1029,12 +1048,15 @@ if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!
       if(geometry.type==='MultiLineString')geometry.coordinates.forEach(addBoundaryLine);
       else if(geometry.type==='LineString')addBoundaryLine(geometry.coordinates);
     }
-    if(rendered<80)throw new Error('Too few IAU boundary segments rendered: '+rendered);
+    if(rendered<80||vertices<500)throw new Error('IAU boundary render validation failed: '+rendered+' segments, '+vertices+' vertices');
     aladin.addOverlay(overlay);
     overlay.show();
-    window.GalaxyViewerConstellationRegions=Object.freeze({VERSION:'0001',featureCount:data.features.length,segmentCount:rendered,overlay});
-    console.info('GV IAU CONSTELLATION REGIONS: all official boundary lines rendered', {features:data.features.length,segments:rendered,color:GV_IAU_BOUNDARY_COLOR,width:GV_IAU_BOUNDARY_WIDTH});
-  }).catch(error=>console.error('GV IAU CONSTELLATION REGIONS FAILED (non-fatal)',error));
+    window.GalaxyViewerConstellationRegions=Object.freeze({VERSION:'0002',featureCount:data.features.length,segmentCount:rendered,vertexCount:vertices,coordinateFrame:'J2000',lineWidth:GV_IAU_BOUNDARY_WIDTH,opacity:GV_IAU_BOUNDARY_OPACITY,overlay});
+    console.info('GV IAU CONSTELLATION REGIONS RENDERED', {features:data.features.length,segments:rendered,vertices,color:GV_IAU_BOUNDARY_COLOR,width:GV_IAU_BOUNDARY_WIDTH,opacity:GV_IAU_BOUNDARY_OPACITY,coordinateFrame:'J2000'});
+  }).catch(error=>{
+    window.GalaxyViewerConstellationRegions={VERSION:'0002',error:String(error)};
+    console.error('GV IAU CONSTELLATION REGIONS FAILED (non-fatal)',error);
+  });
 })();
 
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0005'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0004 EXPORT MISSING');
