@@ -56511,9 +56511,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 38.8126,
+      "distanceMly": 24.0,
       "science": {},
-      "redshift": 0.002685
+      "redshift": 0.00165715
     },
     {
       "providerKey": "noirlab",
@@ -62001,9 +62001,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 38.8126,
+      "distanceMly": 24.0,
       "science": {},
-      "redshift": 0.002685
+      "redshift": 0.00165715
     },
     {
       "providerKey": "noirlab",
