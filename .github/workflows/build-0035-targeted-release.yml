@@ -1,4 +1,4 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0054
+name: Validate and Deploy RC-V1.0.0.9 Build 0056
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0054 and fresh provider portal loading
+      - name: Validate Build 0056 and early provider website loading
         shell: bash
         run: |
           set -euo pipefail
@@ -36,13 +36,13 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0054.py","build":"0054"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0054", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0054.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0056.py","build":"0056"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0056", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0056.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0054"' in rc
-          assert "const GV200001_BUILD='0054'" in rc
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0056"' in rc
+          assert "const GV200001_BUILD='0056'" in rc
           assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc
           assert "const data=JSON.parse(" in rc, "Boundary data must be bundled, not fetched at runtime"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess the already J2000-aligned GeoJSON"
@@ -60,11 +60,13 @@ jobs:
           }
           assert required.issubset(pins), f"Required stable dependency pin missing: {sorted(required-pins)}"
           assert "function gvClearProviderPortalState(" in rc
-          assert "GV ROLL 0054: fresh provider portal load started for selected galaxy" in rc
-          assert "const providerPrewarmStarted=gvPrewarmProviderWebsite(destination);" in rc
+          assert "GV ROLL 0056: provider website prewarm started immediately for selected galaxy" in rc
+          assert "providerPrewarmStarted=gvPrewarmProviderWebsite(destination);" in rc
+          assert "ROLL 0056: do not asynchronously delete broad Cache API buckets here." in rc
+          assert "before awaiting the unrelated HD-image" in rc
           assert "providerPrewarmStarted" in rc
           assert "gvClearProviderPortalState(\'Random Galaxy pressed\')" in rc
-          print("BUILD 0054 STATIC VALIDATION PASSED: release identity, provider portal invalidation and fresh selected-galaxy portal loading on navigation, bundled closed IAU polygon data, overlay attach/show, geometry validation, and immutable pins.")
+          print("BUILD 0056 STATIC VALIDATION PASSED: release identity, provider portal invalidation and fresh selected-galaxy portal loading on navigation, bundled closed IAU polygon data, overlay attach/show, geometry validation, and immutable pins.")
           PY
 
       - name: Configure GitHub Pages
