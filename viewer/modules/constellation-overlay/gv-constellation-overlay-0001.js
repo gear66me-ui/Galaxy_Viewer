@@ -63,6 +63,45 @@
     }
     console.info("GV CONSTELLATION: Fornax V registered",{stars:fornaxPrincipalStars.map(s=>s.name),edges:2,closed:false});
 
+    // Camelopardalis: match the IAU chart's two open Hipparcos chains.
+    // Do not use the alternate simplified CAM edges from the upstream CSV.
+    const camelopardalisStars = [
+      {hip:33694,ra:105.016033,dec:76.977442},
+      {hip:29997,ra:94.711583,dec:69.320034},
+      {hip:22783,ra:73.512544,dec:66.342660},
+      {hip:23522,ra:75.854572,dec:60.442281},
+      {hip:23040,ra:74.321752,dec:53.752083},
+      {hip:17959,ra:57.589483,dec:71.332368},
+      {hip:17884,ra:57.380356,dec:65.526006},
+      {hip:16228,ra:52.267227,dec:59.940335}
+    ];
+    const camLines = [
+      [33694,29997],[29997,22783],[22783,23522],[23522,23040],
+      [22783,17959],[17959,17884],[17884,16228]
+    ];
+    let cam = [...overlays.values()].find(e => ["CAM","CAMELOPARDALIS"].includes(canon(e.name)));
+    if (!cam) {
+      cam = {name:"Cam",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
+      aladin.addOverlay(cam.obj); aladin.addOverlay(cam.highlight); overlays.set(cam.name,cam);
+    }
+    cam.points = camelopardalisStars.map(s => [s.ra,s.dec]);
+    cam.starIds = new Set(camelopardalisStars.map(s => s.hip));
+    cam.segmentPairs = camLines.map(([a,b]) => {
+      const p1=cam.points[camelopardalisStars.findIndex(s=>s.hip===a)];
+      const p2=cam.points[camelopardalisStars.findIndex(s=>s.hip===b)];
+      return [p1,p2];
+    });
+    cam.segments = cam.segmentPairs.length;
+    // Rebuild the object overlays so no upstream CAM segments remain visible.
+    cam.obj = window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH});
+    cam.highlight = window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH});
+    aladin.addOverlay(cam.obj); aladin.addOverlay(cam.highlight);
+    for (const pair of cam.segmentPairs) {
+      cam.obj.add(window.A.polyline(pair,{color:COLOR,lineWidth:WIDTH}));
+      cam.highlight.add(window.A.polyline(pair,{color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}));
+    }
+    console.info("GV CONSTELLATION: IAU Camelopardalis chains registered",{stars:camelopardalisStars.map(s=>s.hip),edges:cam.segments,closed:false});
+
     // Static line highlight only: no star circles, glow layers, timers, or animation.
     for(const e of overlays.values()){e.obj.hide();e.highlight.hide();}
     let enabled=false,highlightEntry=null;
