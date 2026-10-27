@@ -1,0 +1,37 @@
+name: Algorithmic Audit — 88 Constellation Connections
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/constellation-algorithmic-audit.yml"
+      - "tools/constellation_audit/algorithmic_audit.py"
+      - "viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Run algorithmic edge and coordinate audit
+        run: python tools/constellation_audit/algorithmic_audit.py
+      - name: Upload complete audit registers
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-88-Constellation-Algorithmic-Audit
+          path: constellation_algorithmic_audit/
+          if-no-files-found: warn
+          retention-days: 30
