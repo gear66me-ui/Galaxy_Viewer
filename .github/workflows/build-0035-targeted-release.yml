@@ -1,4 +1,4 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0048
+name: Validate and Deploy RC-V1.0.0.9 Build 0049
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0048 and bundled closed IAU constellation polygons
+      - name: Validate Build 0049 and bundled closed IAU constellation polygons
         shell: bash
         run: |
           set -euo pipefail
@@ -36,13 +36,13 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0048.py","build":"0048"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0048", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0048.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0049.py","build":"0049"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0049", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0049.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0048"' in rc
-          assert "const GV200001_BUILD='0048'" in rc
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0049"' in rc
+          assert "const GV200001_BUILD='0049'" in rc
           assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc
           assert "const data=JSON.parse(" in rc, "Boundary data must be bundled, not fetched at runtime"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess the already J2000-aligned GeoJSON"
@@ -59,7 +59,7 @@ jobs:
             "e38bfcc36a2f156517f9a77865da0c1c13d49175",
           }
           assert required.issubset(pins), f"Required stable dependency pin missing: {sorted(required-pins)}"
-          print("BUILD 0048 STATIC VALIDATION PASSED: release identity, bundled closed IAU polygon data, no runtime fetch, no double precession, overlay attach/show, closed-ring geometry validation, Random Galaxy handler, and immutable pins.")
+          print("BUILD 0049 STATIC VALIDATION PASSED: release identity, bundled closed IAU polygon data, no runtime fetch, no double precession, overlay attach/show, closed-ring geometry validation, Random Galaxy handler, and immutable pins.")
           PY
 
       - name: Configure GitHub Pages
