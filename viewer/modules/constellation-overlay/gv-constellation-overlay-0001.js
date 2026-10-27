@@ -30,11 +30,11 @@
       for(const id of [a,b]){const p=stars.get(id);if(p&&!e.starIds.has(id)){e.starIds.add(id);e.points.push(p);}}
       // Fornax and Camelopardalis are rebuilt below from verified IAU chart chains.
       // Ignore upstream edges for both so they cannot distort the corrected figures.
-      if(!["FOR","FORNAX","CAM","CAMELOPARDALIS"].includes(canon(name))&&p1&&p2){
+      if(!["FOR","FORNAX","CAM","CAMELOPARDALIS","LIB","LIBRA"].includes(canon(name))&&p1&&p2){
         e.obj.add(window.A.polyline([p1,p2]));
         e.highlight.add(window.A.polyline([p1,p2],{color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}));
         e.segmentPairs.push([p1,p2]);e.segments++;
-      } else if(!["FOR","FORNAX","CAM","CAMELOPARDALIS"].includes(canon(name))) {
+      } else if(!["FOR","FORNAX","CAM","CAMELOPARDALIS","LIB","LIBRA"].includes(canon(name))) {
         console.warn("GV CONSTELLATION: skipped segment with missing star coordinate",{constellation:name,start:a,end:b,hasStart:!!p1,hasEnd:!!p2});
       }
     }
