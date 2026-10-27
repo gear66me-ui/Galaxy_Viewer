@@ -151,13 +151,13 @@ public final class MainActivity extends Activity {
   private WebView provider(){
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
-    s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
+    s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_NO_CACHE);
     s.setSupportMultipleWindows(true); s.setJavaScriptCanOpenWindowsAutomatically(true);
     s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0060");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
         disposePopupWebView();
-        WebView popup=new WebView(MainActivity.this); providerPopup=popup; WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false);
+        WebView popup=new WebView(MainActivity.this); providerPopup=popup; WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false); ps.setCacheMode(WebSettings.LOAD_NO_CACHE);
         popup.setWebViewClient(new WebViewClient(){
           private boolean handedOff=false;
           private boolean handoff(String url){ if(handedOff||url==null||url.isEmpty()||"about:blank".equals(url))return false; handedOff=true; if(web!=null)web.loadUrl(url); return true; }
