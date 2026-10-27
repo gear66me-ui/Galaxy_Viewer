@@ -53,7 +53,7 @@ jobs:
           grep -Fq 'web.clearCache(true)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'ROLL 0061: provider identity belongs to openProvider(requestedUrl, icon).' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           ! grep -Fq 'launchSourceUrl(getIntent())' <(sed -n '/private void fetchPointer()/,/private boolean launchPrewarm/p' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java)
-          echo "APK 0061 identity, explicit URL priority, and provider no-cache checks passed."
+          echo "APK 0062 identity, explicit URL priority, and provider no-cache checks passed."
 
       - name: Build installable debug APK
         working-directory: android/galaxy-viewer-web-browser
