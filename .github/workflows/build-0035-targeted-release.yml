@@ -1,4 +1,4 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0057
+name: Validate and Deploy RC-V1.0.0.9 Build 0058
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0057 provider readiness handoff
+      - name: Validate Build 0058 provider readiness handoff
         shell: bash
         run: |
           set -euo pipefail
@@ -36,13 +36,13 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0057.py","build":"0057"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0057", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0057.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0058.py","build":"0058"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0058", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0058.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0057"' in rc
-          assert "const GV200001_BUILD='0057'" in rc
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0058"' in rc
+          assert "const GV200001_BUILD='0058'" in rc
           assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc
           assert "const data=JSON.parse(" in rc, "Boundary data must be bundled, not fetched at runtime"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess the already J2000-aligned GeoJSON"
@@ -60,18 +60,19 @@ jobs:
           }
           assert required.issubset(pins), f"Required stable dependency pin missing: {sorted(required-pins)}"
           assert "function gvClearProviderPortalState(" in rc
-          assert "GV ROLL 0057: provider website prewarm started immediately for selected galaxy" in rc
+          assert "GV ROLL 0058: provider website prewarm started immediately for selected galaxy" in rc
           assert "providerPrewarmStarted=gvPrewarmProviderWebsite(destination);" in rc
           assert "ROLL 0056: do not asynchronously delete broad Cache API buckets here." in rc
           assert "prewarm BEFORE awaiting the unrelated HD-image" in rc
           assert "providerPrewarmStarted" in rc
           assert "window.dispatchEvent(new Event('gv-provider-progress-reset'))" in rc
-          assert "@d7504fc90370f9ff64428581d3570d7cd50c64e9/viewer/modules/destination-presentation/gv-destination-presentation-0065.js" in rc
-          presentation = (root / "viewer/modules/destination-presentation/gv-destination-presentation-0065.js").read_text()
-          assert "const VERSION='0065';" in presentation
+          assert "@4508a3a43017859afe7798b11ed79ac3055efc48/viewer/modules/destination-presentation/gv-destination-presentation-0066.js" in rc
+          presentation = (root / "viewer/modules/destination-presentation/gv-destination-presentation-0066.js").read_text()
+          assert "const VERSION='0066';" in presentation
           assert "gv-provider-progress-reset" in presentation
           assert "if(providerProgressSuppressed){providerProgressHdFill.style.width='0%';providerProgressHd.classList.remove('gv-ready');return}" in presentation
           assert "retired matching prewarmed provider WebView" not in presentation
+          assert "/* ROLL 0066: preserve the selected galaxy's prewarmed provider portal." in presentation
           assert "gvClearProviderPortalState(\'Random Galaxy pressed\')" in rc
           print("BUILD 0057 STATIC VALIDATION PASSED: release identity, provider portal invalidation and fresh selected-galaxy portal loading on navigation, bundled closed IAU polygon data, overlay attach/show, geometry validation, and immutable pins.")
           PY
