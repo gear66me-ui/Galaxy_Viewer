@@ -7,7 +7,7 @@ import json
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.3"
 BUILD_NUMBER = "0022"
-# ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
+# ROLLUP 1.0.0.3 / ROLL 0051 — disable provider prewarm to prevent stale portal pages without an APK update
 
 # ============================================================================
 # SECTION 002 — ALADIN MIRROR POINTERS
@@ -106,7 +106,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5781bcedd8faaaa81b7eb3df1cda6ce586765181/viewer/modules/provider-artwork/gv-provider-artwork-0004.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/random-galaxy/gv-random-travel-presentation-003.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0060.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/modules/destination-presentation/gv-destination-presentation-0062.js'
 });
 
 
@@ -2157,10 +2157,7 @@ function gvPrewarmProviderWebsite(destination){
     try{
         const origin=new URL(url).origin;
         gvTrackProviderPortal(origin);
-        if(window.GVNative&&typeof window.GVNative.prewarm==='function'){
-            window.GVNative.prewarm(url);
-            console.info('GV PROVIDER NATIVE PRERENDER REQUESTED',url);
-        }
+        // ROLL 0051: do not prewarm hidden provider pages; the portal click loads the current destination.
         for(const rel of ['dns-prefetch','preconnect']){
             const selector='link[data-gv-provider-warm="'+rel+'"][href="'+CSS.escape(origin)+'"]';
             if(!document.querySelector(selector)){
