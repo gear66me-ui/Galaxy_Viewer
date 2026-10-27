@@ -214,13 +214,11 @@ def draw_header(title,subtitle,page):
 page=0
 for n,(abbr,name) in enumerate(items,1):
     rows,edges=coords_rows(abbr)
-    refrows,refedges=reference_rows(abbr)
     page+=1
-    draw_header(f"{n:02d}/88  {name} ({abbr}) — wire-diagram comparison",
-                "Left: Galaxy Viewer release implementation • Right: upstream Hipparcos line dataset used by the overlay module",page)
-    margin=25; gap=14; w=(W-2*margin-gap)/2; y=105; h=H-185
-    draw_diagram(margin,y,w,h,rows,edges,"GALAXY VIEWER", "Exact release JS edges + runtime source CSV; custom overrides applied")
-    draw_iau_chart(margin+w+gap,y,w,h,abbr,refrows,refedges)
+    draw_header(f"{n:02d}/88  {name} ({abbr}) — Galaxy Viewer release chart",
+                "Connections are generated from the release constellation JavaScript and the exact upstream line data it loads at runtime.",page)
+    margin=25; y=105; h=H-185; w=W-2*margin
+    draw_diagram(margin,y,w,h,rows,edges,"RELEASE MODULE ASTERISM", "Release JS custom edges + its runtime source CSV for all non-overridden constellations")
     c.setFillColor(navy); c.setFont("Helvetica-Bold",8)
     c.drawString(28,82,"Review:  [ ] Correct   [ ] Incorrect   [ ] Needs review")
     c.drawString(28,65,"Missing / extra connections: ______________________________________________________________")
