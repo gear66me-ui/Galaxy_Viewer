@@ -1,4 +1,4 @@
-import csv, io, math, os, re, urllib.request
+import csv, io, math, os, re, time, urllib.request
 from collections import defaultdict
 from reportlab.lib.pagesizes import landscape, A4
 from reportlab.lib import colors
@@ -18,7 +18,17 @@ EFFECTIVE_EDGES_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_View
 
 def get(url):
     req=urllib.request.Request(url,headers={"User-Agent":"GalaxyViewer-Constellation-Audit/1.0"})
-    with urllib.request.urlopen(req,timeout=8) as r: return r.read()
+    last_error=None
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req,timeout=25) as r:
+                data=r.read()
+            if not data: raise RuntimeError("Empty response from " + url)
+            return data
+        except Exception as exc:
+            last_error=exc
+            if attempt < 3: time.sleep(1.5 * (attempt + 1))
+    raise RuntimeError(f"Could not download {url} after 4 attempts: {last_error}")
 
 lines_text=get(LINE_URL).decode("utf-8-sig")
 effective_edges_text=get(EFFECTIVE_EDGES_URL).decode("utf-8-sig")
@@ -63,7 +73,7 @@ custom = {
 "Lib": ([(i,n,ra,dec) for i,n,ra,dec in libra_stars], libra_edges),
 }
 # Direct official IAU / Sky & Telescope J2000 chart PDF endpoints.
-iau_chart_urls={abbr:"https://iauarchive.eso.org/static/public/constellations/pdf/"+abbr.upper()+".pdf" for abbr,name in items}
+iau_chart_urls={abbr:"https://www.iau.org/static/public/constellations/pdf/"+abbr.upper()+".pdf" for abbr,name in items}
 
 W,H=landscape(A4)
 c=canvas.Canvas(OUT,pagesize=(W,H))
@@ -178,6 +188,7 @@ def reference_rows(abbr):
         if b not in refids: refids.append(b)
     refrows=[(i,f"HIP {i}",star[i][0],star[i][1]) for i in refids if i in star]
     return refrows,refedges
+iau_charts_embedded = set()
 def draw_iau_chart(x,y,w,h,abbr,rows,edges):
     c.setStrokeColor(colors.HexColor("#94a3b8")); c.roundRect(x,y,w,h,6,stroke=1,fill=0)
     c.setFillColor(navy); c.setFont("Helvetica-Bold",10); c.drawString(x+8,y+h-16,"REFERENCE CHART / SOURCE WIRES")
@@ -199,6 +210,7 @@ def draw_iau_chart(x,y,w,h,abbr,rows,edges):
                 dw,dh=iw*scale,ih*scale
                 c.drawImage(img,bx+(bw-dw)/2,by+(bh-dh)/2,width=dw,height=dh,preserveAspectRatio=True,mask="auto")
                 doc.close()
+                iau_charts_embedded.add(abbr)
                 return
         except Exception as exc:
             print("IAU chart download/render failed",abbr,chart_url,repr(exc))
