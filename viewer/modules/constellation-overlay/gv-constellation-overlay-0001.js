@@ -102,6 +102,36 @@
     }
     console.info("GV CONSTELLATION: IAU Camelopardalis chains registered",{stars:camelopardalisStars.map(s=>s.hip),edges:cam.segments,closed:false});
 
+    // Libra: restore the fuller six-star stick figure from the reference chart.
+    // Replace upstream Libra edges so the intended crossbar and lower chains are explicit.
+    let libra = [...overlays.values()].find(e => ["LIB","LIBRA"].includes(canon(e.name)));
+    if (!libra) {
+      libra = {name:"Lib",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
+      aladin.addOverlay(libra.obj); aladin.addOverlay(libra.highlight); overlays.set(libra.name,libra);
+    }
+    const libraStars = [
+      {id:1,ra:225.2967,dec:-8.5197},    // Delta Librae
+      {id:2,ra:222.7196,dec:-16.0418},   // Alpha Librae
+      {id:3,ra:226.0176,dec:-25.2819},   // Sigma Librae
+      {id:4,ra:233.8816,dec:-14.7895},   // Gamma Librae
+      {id:5,ra:234.2561,dec:-28.1351},   // Upsilon Librae
+      {id:6,ra:229.2517,dec:-9.3829}     // Beta Librae
+    ];
+    const libraById = new Map(libraStars.map(s=>[s.id,[s.ra,s.dec]]));
+    const libraEdges = [[6,1],[1,2],[6,2],[2,3],[6,4],[4,5]];
+    libra.obj = window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH});
+    libra.highlight = window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH});
+    aladin.addOverlay(libra.obj); aladin.addOverlay(libra.highlight);
+    libra.points = libraStars.map(s=>[s.ra,s.dec]);
+    libra.starIds = new Set(libraStars.map(s=>s.id));
+    libra.segmentPairs = libraEdges.map(([a,b])=>[libraById.get(a),libraById.get(b)]);
+    libra.segments = libra.segmentPairs.length;
+    for (const pair of libra.segmentPairs) {
+      libra.obj.add(window.A.polyline(pair,{color:COLOR,lineWidth:WIDTH}));
+      libra.highlight.add(window.A.polyline(pair,{color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}));
+    }
+    console.info("GV CONSTELLATION: Libra six-star reference pattern registered",{stars:libraStars.map(s=>s.id),edges:libraEdges,segments:libra.segments});
+
     // Static line highlight only: no star circles, glow layers, timers, or animation.
     for(const e of overlays.values()){e.obj.hide();e.highlight.hide();}
     let enabled=false,highlightEntry=null;
