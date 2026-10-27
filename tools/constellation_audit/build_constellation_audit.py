@@ -67,16 +67,17 @@ try:
     from bs4 import BeautifulSoup
     html=requests.get(IAU_URL,timeout=30,headers={"User-Agent":"Mozilla/5.0"}).text
     soup=BeautifulSoup(html,"html.parser")
-    for tr in soup.find_all("tr"):
-        txt=tr.get_text(" ",strip=True)
-        for abbr,name in items:
-            if name.lower() in txt.lower() or (abbr.lower() in txt.lower() and len(txt)<600):
-                for a in tr.find_all("a",href=True):
-                    href=a["href"]
-                    if ".pdf" in href.lower():
-                        if href.startswith("/"): href="https://www.iau.org"+href
-                        elif href.startswith("http") is False: href="https://www.iau.org/"+href.lstrip("/")
-                        iau_chart_urls[abbr]=href; break
+    abbr_by_code={abbr.upper():abbr for abbr,name in items}
+    for a in soup.find_all("a",href=True):
+        href=a["href"]
+        match=re.search(r"/([A-Z]{3})\.pdf(?:$|[?#])",href)
+        if not match: continue
+        code=match.group(1).upper()
+        abbr=abbr_by_code.get(code)
+        if not abbr: continue
+        if href.startswith("/"): href="https://iauarchive.eso.org"+href
+        elif not href.startswith("http"): href="https://iauarchive.eso.org/"+href.lstrip("/")
+        iau_chart_urls[abbr]=href
 except Exception as e:
     print("IAU chart scraping unavailable:",repr(e))
 
@@ -146,7 +147,7 @@ def draw_iau_chart(x,y,w,h,abbr,rows,edges):
     chart_url=iau_chart_urls.get(abbr)
     if chart_url:
         try:
-            import fitz
+            import pymupdf as fitz
             from reportlab.lib.utils import ImageReader
             raw=get(chart_url)
             doc=fitz.open(stream=raw,filetype="pdf")
@@ -162,7 +163,7 @@ def draw_iau_chart(x,y,w,h,abbr,rows,edges):
                 return
         except Exception as exc:
             print("IAU chart download/render failed",abbr,chart_url,repr(exc))
-    draw_diagram(x,y,w,h,rows,edges,"REFERENCE WIRES","Fallback: upstream Hipparcos line dataset")
+    draw_diagram(x,y,w,h,rows,edges,"","Fallback: upstream Hipparcos line dataset")
 
 def draw_header(title,subtitle,page):
     c.setFillColor(navy); c.rect(0,H-55,W,55,stroke=0,fill=1)
