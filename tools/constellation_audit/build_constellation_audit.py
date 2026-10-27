@@ -141,9 +141,9 @@ def reference_rows(abbr):
     return refrows,refedges
 def draw_iau_chart(x,y,w,h,abbr,rows,edges):
     c.setStrokeColor(colors.HexColor("#94a3b8")); c.roundRect(x,y,w,h,6,stroke=1,fill=0)
-    c.setFillColor(navy); c.setFont("Helvetica-Bold",10); c.drawString(x+8,y+h-16,"IAU-PUBLISHED CONSTELLATION CHART")
+    c.setFillColor(navy); c.setFont("Helvetica-Bold",10); c.drawString(x+8,y+h-16,"REFERENCE CHART / SOURCE WIRES")
     c.setFillColor(colors.HexColor("#475569")); c.setFont("Helvetica",7)
-    c.drawString(x+8,y+h-28,"IAU / Sky & Telescope reference chart (J2000)")
+    c.drawString(x+8,y+h-28,"IAU chart if available; otherwise source-wire fallback")
     chart_url=iau_chart_urls.get(abbr)
     if chart_url:
         try:
@@ -189,12 +189,15 @@ for n,(abbr,name) in enumerate(items,1):
     page+=1
     draw_header(f"{n:02d}/88  {name} ({abbr}) — coordinate and segment register",
                 "Coordinates are J2000 equatorial RA/Dec in decimal degrees, parsed from the catalog's HIP source table; custom points are labeled explicitly.",page)
-    data=[["Point / HIP ID","RA (deg)","Dec (deg)","Connected to (HIP IDs)"]]
+    data=[["Point / HIP ID","RA (deg)","Dec (deg)","Connected to (star labels)"]]
     if rows:
         adjacency=defaultdict(list)
-        for a,b in edges: adjacency[a].append(b); adjacency[b].append(a)
+        label_by_id={row[0]:row[1] for row in rows}
+        for a,b in edges:
+            if a in label_by_id and b in label_by_id:
+                adjacency[a].append(b); adjacency[b].append(a)
         for hip,label,ra,dec in rows:
-            conn=", ".join(str(q) for q in adjacency[hip]) or "—"
+            conn=", ".join(label_by_id[q] for q in adjacency[hip]) or "—"
             data.append([label, f"{ra:.6f}", f"{dec:+.6f}", conn])
     else: data.append(["NO COORDINATE ROWS FOUND","","",""])
     # split large tables across multiple pages while preserving every point
