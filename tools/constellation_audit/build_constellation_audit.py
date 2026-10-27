@@ -18,7 +18,7 @@ EFFECTIVE_EDGES_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_View
 
 def get(url):
     req=urllib.request.Request(url,headers={"User-Agent":"GalaxyViewer-Constellation-Audit/1.0"})
-    with urllib.request.urlopen(req,timeout=45) as r: return r.read()
+    with urllib.request.urlopen(req,timeout=8) as r: return r.read()
 
 lines_text=get(LINE_URL).decode("utf-8-sig")
 effective_edges_text=get(EFFECTIVE_EDGES_URL).decode("utf-8-sig")
