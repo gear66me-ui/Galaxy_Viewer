@@ -15,8 +15,8 @@ BUILD_NUMBER = "0065"
 # ECO: GV200-001
 # ============================================================================
 ALADIN_VERSION = "3.8.2"
-ALADIN_CSS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css"
-ALADIN_JS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js"
+ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js"
+ALADIN_CSS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css"
 
 # ============================================================================
 # SECTION 003 — GALAXY VIEWER MODULE POINTERS
@@ -25,7 +25,7 @@ ALADIN_JS_URL = "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladi
 HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST"
 HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST"
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc36a2f156517f9a77865da0c1c13d49175/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js"
-TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@84f048982fd1327748c69a0697248666cd355f1d/viewer/modules/target-simbad/gv-target-simbad-0007.js"
+TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7dcd8a191372e112b07bb20d0518a739a7c05865/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0002"
 GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js"
@@ -36,7 +36,7 @@ HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d8
 # ECO: GV200-001
 # ============================================================================
 display(HTML("""
-<link rel="stylesheet" href="https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css">
 <div id="aladin-cosmic-command-test">
 
 <!-- =======================================================================
@@ -96,14 +96,14 @@ document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:t
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'RC-V1.0.0.8',
     aladinVersion:'3.8.2',
-    aladinCssUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css',
-    aladinJsUrl:'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js',
+    aladinJsUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js',
+    aladinCssUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css',
     hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
     constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@42620e479e7fa719ca168dd1fbf96e924e23eb9d/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
     constellationOverlayFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/42620e479e7fa719ca168dd1fbf96e924e23eb9d/viewer/modules/constellation-overlay/gv-constellation-overlay-0001.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc36a2f156517f9a77865da0c1c13d49175/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js',
-    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@84f048982fd1327748c69a0697248666cd355f1d/viewer/modules/target-simbad/gv-target-simbad-0007.js',
+    targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7dcd8a191372e112b07bb20d0518a739a7c05865/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9ad02b64b0c10e09938ad8276109f2a61a0229cc/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/hud/gv-heads-up-display-0002.js',
@@ -155,20 +155,12 @@ const gvModuleLoadPromise=Promise.all([
     loadScript(fresh(config.destinationPresentationUrl)).catch(error=>{console.error('DESTINATION PRESENTATION LOAD FAILED',error)}),
     Promise.resolve()
 ]);
-if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
-    const css=document.createElement('link');
-    css.rel='stylesheet';
-    css.href=config.aladinCssUrl;
-    document.head.appendChild(css);
-}
-
-
 // ============================================================================
 // SECTION 012 — BOOT CONFIGURATION VALIDATION
 // ECO: GV200-001
 // ============================================================================
 for(const key of [
-    'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
+    'viewerVersion','aladinVersion','aladinJsUrl','aladinCssUrl',
     'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
     'galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl','providerArtworkUrl','travelPresentationUrl','destinationPresentationUrl'
 ]){
