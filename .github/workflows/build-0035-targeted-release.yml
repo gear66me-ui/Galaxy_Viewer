@@ -66,9 +66,9 @@ jobs:
           assert "prewarm BEFORE awaiting the unrelated HD-image" in rc
           assert "providerPrewarmStarted" in rc
           assert "window.dispatchEvent(new Event('gv-provider-progress-reset'))" in rc
-          assert "@16dbb1f36cddf89ece1d42f13e54bda017e12ce0/viewer/modules/destination-presentation/gv-destination-presentation-0067.js" in rc
-          presentation = (root / "viewer/modules/destination-presentation/gv-destination-presentation-0067.js").read_text()
-          assert "const VERSION='0067';" in presentation
+          assert "@c1dea31ee7151970a0a2ddbf872ff218605930a8/viewer/modules/destination-presentation/gv-destination-presentation-0068.js" in rc
+          presentation = (root / "viewer/modules/destination-presentation/gv-destination-presentation-0068.js").read_text()
+          assert "const VERSION='0068';" in presentation
           assert "gv-provider-progress-reset" in presentation
           assert "if(providerProgressSuppressed){providerProgressHdFill.style.width='0%';providerProgressHd.classList.remove('gv-ready');providerProgressHd.classList.remove('gv-indeterminate');return}" in presentation
           assert "retired matching prewarmed provider WebView" not in presentation
