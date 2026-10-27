@@ -14,7 +14,7 @@ BUILD_NUMBER = "0064"
 # SECTION 002 — ALADIN MIRROR POINTERS
 # ECO: GV200-001
 # ============================================================================
-ALADIN_VERSION = "3.8.2"
+ALADIN_VERSION = "latest"
 ALADIN_JS_URL = "https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js"
 
 # ============================================================================
@@ -93,7 +93,7 @@ requestPortraitLock();
 document.addEventListener('pointerdown',requestPortraitLock,{once:true,passive:true});
 window.GV_BOOT_CONFIG=Object.freeze({
     viewerVersion:'RC-V1.0.0.8',
-    aladinVersion:'3.8.2',
+    aladinVersion:'latest',
     aladinJsUrl:'https://aladin.cds.unistra.fr/AladinLite/api/v3/latest/aladin.js',
     hamburgerBaseUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe20a1dccd0e58644e8c154f4e6396ed83/viewer/modules/hamburger-menu/gv-hamburger-menu-0012.js?v=GV200001-0120-HAMBURGER-CONST-FOV-TEST',
