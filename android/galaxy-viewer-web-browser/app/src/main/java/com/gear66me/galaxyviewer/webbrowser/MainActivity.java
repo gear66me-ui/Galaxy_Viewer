@@ -247,8 +247,8 @@ public final class MainActivity extends Activity {
     if(browserMode||viewerWeb==null)return;
     if(url!=null&&!url.isEmpty()&&!url.equals(prewarmedUrl))return;
     int p=Math.max(0,Math.min(100,percent));
-    String fill=JSONObject.quote(p+"%"),shadow=JSONObject.quote(ready?"0 0 4px #55FF99":"none"),background=JSONObject.quote(ready?"#55FF99":"#173126");
-    String js="(function(){var e=document.getElementById('gv-provider-native-progress');if(!e)return;var f=e.querySelector('i'),b=e.querySelector('b');if(f)f.style.width="+fill+";if(b){b.style.boxShadow="+shadow+";b.style.background="+background+";}})()";
+    String requested=JSONObject.quote(url==null?prewarmedUrl:url);
+    String js="(function(){var s={requestedUrl:"+requested+",progress:"+p+",ready:"+(ready?"true":"false")+"};window.__GV_PROVIDER_NATIVE_STATUS=s;window.dispatchEvent(new CustomEvent('gv-provider-native-status',{detail:s}));var e=document.getElementById('gv-provider-native-progress');if(!e)return;var f=e.querySelector('i'),b=e.querySelector('b');if(f)f.style.width=s.progress+'%';if(b){b.style.boxShadow=s.ready?'0 0 4px #55FF99':'none';b.style.background=s.ready?'#55FF99':'#173126';}})()";
     viewerWeb.evaluateJavascript(js,null);
   }
   private void prewarmProvider(String u){
