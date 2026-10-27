@@ -6,10 +6,11 @@ on:
     paths:
       - ".github/workflows/build-constellation-audit.yml"
       - "tools/constellation_audit/build_constellation_audit.py"
+      - "tools/constellation_audit/release_effective_edges.csv"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -31,6 +32,7 @@ jobs:
       - name: Validate non-empty PDF
         run: |
           test -s Galaxy_Viewer_88_Constellation_Audit.pdf
+          pdfinfo Galaxy_Viewer_88_Constellation_Audit.pdf | grep -E 'Pages:|File size:'
           ls -lh Galaxy_Viewer_88_Constellation_Audit.pdf
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
@@ -39,3 +41,18 @@ jobs:
           path: Galaxy_Viewer_88_Constellation_Audit.pdf
           if-no-files-found: error
           retention-days: 30
+      - name: Publish the generated PDF on release branch
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p tools/constellation_audit/output
+          cp Galaxy_Viewer_88_Constellation_Audit.pdf tools/constellation_audit/output/Galaxy_Viewer_88_Constellation_Audit.pdf
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add tools/constellation_audit/output/Galaxy_Viewer_88_Constellation_Audit.pdf
+          if git diff --cached --quiet; then
+            echo "Generated PDF unchanged; no publication commit needed."
+          else
+            git commit -m "Publish regenerated 88-constellation audit PDF"
+            git push origin HEAD:release
+          fi
