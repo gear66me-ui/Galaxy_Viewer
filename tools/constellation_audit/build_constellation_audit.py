@@ -62,38 +62,25 @@ custom = {
 "For": ([(i,n,ra,dec) for i,n,ra,dec in fornax_stars], [(9000001,9000002),(9000002,9000003)]),
 "Lib": ([(i,n,ra,dec) for i,n,ra,dec in libra_stars], libra_edges),
 }
-# Attempt to fetch IAU's published constellation chart PDFs; if unavailable, show source reference wire figure and clearly label it.
-iau_chart_urls={}
-try:
-    import requests
-    from bs4 import BeautifulSoup
-    html=requests.get(IAU_URL,timeout=30,headers={"User-Agent":"Mozilla/5.0"}).text
-    soup=BeautifulSoup(html,"html.parser")
-    abbr_by_code={abbr.upper():abbr for abbr,name in items}
-    for a in soup.find_all("a",href=True):
-        href=a["href"]
-        match=re.search(r"/([A-Z]{3})\.pdf(?:$|[?#])",href)
-        if not match: continue
-        code=match.group(1).upper()
-        abbr=abbr_by_code.get(code)
-        if not abbr: continue
-        if href.startswith("/"): href="https://iauarchive.eso.org"+href
-        elif not href.startswith("http"): href="https://iauarchive.eso.org/"+href.lstrip("/")
-        iau_chart_urls[abbr]=href
-except Exception as e:
-    print("IAU chart scraping unavailable:",repr(e))
+# Direct official IAU / Sky & Telescope J2000 chart PDF endpoints.
+iau_chart_urls={abbr:"https://iauarchive.eso.org/static/public/constellations/pdf/"+abbr.upper()+".pdf" for abbr,name in items}
 
 W,H=landscape(A4)
 c=canvas.Canvas(OUT,pagesize=(W,H))
 navy=colors.HexColor("#0b1730"); blue=colors.HexColor("#176b87"); pale=colors.HexColor("#dbeafe")
 def project(points):
-    # RA/Dec chart view: cos(dec) correction to avoid excessive RA stretch.
+    # Local gnomonic tangent-plane projection from the exact J2000 RA/Dec coordinates.
+    # Reverse RA as on a conventional celestial chart; do not stretch RA and Dec independently.
     if not points: return {}
-    ras=np.array([p[1] for p in points],dtype=float); decs=np.array([p[2] for p in points],dtype=float)
-    ref=float(np.mean(ras)); dec0=float(np.mean(decs))
-    x=(ras-ref)*math.cos(math.radians(dec0)); y=decs-dec0
-    spanx=max(float(np.ptp(x)),0.1); spany=max(float(np.ptp(y)),0.1)
-    return {p[0]:((x[i]/spanx),(y[i]/spany)) for i,p in enumerate(points)}
+    ras=np.radians(np.array([p[1] for p in points],dtype=float))
+    decs=np.radians(np.array([p[2] for p in points],dtype=float))
+    ra0=float(np.mean(ras)); dec0=float(np.mean(decs)); dra=ras-ra0
+    den=np.sin(dec0)*np.sin(decs)+np.cos(dec0)*np.cos(decs)*np.cos(dra)
+    den=np.where(np.abs(den)<1e-9,1e-9,den)
+    x=np.cos(decs)*np.sin(dra)/den
+    y=(np.cos(dec0)*np.sin(decs)-np.sin(dec0)*np.cos(decs)*np.cos(dra))/den
+    return {p[0]:(-float(x[i]),float(y[i])) for i,p in enumerate(points)}
+
 def draw_diagram(x,y,w,h,rows,edges,title,source_label):
     c.setStrokeColor(colors.HexColor("#94a3b8")); c.roundRect(x,y,w,h,6,stroke=1,fill=0)
     c.setFillColor(navy); c.setFont("Helvetica-Bold",10); c.drawString(x+8,y+h-16,title)
@@ -153,7 +140,7 @@ def draw_iau_chart(x,y,w,h,abbr,rows,edges):
     c.setStrokeColor(colors.HexColor("#94a3b8")); c.roundRect(x,y,w,h,6,stroke=1,fill=0)
     c.setFillColor(navy); c.setFont("Helvetica-Bold",10); c.drawString(x+8,y+h-16,"REFERENCE CHART / SOURCE WIRES")
     c.setFillColor(colors.HexColor("#475569")); c.setFont("Helvetica",7)
-    c.drawString(x+8,y+h-28,"IAU chart if available; otherwise source-wire fallback")
+    c.drawString(x+8,y+h-28,"Official IAU / Sky & Telescope J2000 chart; fallback clearly marked if unavailable")
     chart_url=iau_chart_urls.get(abbr)
     if chart_url:
         try:
@@ -173,7 +160,9 @@ def draw_iau_chart(x,y,w,h,abbr,rows,edges):
                 return
         except Exception as exc:
             print("IAU chart download/render failed",abbr,chart_url,repr(exc))
-    draw_diagram(x,y,w,h,rows,edges,"","Fallback: upstream Hipparcos line dataset")
+    c.setFillColor(colors.HexColor("#991b1b")); c.setFont("Helvetica-Bold",8)
+    c.drawCentredString(x+w/2,y+h/2,"OFFICIAL IAU CHART UNAVAILABLE")
+    c.setFont("Helvetica",7); c.drawCentredString(x+w/2,y+h/2-13,"Chart could not be retrieved; no substitute diagram shown")
 
 def draw_header(title,subtitle,page):
     c.setFillColor(navy); c.rect(0,H-55,W,55,stroke=0,fill=1)
