@@ -14,12 +14,14 @@ LINE_URL = BASE + "hip_constellation_line.csv"
 STAR_URL = BASE + "hip_constellation_line_star.csv"
 IAU_URL = "https://www.iau.org/IAU/Astronomy-FAQs/Constellations.aspx"
 OUT = "Galaxy_Viewer_88_Constellation_Audit.pdf"
+EFFECTIVE_EDGES_URL = "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/tools/constellation_audit/release_effective_edges.csv"
 
 def get(url):
     req=urllib.request.Request(url,headers={"User-Agent":"GalaxyViewer-Constellation-Audit/1.0"})
     with urllib.request.urlopen(req,timeout=45) as r: return r.read()
 
 lines_text=get(LINE_URL).decode("utf-8-sig")
+effective_edges_text=get(EFFECTIVE_EDGES_URL).decode("utf-8-sig")
 stars_text=get(STAR_URL).decode("utf-8-sig")
 star={}
 for row in csv.reader(io.StringIO(stars_text)):
@@ -113,20 +115,28 @@ def draw_diagram(x,y,w,h,rows,edges,title,source_label):
     c.setFillColor(colors.HexColor("#f59e0b"))
     for i,(sx,sy) in xy.items():
         c.circle(sx,sy,2.3,stroke=0,fill=1)
+# Build left-hand diagrams from a source-derived edge register generated from the
+# exact release JavaScript module plus its runtime line CSV. Do not retype custom edges here.
+effective=defaultdict(list)
+for row in csv.DictReader(io.StringIO(effective_edges_text)):
+    abbr=row["constellation_abbr"]
+    aid=row["endpoint_A_id"]; bid=row["endpoint_B_id"]
+    a=(aid,row["endpoint_A_label"],float(row["endpoint_A_ra_deg"]),float(row["endpoint_A_dec_deg"]))
+    b=(bid,row["endpoint_B_label"],float(row["endpoint_B_ra_deg"]),float(row["endpoint_B_dec_deg"]))
+    effective[abbr].append((a,b,row["implementation"]))
+
 def coords_rows(abbr):
-    if abbr in custom:
-        return custom[abbr][0], custom[abbr][1]
-    key=source_key(abbr)
-    if not key: return [],[]
-    egs=segments[key]
-    ids=[]
-    for a,b in egs:
-        if a not in ids: ids.append(a)
-        if b not in ids: ids.append(b)
-    rows=[]
-    for hip in ids:
-        if hip in star: rows.append((hip,f"HIP {hip}",star[hip][0],star[hip][1]))
-    return rows,egs
+    edges_data=effective.get(abbr,[])
+    if not edges_data: return [],[]
+    point_map={}
+    edges=[]
+    for a,b,implementation in edges_data:
+        point_map[a[0]]=a
+        point_map[b[0]]=b
+        edges.append((a[0],b[0]))
+    rows=[(pid,label,ra,dec) for pid,(pid,label,ra,dec) in point_map.items()]
+    return rows,edges
+
 def reference_rows(abbr):
     key=source_key(abbr)
     if not key: return [],[]
@@ -178,7 +188,7 @@ for n,(abbr,name) in enumerate(items,1):
     draw_header(f"{n:02d}/88  {name} ({abbr}) — wire-diagram comparison",
                 "Left: Galaxy Viewer release implementation • Right: upstream Hipparcos line dataset used by the overlay module",page)
     margin=25; gap=14; w=(W-2*margin-gap)/2; y=105; h=H-185
-    draw_diagram(margin,y,w,h,rows,edges,"GALAXY VIEWER", "Release JS with explicit overrides for Cam / For / Lib")
+    draw_diagram(margin,y,w,h,rows,edges,"GALAXY VIEWER", "Exact release JS edges + runtime source CSV; custom overrides applied")
     draw_iau_chart(margin+w+gap,y,w,h,abbr,refrows,refedges)
     c.setFillColor(navy); c.setFont("Helvetica-Bold",8)
     c.drawString(28,82,"Review:  [ ] Correct   [ ] Incorrect   [ ] Needs review")
@@ -222,7 +232,7 @@ for n,(abbr,name) in enumerate(items,1):
         tw,th=t.wrapOn(c,W-50,H-100)
         t.drawOn(c,25,H-78-th)
         c.setFillColor(colors.HexColor("#475569")); c.setFont("Helvetica",7)
-        c.drawString(27,32,f"Source line segments: {len(edges)} • unique coordinate points: {len(rows)} • Source key: {source_key(abbr) or 'custom override'}")
+        c.drawString(27,32,f"Effective release edges: {len(edges)} • unique plotted points: {len(rows)} • source: release_effective_edges.csv")
         c.showPage()
 c.save()
 print(f"Created {OUT}; constellations={len(items)}; stars={len(star)}; source line groups={len(segments)}; IAU chart links found={len(iau_chart_urls)}")
