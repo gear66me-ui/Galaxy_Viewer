@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer Android APK 0062
+name: Build Galaxy Viewer Android APK 0061
 
 on:
   push:
@@ -46,14 +46,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq "versionCode 62" android/galaxy-viewer-web-browser/app/build.gradle
-          grep -Fq "versionName '0062'" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionCode 61" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionName '0061'" android/galaxy-viewer-web-browser/app/build.gradle
           grep -Fq 's.setCacheMode(WebSettings.LOAD_NO_CACHE)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'ps.setCacheMode(WebSettings.LOAD_NO_CACHE)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'web.clearCache(true)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'ROLL 0061: provider identity belongs to openProvider(requestedUrl, icon).' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           ! grep -Fq 'launchSourceUrl(getIntent())' <(sed -n '/private void fetchPointer()/,/private boolean launchPrewarm/p' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java)
-          echo "APK 0062 identity, explicit URL priority, and provider no-cache checks passed."
+          echo "APK 0061 identity, explicit URL priority, and provider no-cache checks passed."
 
       - name: Build installable debug APK
         working-directory: android/galaxy-viewer-web-browser
@@ -71,7 +71,7 @@ jobs:
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Android-APK-0062
+          name: Galaxy-Viewer-Android-APK-0061
           path: android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
