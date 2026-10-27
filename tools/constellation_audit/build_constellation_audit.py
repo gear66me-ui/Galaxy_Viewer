@@ -78,7 +78,7 @@ custom = {
 CHART_SITE = "https://universum.lu/en/atlas/constellations/"
 def discover_iau_chart_url(abbr):
     page = get(CHART_SITE + abbr.lower() + "/").decode("utf-8", "replace")
-    anchors = re.findall(r'<a\b[^>]*href=["\\']([^"\\']+)["\\'][^>]*>(.*?)</a>', page, re.I | re.S)
+    anchors = re.findall(r"""<a\b[^>]*href=["']([^"']+)["'][^>]*>(.*?)</a>""", page, re.I | re.S)
     for href, body in anchors:
         label = re.sub(r"<[^>]+>", " ", body)
         if "Download the WebP chart" in re.sub(r"\s+", " ", label):
