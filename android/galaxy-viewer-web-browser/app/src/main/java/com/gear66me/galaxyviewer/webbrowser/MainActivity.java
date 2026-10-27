@@ -153,7 +153,7 @@ public final class MainActivity extends Activity {
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
     s.setBuiltInZoomControls(true); s.setDisplayZoomControls(false); s.setCacheMode(WebSettings.LOAD_DEFAULT);
     s.setSupportMultipleWindows(true); s.setJavaScriptCanOpenWindowsAutomatically(true);
-    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0057");
+    s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0060");
     v.setWebChromeClient(new WebChromeClient(){
       @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
         disposePopupWebView();
@@ -265,7 +265,18 @@ public final class MainActivity extends Activity {
   // Reveal no earlier than 2,000 ms after the button action, and only after the destination finishes.
   // Preserve WebView cache, cookies, and storage.
   private void openProvider(String u,String icon){
+    // Each explicit provider launch must discard the previous page and renderer.
+    // Otherwise stale pageReadyUrl state can make an old galaxy appear current.
+    if(web!=null){
+      try{web.stopLoading();}catch(Exception ignored){}
+      try{web.clearHistory();}catch(Exception ignored){}
+      try{web.clearCache(true);}catch(Exception ignored){}
+    }
+    retireProviderWebView();
     ensureProviderWebView();
+    pageReadyUrl="";
+    loadingProviderUrl="";
+    prewarmReadyUrl="";
     browserMode=true;
     clearProviderEntryHistory=true;
     pendingProviderUrl=u;
@@ -292,11 +303,8 @@ public final class MainActivity extends Activity {
     };
     if(web!=null){
       web.postDelayed(pendingProviderLaunch,2000);
-      if(!u.equals(web.getUrl())||!u.equals(pageReadyUrl)){
-        // Keep the previous page covered while the current destination loads immediately.
-        // Do not navigate to about:blank or clear cache, cookies, or DOM storage.
-        web.loadUrl(u);
-      }
+      // Always load the explicitly requested URL; never trust a prior page-ready signal.
+      web.loadUrl(u);
     }
   }
   private void notifyViewerResumed(){
