@@ -111,7 +111,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@34d6f9b9417438afd56317bc838b93eb655c7d15/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@08e7c8cae3f90fc66b0e9a4925d70047c98854d1/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d4e92eea30b5c32809397d3b8ffeff53ad6d71d3/viewer/modules/destination-presentation/gv-destination-presentation-0069.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1295c0303335bf990ef3c01b64f95e40697bfc6d/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
 });
 
 
@@ -462,7 +462,7 @@ function gvRecoverViewerAfterNativeReturn(){
         }catch(error){console.error('GV VIEWER RETURN RECOVERY FAILED',error)}
     });
 }
-// BUILD 0052 — Aladin WebGL context-loss guard.
+// BUILD 0051 — Aladin WebGL context-loss guard.
 // Android WebView can reclaim the GPU context during long sessions. Aladin Lite 3.8.2
 // does not install its own webglcontextlost recovery, so a lost context can otherwise
 // leave the HiPS canvas permanently black while the rest of the UI remains alive.
@@ -1091,7 +1091,7 @@ if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!
 
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0005'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0004 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0069'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0069 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0061'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0061 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
@@ -2027,7 +2027,7 @@ galaxyNavigator?.random?.addEventListener('pointerdown',event=>{
 // Presentation only: vignette + CROSS FADE + spring-loaded ZOOM.
 // Navigation remains sole owner of destination RA/Dec/FOV/orientation.
 // ============================================================================
-const DIRECT_HD_LAYER='GV_DIRECT_HD_0060';
+const DIRECT_HD_LAYER='GV_DIRECT_HD_0059';
 let directHdLayerSequence=0;
 let directHdLayerName=DIRECT_HD_LAYER;
 const CANVAS_IMAGE_PROXY='https://gv-cloudflare-auto-astrometry-curator-0015.gear66me.workers.dev/api/image?url=';
@@ -3169,9 +3169,6 @@ function validateDestination(destination){
 
 
 function gvCancelProviderAll(){
-    // ROLL 0057: reset the old provider status once, then let the hidden progress
-    // signal continue to be sampled while the next galaxy's provider prewarms.
-    try{window.dispatchEvent(new Event('gv-provider-progress-reset'))}catch(_){}
     try{
         if(window.GVNative&&typeof window.GVNative.cancelProviderAll==='function'){
             window.GVNative.cancelProviderAll();
@@ -3209,27 +3206,9 @@ function gvTrackProviderPortal(origin){
         }catch(_){}
     }
 }
-// ROLL 0053: invalidate tracked provider prewarms on every Random Galaxy action.
-// The native bridge retires its matching prewarmed WebView; Cache API cleanup is limited
-// to provider/portal caches owned by this origin and never touches user settings.
-function gvClearProviderPortalState(reason='random navigation'){
-    const origins=gvProviderPortalOrigins.splice(0);
-    for(const origin of origins){
-        gvReleaseProviderPortalOrigin(origin);
-        try{
-            if(window.GVNative&&typeof window.GVNative.releaseProviderPortal==='function'){
-                window.GVNative.releaseProviderPortal(origin);
-            }
-        }catch(error){console.warn('GV PROVIDER PORTAL RETIREMENT FAILED',origin,error)}
-    }
-    // ROLL 0056: do not asynchronously delete broad Cache API buckets here.
-    // That deletion can race the next destination's prewarm and erase its newly
-    // cached provider assets. Retire only explicitly tracked native prewarm origins.
-    console.info('GV ROLL 0053: provider portal state invalidated before Random Galaxy navigation',{reason,retiredOrigins:origins.length});
-}
 function gvPrewarmProviderWebsite(destination){
     const url=String(destination?.sourceUrl||'').trim();
-    if(!url.startsWith('https://'))return false;
+    if(!url.startsWith('https://'))return;
     try{
         const origin=new URL(url).origin;
         gvTrackProviderPortal(origin);
@@ -3248,9 +3227,7 @@ function gvPrewarmProviderWebsite(destination){
                 document.head.appendChild(link);
             }
         }
-        console.info('GV ROLL 0067: provider website prewarm deferred until after arrival',url);
-        return true;
-    }catch(error){console.warn('GV PROVIDER PREWARM SKIPPED',error);return false}
+    }catch(error){console.warn('GV PROVIDER PREWARM SKIPPED',error)}
 }
 
 let gvFirstDestinationPreload=null;
@@ -3384,7 +3361,7 @@ document.addEventListener('visibilitychange',()=>{
     }
 });
 
-async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false,prewarmedPresentationDestination=null,providerPrewarmStarted=false}={}){
+async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false,prewarmedPresentationDestination=null}={}){
     gvHdTravelRetired=false;
     const v=validateDestination(destination),sourceDestination=activeDestination;
     if(directHdStaged){const stale=directHdStaged;directHdStaged=null;try{aladin.removeImageLayer?.(stale.layerName)}catch(_){}if(stale.objectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(stale.objectUrl)}
@@ -3517,7 +3494,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             gvEarthDistanceSyncPending=false;
             headsUpDisplay.render();
             gvShowEarthDistance(presentationDestination,true);
-            if(!providerPrewarmStarted)gvPrewarmProviderWebsite(v.destination);
+            gvPrewarmProviderWebsite(v.destination);
             gvStartNextTripPrewarm();
         }));
         return v.destination;
@@ -3543,7 +3520,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         gvEarthDistanceSyncPending=false;
         headsUpDisplay.render();
         gvShowEarthDistance(presentationDestination,true);
-        if(!providerPrewarmStarted)gvPrewarmProviderWebsite(v.destination);
+        gvPrewarmProviderWebsite(v.destination);
         gvStartNextTripPrewarm();
     }));
     return v.destination;
@@ -3688,8 +3665,7 @@ async function gvNavigateSurveyIndex(nextIndex){
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
-        const providerPrewarmStarted=false;
-        await showDestination(destination,{firstTrip,switchToSphericalAtApex,providerPrewarmStarted});
+        await showDestination(destination,{firstTrip,switchToSphericalAtApex});
         gvSurveyMode.index=index;
         gvSurveyMode.pendingIndex=index;
         gvSurveyCursors.set(gvSurveyMode.provider,index);
@@ -3720,8 +3696,6 @@ async function gvNavigateSurveyIndex(nextIndex){
 // ECO: GV200-001
 // ============================================================================
 async function navigateRandom(){
-    if(navigationInFlight)return;
-    gvClearProviderPortalState('Random Galaxy pressed');
     if(gvSurveyMode){
         if(navigationInFlight)return;
         if(gvSurveyMode.index<0)return gvNavigateSurveyIndex(Number.isInteger(gvSurveyMode.pendingIndex)?gvSurveyMode.pendingIndex:0);
@@ -3739,26 +3713,13 @@ async function navigateRandom(){
     updateNavigationAvailability();
     try{
         let nextWarm=gvNextTripPrewarm;gvNextTripPrewarm=null;
-        let destination,preloadedPrepared=null,prewarmedPresentationDestination=null,providerPrewarmStarted=false;
+        let destination,preloadedPrepared=null,prewarmedPresentationDestination=null;
         if(nextWarm){
-            // ROLL 0067: keep provider-network and WebView work out of the navigation animation.
-            // Reuse the prepared HD image, then prewarm the provider only after arrival.
+            try{preloadedPrepared=nextWarm.prepared?await nextWarm.prepared:null}catch(error){console.warn('GV NEXT DESTINATION PREWARM FALLBACK',String(error?.message||error));preloadedPrepared=null}
             destination=nextWarm.destination;
-            if(destination){
-                prewarmedPresentationDestination=nextWarm.presentationReady?destination:null;
-                providerPrewarmStarted=false;
-                try{preloadedPrepared=nextWarm.prepared?await nextWarm.prepared:null}catch(error){console.warn('GV NEXT DESTINATION PREWARM FALLBACK',String(error?.message||error));preloadedPrepared=null}
-                console.info(preloadedPrepared?'GV NEXT DESTINATION PREWARM CACHE HIT':'GV NEXT DESTINATION PREWARM CACHE MISS',{name:destination?.name||destination?.designation||''});
-            }else{
-                console.warn('GV NEXT DESTINATION PREWARM DESTINATION MISSING; SELECTING FRESH');
-                destination=await navigationRuntime.nextDestination();
-                providerPrewarmStarted=false;
-            }
-        }else{
-            destination=await navigationRuntime.nextDestination();
-            // ROLL 0067: provider loading is deferred until arrival to protect animation frame time.
-            providerPrewarmStarted=false;
-        }
+            if(!destination){console.warn('GV NEXT DESTINATION PREWARM DESTINATION MISSING; SELECTING FRESH');destination=await navigationRuntime.nextDestination()}
+            else {prewarmedPresentationDestination=nextWarm.presentationReady?destination:null;console.info(preloadedPrepared?'GV NEXT DESTINATION PREWARM CACHE HIT':'GV NEXT DESTINATION PREWARM CACHE MISS',{name:destination?.name||destination?.designation||''})}
+        }else destination=await navigationRuntime.nextDestination();
         if(routeIndex===0&&gvFirstDestinationPreload){
             gvFirstDestinationPreload.then(warm=>{if(warm?.destination===destination)console.info('GV FIRST DESTINATION PRELOAD READY FOR ACTIVE TRIP')}).catch(error=>console.error('GV FIRST DESTINATION PRELOAD UNAVAILABLE',error));
         }
@@ -3768,7 +3729,7 @@ async function navigateRandom(){
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===1;
         routeIndex++;
-        await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex,prewarmedPresentationDestination,providerPrewarmStarted});
+        await showDestination(destination,{firstTrip,preloadedPrepared,switchToSphericalAtApex,prewarmedPresentationDestination});
     }finally{
         navigationInFlight=false;
         gvSetTripCycle(false);
