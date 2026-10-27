@@ -1,0 +1,41 @@
+name: Build 88 Constellation Audit PDF
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - ".github/workflows/build-constellation-audit.yml"
+      - "tools/constellation_audit/build_constellation_audit.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install PDF and plotting dependencies
+        run: python -m pip install --upgrade reportlab matplotlib numpy requests beautifulsoup4
+      - name: Build comparison atlas and coordinate registers
+        run: python tools/constellation_audit/build_constellation_audit.py
+      - name: Validate non-empty PDF
+        run: |
+          test -s Galaxy_Viewer_88_Constellation_Audit.pdf
+          ls -lh Galaxy_Viewer_88_Constellation_Audit.pdf
+      - name: Upload PDF artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Galaxy-Viewer-88-Constellation-Audit
+          path: Galaxy_Viewer_88_Constellation_Audit.pdf
+          if-no-files-found: error
+          retention-days: 30
