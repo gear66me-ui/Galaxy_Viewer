@@ -117,29 +117,29 @@ def js_block(pattern, label):
     return m.group(1)
 
 custom_rows = {}
-cam_block = js_block(r"const camelopardalisStars\\s*=\\s*\\[(.*?)\\];", "Camelopardalis stars")
-cam_points = [(int(i), "HIP " + i, float(ra), float(dec)) for i,ra,dec in re.findall(r"\\{hip:(\\d+),ra:([\\d.]+),dec:([-\\d.]+)\\}", cam_block)]
-cam_edge_block = js_block(r"const camLines\\s*=\\s*\\[(.*?)\\];", "Camelopardalis edges")
-cam_edges = [(int(a),int(b)) for a,b in re.findall(r"\\[(\\d+),(\\d+)\\]", cam_edge_block)]
+cam_block = js_block(r"const camelopardalisStars\s*=\s*\[(.*?)\];", "Camelopardalis stars")
+cam_points = [(int(i), "HIP " + i, float(ra), float(dec)) for i,ra,dec in re.findall(r"\{hip:(\d+),ra:([\d.]+),dec:([-\d.]+)\}", cam_block)]
+cam_edge_block = js_block(r"const camLines\s*=\s*\[(.*?)\];", "Camelopardalis edges")
+cam_edges = [(int(a),int(b)) for a,b in re.findall(r"\[(\d+),(\d+)\]", cam_edge_block)]
 if len(cam_points) != 8 or len(cam_edges) != 7: raise RuntimeError("Unexpected Camelopardalis JS topology")
 custom_rows["Cam"] = (cam_points, cam_edges)
 
-for_block = js_block(r"const fornaxPrincipalStars\\s*=\\s*\\[(.*?)\\];", "Fornax stars")
-for_points = [(f"For-{i+1}", name, float(ra), float(dec)) for i,(name,ra,dec) in enumerate(re.findall(r'\\{name:"([^"]+)",ra:([\\d.]+),dec:([-\\d.]+)\\}', for_block))]
-for_edge_block = js_block(r"fornax\\.segmentPairs\\s*=\\s*\\[(.*?)\\];", "Fornax edges")
-for_edges = [(for_points[int(a)][0],for_points[int(b)][0]) for a,b in re.findall(r"\\[fornax\\.points\\[(\\d+)\\],fornax\\.points\\[(\\d+)\\]\\]", for_edge_block)]
+for_block = js_block(r"const fornaxPrincipalStars\s*=\s*\[(.*?)\];", "Fornax stars")
+for_points = [(f"For-{i+1}", name, float(ra), float(dec)) for i,(name,ra,dec) in enumerate(re.findall(r'\{name:"([^"]+)",ra:([\d.]+),dec:([-\d.]+)\}', for_block))]
+for_edge_block = js_block(r"fornax\.segmentPairs\s*=\s*\[(.*?)\];", "Fornax edges")
+for_edges = [(for_points[int(a)][0],for_points[int(b)][0]) for a,b in re.findall(r"\[fornax\.points\[(\d+)\],fornax\.points\[(\d+)\]\]", for_edge_block)]
 if len(for_points) != 3 or len(for_edges) != 2: raise RuntimeError("Unexpected Fornax JS topology")
 custom_rows["For"] = (for_points, for_edges)
 
-lib_block = js_block(r"const libraStars\\s*=\\s*\\[(.*?)\\];", "Libra stars")
-lib_points = [(int(i), label, float(ra), float(dec)) for i,ra,dec,label in re.findall(r"\\{id:(\\d+),ra:([\\d.]+),dec:([-\\d.]+)\\}\\s*[,/]?\\s*(?://\\s*([^\\n]+))?", lib_block)]
+lib_block = js_block(r"const libraStars\s*=\s*\[(.*?)\];", "Libra stars")
+lib_points = [(int(i), label, float(ra), float(dec)) for i,ra,dec,label in re.findall(r"\{id:(\d+),ra:([\d.]+),dec:([-\d.]+)\}\s*[,/]?\s*(?://\s*([^\n]+))?", lib_block)]
 # Labels are comments on each source line; parse them separately by preserving line boundaries.
 lib_points = []
 for line in lib_block.splitlines():
-    m = re.search(r"\\{id:(\\d+),ra:([\\d.]+),dec:([-\\d.]+)\\}.*?//\\s*(.+)$", line)
+    m = re.search(r"\{id:(\d+),ra:([\d.]+),dec:([-\d.]+)\}.*?//\s*(.+)$", line)
     if m: lib_points.append((int(m.group(1)), m.group(4).strip(), float(m.group(2)), float(m.group(3))))
-lib_edge_block = js_block(r"const libraEdges\\s*=\\s*\\[(.*?)\\];", "Libra edges")
-lib_edges = [(int(a),int(b)) for a,b in re.findall(r"\\[(\\d+),(\\d+)\\]", lib_edge_block)]
+lib_edge_block = js_block(r"const libraEdges\s*=\s*\[(.*?)\];", "Libra edges")
+lib_edges = [(int(a),int(b)) for a,b in re.findall(r"\[(\d+),(\d+)\]", lib_edge_block)]
 if len(lib_points) != 6 or len(lib_edges) != 6: raise RuntimeError("Unexpected Libra JS topology")
 custom_rows["Lib"] = (lib_points, lib_edges)
 
