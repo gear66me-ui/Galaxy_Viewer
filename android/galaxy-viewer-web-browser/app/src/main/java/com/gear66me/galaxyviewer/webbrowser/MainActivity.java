@@ -155,6 +155,10 @@ public final class MainActivity extends Activity {
     s.setSupportMultipleWindows(true); s.setJavaScriptCanOpenWindowsAutomatically(true);
     s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0060");
     v.setWebChromeClient(new WebChromeClient(){
+      @Override public void onProgressChanged(WebView view,int newProgress){
+        super.onProgressChanged(view,newProgress);
+        if(view==web&&!browserMode&&prewarmedUrl!=null&&!prewarmedUrl.isEmpty())publishProviderProgress(newProgress,newProgress>=100,prewarmedUrl);
+      }
       @Override public boolean onCreateWindow(WebView view,boolean isDialog,boolean isUserGesture,Message resultMsg){
         disposePopupWebView();
         WebView popup=new WebView(MainActivity.this); providerPopup=popup; WebSettings ps=popup.getSettings(); ps.setJavaScriptEnabled(true); ps.setDomStorageEnabled(true); ps.setSupportZoom(true); ps.setBuiltInZoomControls(true); ps.setDisplayZoomControls(false); ps.setCacheMode(WebSettings.LOAD_NO_CACHE);
@@ -185,6 +189,7 @@ public final class MainActivity extends Activity {
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
       @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){ Uri u=request.getUrl(); if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){ String target=u.getQueryParameter("url"); if(target!=null&&target.startsWith("https://")){ openProvider(target,u.getQueryParameter("icon")); return true; } } return false; }
       @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){
+        if(!browserMode&&url!=null&&url.equals(prewarmedUrl))publishProviderProgress(0,false,url);
         if(browserMode&&url!=null&&!"about:blank".equals(url)){
           loadingProviderUrl=url;
           android.util.Log.i("GalaxyViewerProvider","ROLL 0061 pageStarted requested="+sourceUrl+" actual="+url);
@@ -198,7 +203,7 @@ public final class MainActivity extends Activity {
         if(url!=null){
           pageReadyUrl=url;
           if(providerPopup!=null)disposePopupWebView();
-          if(!browserMode&&url.equals(prewarmedUrl))prewarmReadyUrl=url;
+          if(!browserMode&&url.equals(prewarmedUrl)){prewarmReadyUrl=url;publishProviderProgress(100,true,url);}
         }
         if(browserMode){
           if(clearProviderEntryHistory){ web.clearHistory(); clearProviderEntryHistory=false; }
@@ -236,6 +241,16 @@ public final class MainActivity extends Activity {
     }catch(Exception e){ runOnUiThread(()->web.loadData("<h3>Galaxy Viewer Browser config error</h3><pre>"+esc(e.toString())+"</pre>","text/html","UTF-8")); }}).start();
   }
   private boolean launchPrewarm(Intent intent){ try{ Uri d=intent==null?null:intent.getData(); return d!=null&&"galaxyviewerbrowser".equalsIgnoreCase(d.getScheme())&&"prewarm".equalsIgnoreCase(d.getQueryParameter("mode")); }catch(Exception ignored){} return false; }
+  // Publish the hidden provider WebView's real load progress to the viewer DOM.
+  // The destination card polls this element, so no synthetic percentage is used.
+  private void publishProviderProgress(int percent,boolean ready,String url){
+    if(browserMode||viewerWeb==null)return;
+    if(url!=null&&!url.isEmpty()&&!url.equals(prewarmedUrl))return;
+    int p=Math.max(0,Math.min(100,percent));
+    String fill=JSONObject.quote(p+"%"),shadow=JSONObject.quote(ready?"0 0 4px #55FF99":"none"),background=JSONObject.quote(ready?"#55FF99":"#173126");
+    String js="(function(){var e=document.getElementById('gv-provider-native-progress');if(!e)return;var f=e.querySelector('i'),b=e.querySelector('b');if(f)f.style.width="+fill+";if(b){b.style.boxShadow="+shadow+";b.style.background="+background+";}})()";
+    viewerWeb.evaluateJavascript(js,null);
+  }
   private void prewarmProvider(String u){
     if(u==null||!u.startsWith("https://"))return;
     ensureProviderWebView();
@@ -246,6 +261,7 @@ public final class MainActivity extends Activity {
     if(web!=null&&!browserMode)retireProviderWebView();
     prewarmedUrl=u;
     prewarmReadyUrl="";
+    publishProviderProgress(0,false,u);
     if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
     try{
       if(WebViewFeature.isFeatureSupported(WebViewFeature.PRERENDER_WITH_URL)){
@@ -253,10 +269,10 @@ public final class MainActivity extends Activity {
         prerenderSignal=signal;
         WebViewCompat.prerenderUrlAsync(web,u,signal,getMainExecutor(),new PrerenderOperationCallback(){
           @Override public void onPrerenderActivated(){
-            if(u.equals(prewarmedUrl)){ prewarmReadyUrl=u; prerenderSignal=null; }
+            if(u.equals(prewarmedUrl)){ prewarmReadyUrl=u; prerenderSignal=null; publishProviderProgress(100,true,u); }
           }
           @Override public void onError(PrerenderException e){
-            if(u.equals(prewarmedUrl)){ prerenderSignal=null; web.loadUrl(u); }
+            if(u.equals(prewarmedUrl)){ prerenderSignal=null; publishProviderProgress(0,false,u); web.loadUrl(u); }
           }
         });
       }else web.loadUrl(u);
