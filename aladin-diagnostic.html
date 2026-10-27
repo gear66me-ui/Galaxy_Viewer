@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Galaxy Viewer — Aladin Lite Diagnostic</title>
+<link rel="stylesheet" href="https://gear66me-ui.github.io/Galaxy_Viewer/aladin-source-clone/src/css/aladin.css">
+<style>
+html,body{margin:0;min-height:100%;background:#05080e;color:#eaf3ff;font:15px system-ui,sans-serif}
+main{max-width:1100px;margin:auto;padding:16px}
+h1{font-size:clamp(22px,4vw,32px);margin:0 0 8px}
+p{color:#b8c9dd;line-height:1.45}
+#status{padding:10px;border:1px solid #36506d;border-radius:8px;margin:12px 0;color:#9ee6ff;overflow-wrap:anywhere}
+#aladin-lite-div{width:100%;height:min(72vh,720px);min-height:380px;background:#000;border:1px solid #26394f;border-radius:8px;overflow:hidden}
+button{background:#172943;color:white;border:1px solid #4d7195;border-radius:8px;padding:9px 12px;margin:3px}
+code{overflow-wrap:anywhere}
+</style>
+</head>
+<body>
+<main>
+<h1>Aladin Lite 3.8.2 — standalone diagnostic</h1>
+<p>This page isolates Aladin from Galaxy Viewer navigation, overlays, and other modules. It loads the repository's currently pinned Aladin JS bundle and CSS from the published GitHub Pages site, then opens a sky survey centered on M51 (Whirlpool Galaxy). Try the buttons to change target and projection.</p>
+<div id="status">Loading the repository-hosted Aladin bundle…</div>
+<div>
+<button onclick="setTarget('M 51')">M51 · Whirlpool</button>
+<button onclick="setTarget('Virgo Cluster')">Virgo Cluster</button>
+<button onclick="setTarget('Orion Nebula')">Orion Nebula</button>
+<button onclick="setProjection('Mollweide')">Mollweide</button>
+<button onclick="setProjection(' aitoff ')">Aitoff</button>
+</div>
+<div id="aladin-lite-div"></div>
+<p>Bundle: <code>viewer/vendor/aladin-lite/3.8.2/aladin.js</code><br>
+Stylesheet: <code>aladin-source-clone/src/css/aladin.css</code></p>
+</main>
+<script>
+let aladinViewer=null;
+const statusEl=document.getElementById('status');
+function status(s){statusEl.textContent=s}
+function setTarget(target){if(aladinViewer){try{aladinViewer.gotoObject(target);status('Requested target: '+target)}catch(e){status('Target change failed: '+e.message)}}}
+function setProjection(p){if(aladinViewer){try{aladinViewer.setProjection(p.trim().toLowerCase());status('Requested projection: '+p.trim())}catch(e){status('Projection change failed: '+e.message)}}}
+(async()=>{
+ try{
+  const bundle='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/vendor/aladin-lite/3.8.2/aladin.js';
+  const response=await fetch(bundle,{method:'GET',cache:'no-store'});
+  if(!response.ok)throw new Error('Repository bundle HTTP '+response.status);
+  status('Repository bundle reachable (HTTP '+response.status+'). Initializing Aladin Lite…');
+  const script=document.createElement('script');script.src=bundle;script.async=true;
+  await new Promise((resolve,reject)=>{script.onload=resolve;script.onerror=()=>reject(new Error('Browser failed to load repository Aladin bundle'));document.head.appendChild(script)});
+  if(!window.A)throw new Error('Bundle loaded but global A was not created');
+  if(typeof A.init==='function')await A.init();
+  aladinViewer=await A.aladin('#aladin-lite-div',{survey:'P/DSS2/color',target:'M 51',fov:45,projection:'mollweide',showReticle:true,showFullscreenControl:true});
+  status('Aladin initialized. If the map remains black, this isolates the failure to the repository bundle/runtime, WebGL, or sky-survey tile delivery—not Galaxy Viewer navigation.');
+ }catch(e){status('DIAGNOSTIC ERROR: '+(e&&e.stack?e.stack:String(e)))}
+})();
+</script>
+</body>
+</html>
