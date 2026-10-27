@@ -46,7 +46,7 @@ public final class MainActivity extends Activity {
   private WebViewAssetLoader assetLoader;
   private boolean browserMode=false, clearProviderEntryHistory=false, providerHandoffElapsed=false;
   private View fullscreenView=null; private WebChromeClient.CustomViewCallback fullscreenCallback=null;
-  private String providerIcon="", sourceUrl="", pendingProviderUrl="", pendingProviderIcon="", providerHomeUrl="", prewarmedUrl="", prewarmReadyUrl="", pageReadyUrl="", loadingProviderUrl="";
+  private String providerIcon="", sourceUrl="", providerHomeUrl="", prewarmedUrl="", prewarmReadyUrl="", pageReadyUrl="", loadingProviderUrl="";
   private CancellationSignal prerenderSignal=null;
 
   @Override public void onCreate(Bundle b){
@@ -185,7 +185,10 @@ public final class MainActivity extends Activity {
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
       @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){ Uri u=request.getUrl(); if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){ String target=u.getQueryParameter("url"); if(target!=null&&target.startsWith("https://")){ openProvider(target,u.getQueryParameter("icon")); return true; } } return false; }
       @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){
-        if(browserMode&&url!=null&&!"about:blank".equals(url))loadingProviderUrl=url;
+        if(browserMode&&url!=null&&!"about:blank".equals(url)){
+          loadingProviderUrl=url;
+          android.util.Log.i("GalaxyViewerProvider","ROLL 0061 pageStarted requested="+sourceUrl+" actual="+url);
+        }
       }
       @Override public boolean onRenderProcessGone(WebView view,android.webkit.RenderProcessGoneDetail detail){
         if(view==web){ disposeProviderWebView(); if(browserMode&&sourceUrl!=null&&(sourceUrl.startsWith("https://")||sourceUrl.startsWith("http://"))){ensureProviderWebView();web.loadUrl(sourceUrl);} }
@@ -217,7 +220,9 @@ public final class MainActivity extends Activity {
       JSONObject p=getJson(POINTER+"?gv="+t);
       String config=p.getString("config");
       JSONObject c=getJson(config+(config.contains("?")?"&":"?")+"gv="+t);
-      sourceUrl=c.getString("sourceUrl"); String launchUrl=launchSourceUrl(getIntent()); String launchIcon=launchProviderIcon(getIntent()); if(launchUrl!=null){sourceUrl=launchUrl;providerIcon=launchIcon;} else if(pendingProviderUrl!=null&&!pendingProviderUrl.isEmpty()){sourceUrl=pendingProviderUrl;providerIcon=pendingProviderIcon;pendingProviderUrl="";pendingProviderIcon="";} else {providerIcon=c.optString("providerIcon","");} providerHomeUrl=sourceUrl;
+      // ROLL 0061: provider identity belongs to openProvider(requestedUrl, icon).
+      // Never overwrite it from this asynchronous shell-config fetch: getIntent() may
+      // still contain the URL from the Activity's original launch, i.e. a stale galaxy.
       String th=c.getString("topShell"), bh=c.getString("bottomShell");
       runOnUiThread(()->{
         top.loadUrl(th+(th.contains("?")?"&":"?")+"gv="+System.currentTimeMillis());
@@ -265,6 +270,9 @@ public final class MainActivity extends Activity {
   // Reveal no earlier than 2,000 ms after the button action, and only after the destination finishes.
   // Preserve WebView cache, cookies, and storage.
   private void openProvider(String u,String icon){
+    // ROLL 0061: the explicit URL passed by the current galaxy always wins. The Activity
+    // launch Intent is immutable across in-page provider taps and may refer to an older galaxy.
+    android.util.Log.i("GalaxyViewerProvider","ROLL 0061 openProvider requestedUrl="+u);
     // Each explicit provider launch must discard the previous page and renderer.
     // Otherwise stale pageReadyUrl state can make an old galaxy appear current.
     if(web!=null){
@@ -279,9 +287,7 @@ public final class MainActivity extends Activity {
     prewarmReadyUrl="";
     browserMode=true;
     clearProviderEntryHistory=true;
-    pendingProviderUrl=u;
-    pendingProviderIcon=icon==null?"":icon;
-    providerIcon=pendingProviderIcon;
+    providerIcon=icon==null?"":icon;
     sourceUrl=u;
     providerHomeUrl=u;
     if(pendingProviderLaunch!=null&&web!=null)web.removeCallbacks(pendingProviderLaunch);
@@ -319,8 +325,6 @@ public final class MainActivity extends Activity {
     }
     browserMode=false;
     clearProviderEntryHistory=false;
-    pendingProviderUrl="";
-    pendingProviderIcon="";
     sourceUrl="";
     disposeProviderWebView();
     if(browserLayer!=null)browserLayer.setVisibility(View.GONE);
