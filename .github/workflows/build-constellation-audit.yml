@@ -32,7 +32,7 @@ jobs:
       - name: Validate non-empty PDF
         run: |
           test -s Galaxy_Viewer_88_Constellation_Audit.pdf
-          pdfinfo Galaxy_Viewer_88_Constellation_Audit.pdf | grep -E 'Pages:|File size:'
+          python -c "import pymupdf; d=pymupdf.open('Galaxy_Viewer_88_Constellation_Audit.pdf'); print('Pages:', len(d)); print('Bytes:', __import__('os').path.getsize('Galaxy_Viewer_88_Constellation_Audit.pdf')); assert len(d) >= 100"
           ls -lh Galaxy_Viewer_88_Constellation_Audit.pdf
       - name: Upload PDF artifact
         uses: actions/upload-artifact@v4
