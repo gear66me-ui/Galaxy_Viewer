@@ -138,6 +138,32 @@ def reference_rows(abbr):
         if b not in refids: refids.append(b)
     refrows=[(i,f"HIP {i}",star[i][0],star[i][1]) for i in refids if i in star]
     return refrows,refedges
+def draw_iau_chart(x,y,w,h,abbr,rows,edges):
+    c.setStrokeColor(colors.HexColor("#94a3b8")); c.roundRect(x,y,w,h,6,stroke=1,fill=0)
+    c.setFillColor(navy); c.setFont("Helvetica-Bold",10); c.drawString(x+8,y+h-16,"IAU-PUBLISHED CONSTELLATION CHART")
+    c.setFillColor(colors.HexColor("#475569")); c.setFont("Helvetica",7)
+    c.drawString(x+8,y+h-28,"IAU / Sky & Telescope reference chart (J2000)")
+    chart_url=iau_chart_urls.get(abbr)
+    if chart_url:
+        try:
+            import fitz
+            from reportlab.lib.utils import ImageReader
+            raw=get(chart_url)
+            doc=fitz.open(stream=raw,filetype="pdf")
+            if doc.page_count:
+                pix=doc[0].get_pixmap(matrix=fitz.Matrix(1.35,1.35),alpha=False)
+                img=ImageReader(io.BytesIO(pix.tobytes("png")))
+                iw,ih=img.getSize()
+                bx=x+10; by=y+10; bw=w-20; bh=h-45
+                scale=min(bw/iw,bh/ih)
+                dw,dh=iw*scale,ih*scale
+                c.drawImage(img,bx+(bw-dw)/2,by+(bh-dh)/2,width=dw,height=dh,preserveAspectRatio=True,mask="auto")
+                doc.close()
+                return
+        except Exception as exc:
+            print("IAU chart download/render failed",abbr,chart_url,repr(exc))
+    draw_diagram(x,y,w,h,rows,edges,"REFERENCE WIRES","Fallback: upstream Hipparcos line dataset")
+
 def draw_header(title,subtitle,page):
     c.setFillColor(navy); c.rect(0,H-55,W,55,stroke=0,fill=1)
     c.setFillColor(colors.white); c.setFont("Helvetica-Bold",16); c.drawString(26,H-29,title)
@@ -152,7 +178,7 @@ for n,(abbr,name) in enumerate(items,1):
                 "Left: Galaxy Viewer release implementation • Right: upstream Hipparcos line dataset used by the overlay module",page)
     margin=25; gap=14; w=(W-2*margin-gap)/2; y=105; h=H-185
     draw_diagram(margin,y,w,h,rows,edges,"GALAXY VIEWER", "Release JS with explicit overrides for Cam / For / Lib")
-    draw_diagram(margin+w+gap,y,w,h,refrows,refedges,"REFERENCE WIRES", "hip_constellation_line.csv + HIP coordinate table")
+    draw_iau_chart(margin+w+gap,y,w,h,abbr,refrows,refedges)
     c.setFillColor(navy); c.setFont("Helvetica-Bold",8)
     c.drawString(28,82,"Review:  [ ] Correct   [ ] Incorrect   [ ] Needs review")
     c.drawString(28,65,"Missing / extra connections: ______________________________________________________________")
