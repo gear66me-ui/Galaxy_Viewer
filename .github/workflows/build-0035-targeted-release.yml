@@ -63,7 +63,7 @@ jobs:
           assert "GV ROLL 0056: provider website prewarm started immediately for selected galaxy" in rc
           assert "providerPrewarmStarted=gvPrewarmProviderWebsite(destination);" in rc
           assert "ROLL 0056: do not asynchronously delete broad Cache API buckets here." in rc
-          assert "before awaiting the unrelated HD-image" in rc
+          assert "prewarm BEFORE awaiting the unrelated HD-image" in rc
           assert "providerPrewarmStarted" in rc
           assert "gvClearProviderPortalState(\'Random Galaxy pressed\')" in rc
           print("BUILD 0056 STATIC VALIDATION PASSED: release identity, provider portal invalidation and fresh selected-galaxy portal loading on navigation, bundled closed IAU polygon data, overlay attach/show, geometry validation, and immutable pins.")
