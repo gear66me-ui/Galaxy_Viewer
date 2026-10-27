@@ -72,8 +72,23 @@ custom = {
 "For": ([(i,n,ra,dec) for i,n,ra,dec in fornax_stars], [(9000001,9000002),(9000002,9000003)]),
 "Lib": ([(i,n,ra,dec) for i,n,ra,dec in libra_stars], libra_edges),
 }
-# Direct official IAU / Sky & Telescope J2000 chart PDF endpoints.
-iau_chart_urls={abbr:"https://www.iau.org/static/public/constellations/pdf/"+abbr.upper()+".pdf" for abbr,name in items}
+# IAU / Sky & Telescope J2000 charts mirrored losslessly as WebP by Universum.
+# The source explicitly credits IAU / Sky & Telescope and states CC BY 4.0.
+# Resolve each real chart download URL from its constellation page; never guess filenames.
+CHART_SITE = "https://universum.lu/en/atlas/constellations/"
+def discover_iau_chart_url(abbr):
+    page = get(CHART_SITE + abbr.lower() + "/").decode("utf-8", "replace")
+    anchors = re.findall(r'<a\\b[^>]*href=["\\']([^"\\']+)["\\'][^>]*>(.*?)</a>', page, re.I | re.S)
+    for href, body in anchors:
+        label = re.sub(r"<[^>]+>", " ", body)
+        if "Download the WebP chart" in re.sub(r"\\s+", " ", label):
+            from urllib.parse import urljoin
+            return urljoin(CHART_SITE, href)
+    raise RuntimeError("Could not find credited IAU / Sky & Telescope chart for " + abbr)
+iau_chart_urls = {}
+for abbr, name in items:
+    iau_chart_urls[abbr] = discover_iau_chart_url(abbr)
+    print("Resolved credited IAU chart", abbr, iau_chart_urls[abbr])
 
 W,H=landscape(A4)
 c=canvas.Canvas(OUT,pagesize=(W,H))
@@ -193,30 +208,17 @@ def draw_iau_chart(x,y,w,h,abbr,rows,edges):
     c.setStrokeColor(colors.HexColor("#94a3b8")); c.roundRect(x,y,w,h,6,stroke=1,fill=0)
     c.setFillColor(navy); c.setFont("Helvetica-Bold",10); c.drawString(x+8,y+h-16,"REFERENCE CHART / SOURCE WIRES")
     c.setFillColor(colors.HexColor("#475569")); c.setFont("Helvetica",7)
-    c.drawString(x+8,y+h-28,"Official IAU / Sky & Telescope J2000 chart; fallback clearly marked if unavailable")
-    chart_url=iau_chart_urls.get(abbr)
-    if chart_url:
-        try:
-            import pymupdf as fitz
-            from reportlab.lib.utils import ImageReader
-            raw=get(chart_url)
-            doc=fitz.open(stream=raw,filetype="pdf")
-            if doc.page_count:
-                pix=doc[0].get_pixmap(matrix=fitz.Matrix(1.35,1.35),alpha=False)
-                img=ImageReader(io.BytesIO(pix.tobytes("png")))
-                iw,ih=img.getSize()
-                bx=x+10; by=y+10; bw=w-20; bh=h-45
-                scale=min(bw/iw,bh/ih)
-                dw,dh=iw*scale,ih*scale
-                c.drawImage(img,bx+(bw-dw)/2,by+(bh-dh)/2,width=dw,height=dh,preserveAspectRatio=True,mask="auto")
-                doc.close()
-                iau_charts_embedded.add(abbr)
-                return
-        except Exception as exc:
-            print("IAU chart download/render failed",abbr,chart_url,repr(exc))
-    c.setFillColor(colors.HexColor("#991b1b")); c.setFont("Helvetica-Bold",8)
-    c.drawCentredString(x+w/2,y+h/2,"OFFICIAL IAU CHART UNAVAILABLE")
-    c.setFont("Helvetica",7); c.drawCentredString(x+w/2,y+h/2-13,"Chart could not be retrieved; no substitute diagram shown")
+    c.drawString(x+8,y+h-28,"IAU / Sky & Telescope J2000 chart • credited mirror, CC BY 4.0")
+    chart_url=iau_chart_urls[abbr]
+    from reportlab.lib.utils import ImageReader
+    raw=get(chart_url)
+    img=ImageReader(io.BytesIO(raw))
+    iw,ih=img.getSize()
+    bx=x+10; by=y+10; bw=w-20; bh=h-45
+    scale=min(bw/iw,bh/ih)
+    dw,dh=iw*scale,ih*scale
+    c.drawImage(img,bx+(bw-dw)/2,by+(bh-dh)/2,width=dw,height=dh,preserveAspectRatio=True,mask="auto")
+    iau_charts_embedded.add(abbr)
 
 def draw_header(title,subtitle,page):
     c.setFillColor(navy); c.rect(0,H-55,W,55,stroke=0,fill=1)
