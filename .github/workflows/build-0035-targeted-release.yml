@@ -48,7 +48,7 @@ jobs:
           assert "GV_IAU_BOUNDARY_WIDTH=0.5" in rc and "GV_IAU_BOUNDARY_OPACITY=0.58" in rc
           assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
-          pins = set(re.findall(r"https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
+          pins = set(re.findall(r"https://cdn\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
           assert len(pins) == 10, f"Expected 10 immutable dependency pins; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
