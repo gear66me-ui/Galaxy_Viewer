@@ -1,8 +1,8 @@
-# Constellations 2 — Galaxy Viewer star-wire artwork
+# Constellations 2 — standardized visual format
 
-All 88 SVGs are 256×256, in a restrained midnight-blue/cool-blue star-chart style with fine pale-blue connections and white/cyan star nodes. Geometry is generated from the coordinate and segment registers in `Galaxy_Viewer_88_Constellation_Audit.pdf` (J2000 RA/Dec, HIP IDs and named custom points). Each constellation is normalized to its own square while preserving the plotted wire pattern. Pegasus follows the minimalist star-map direction in the supplied reference image; no animal silhouettes or labels are added.
+All 88 icons use one fixed 256×256 SVG frame matching the supplied Galaxy Viewer reference: black outside field, rounded square cyan-to-electric-blue-to-violet gradient rim, dark navy starfield, fine inner cyan outline, glowing golden-yellow constellation connections, and luminous cyan-white/yellow star nodes. The artwork contains no creature silhouettes or text labels. Star geometry and connections are derived from the coordinate and segment registers in `Galaxy_Viewer_88_Constellation_Audit.pdf` (J2000 RA/Dec, HIP IDs, and named custom points); each chart is fitted consistently within the same frame.
 
-These are review assets only. Runtime artwork pointers and viewer code remain unchanged. The PDF notes that the IAU standardizes constellation names and boundaries, not one universal stick-figure line pattern.
+This folder is review artwork only. Existing runtime artwork pointers and viewer behavior are unchanged. The IAU standardizes constellation boundaries and names, not a single mandatory stick-figure connection pattern.
 
 - `ANDROMEDA.SVG`
 - `ANTLIA.SVG`
