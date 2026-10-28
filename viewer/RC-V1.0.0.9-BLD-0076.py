@@ -3494,7 +3494,14 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         try{readinessController.abort()}catch(_){}
         preparedPromise=null;
         recordPromise=null;
-        if(firstTrip)gvFirstDestinationPreload=null;
+        if(firstTrip&&gvFirstDestinationPreload){
+            const staleFirstPreload=gvFirstDestinationPreload;gvFirstDestinationPreload=null;
+            staleFirstPreload.then(warm=>{
+                const stalePrepared=warm?.prepared;
+                if(stalePrepared?.imageObjectUrl&&stalePrepared.imageObjectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(stalePrepared.imageObjectUrl);
+                if(stalePrepared?.cleanImageObjectUrl&&stalePrepared.cleanImageObjectUrl!==directHdPresentationObjectUrl)gvReleaseCleanImageObjectUrl(stalePrepared.cleanImageObjectUrl);
+            }).catch(()=>{});
+        }
         if(activeDestination===presentationDestination)activeDestination=sourceDestination;
         if(directHdStaged?.destination===presentationDestination){const stale=directHdStaged;directHdStaged=null;try{aladin.removeImageLayer?.(stale.layerName)}catch(_){}if(stale.objectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(stale.objectUrl)}
         try{error.gvCandidateReadinessFailure=true}catch(_){}
@@ -3517,6 +3524,12 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         gvActivateStagedHd(presentationDestination);
         travelPresentation.end();
         const arrivedPrepared=await ensurePrepared();
+        if(!directHdOverlay||directHdDestination!==presentationDestination){
+            console.warn('GV ARRIVAL HD ACTIVATION MISSING; REINSTALLING PREPARED IMAGE',{name:presentationDestination?.name||presentationDestination?.designation||''});
+            const recovered=await gvInstallPreparedHd({...arrivedPrepared,destination:presentationDestination},{stage:false});
+            if(!recovered||!directHdOverlay||directHdDestination!==presentationDestination)throw Object.assign(new Error('GV ARRIVAL HD PRESENTATION RECOVERY FAILED'),{gvCandidateReadinessFailure:true});
+            console.info('GV ARRIVAL HD PRESENTATION RECOVERED',{name:presentationDestination?.name||presentationDestination?.designation||''});
+        }
         directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
         destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:arrivedPrepared.cleanImageObjectUrl});
         // BUILD 0030: let the arrival presentation paint before noncritical work.
@@ -3543,8 +3556,14 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     gvActivateStagedHd(presentationDestination);
     travelPresentation.end();
     const arrivedPrepared=await ensurePrepared();
-        directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
-        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:arrivedPrepared.cleanImageObjectUrl});
+    if(!directHdOverlay||directHdDestination!==presentationDestination){
+        console.warn('GV ARRIVAL HD ACTIVATION MISSING; REINSTALLING PREPARED IMAGE',{name:presentationDestination?.name||presentationDestination?.designation||''});
+        const recovered=await gvInstallPreparedHd({...arrivedPrepared,destination:presentationDestination},{stage:false});
+        if(!recovered||!directHdOverlay||directHdDestination!==presentationDestination)throw Object.assign(new Error('GV ARRIVAL HD PRESENTATION RECOVERY FAILED'),{gvCandidateReadinessFailure:true});
+        console.info('GV ARRIVAL HD PRESENTATION RECOVERED',{name:presentationDestination?.name||presentationDestination?.designation||''});
+    }
+    directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
+    destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:arrivedPrepared.cleanImageObjectUrl});
     // BUILD 0030: let the arrival presentation paint before noncritical work.
     // The identity guard prevents stale post-arrival work if another trip starts.
     requestAnimationFrame(()=>requestAnimationFrame(()=>{
