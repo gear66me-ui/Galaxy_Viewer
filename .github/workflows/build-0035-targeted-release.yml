@@ -1,4 +1,4 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0079
+name: Validate and Deploy RC-V1.0.0.9 Build 0080
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0079 and bundled closed IAU constellation polygons
+      - name: Validate Build 0080 and bundled closed IAU constellation polygons
         shell: bash
         run: |
           set -euo pipefail
@@ -36,27 +36,32 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0079.py","build":"0079"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0079", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0079.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0080.py","build":"0080"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0080", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0080.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0079"' in rc
-          assert "const GV200001_BUILD='0079'" in rc
-          assert "const GV_RUNTIME='0137'" in rc, "Build 0079 runtime revision must be rolled to 0137"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0080"' in rc
+          assert "const GV200001_BUILD='0080'" in rc
+          assert "const GV_RUNTIME='0138'" in rc, "Build 0080 runtime revision must be rolled to 0138"
           assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc
-          assert "const GV_RANDOM_READINESS_TIMEOUT_MS=3000;" in rc, "Roll 0079 must retain the short metadata watchdog"
+          assert "const GV_RANDOM_READINESS_TIMEOUT_MS=3000;" in rc, "Roll 0080 must retain the short metadata watchdog"
+          assert "const GV_DESTINATION_SELECTION_TIMEOUT_MS=15000;" in rc, "Destination selection must have a dedicated 15-second watchdog"
+          assert "GV DESTINATION SELECTION FAILED; RETRYING BEFORE TRAVEL" in rc, "Destination selection failures must be handled before camera travel"
+          assert "if(!pendingDestinationSelection)pendingDestinationSelection=Promise.resolve().then(()=>navigationRuntime.nextDestination());" in rc, "Selection retries must not launch concurrent nextDestination operations"
+          assert "GV CANDIDATE IDENTITY FAILED; REQUESTING RESERVE" in rc, "Invalid or duplicate candidates must request reserve recovery"
+          assert "GV CANDIDATE IDENTITY RECOVERY EXHAUSTED" in rc, "Candidate identity recovery must report exhaustion explicitly"
           assert "const GV_HD_PREPARATION_TIMEOUT_MS=30000;" in rc, "HD preparation must receive a 30-second watchdog"
           assert "const GV_HD_STAGING_TIMEOUT_MS=12000;" in rc, "HD staging must receive a 12-second watchdog"
           assert "label==='HD image preparation'?GV_HD_PREPARATION_TIMEOUT_MS" in rc, "HD preparation must not be rejected by the 3-second metadata watchdog"
           assert "label==='HD layer staging'?GV_HD_STAGING_TIMEOUT_MS" in rc, "HD staging must use its dedicated watchdog"
           assert "gvAwaitDestinationReadiness(nextWarm.prepared,performance.now()+GV_HD_PREPARATION_TIMEOUT_MS,'prewarmed HD image')" in rc, "Prewarmed HD image handoff must use the HD preparation timeout"
           assert "readinessDeadline" not in rc, "Do not reuse a pre-travel deadline after the journey has started"
-          assert "navigationRuntime.rejectCurrentDestination(destination" in rc, "Roll 0079 must use the existing reserve bank for candidate recovery"
-          assert "GV CANDIDATE REJECTED — PRETRAVEL READINESS/STAGING FAILED" in rc, "Roll 0079 must reject failed preflight candidates"
-          assert "GV TRAVEL PREFLIGHT/STAGING FAILED; RETRYING AT T-MINUS-EIGHT" not in rc, "Roll 0079 must not begin a journey after failed readiness preflight"
-          assert "gv-galaxy-route-engine-003.js" in rc, "Roll 0079 must load the reserve recovery route-engine revision"
-          assert "VERSION!=='0003'" in rc and "GALAXY ROUTE ENGINE 003 EXPORT MISSING" in rc, "Roll 0079 must validate the route engine 003 export"
+          assert "navigationRuntime.rejectCurrentDestination(destination" in rc, "Roll 0080 must use the existing reserve bank for candidate recovery"
+          assert "GV CANDIDATE REJECTED — PRETRAVEL READINESS/STAGING FAILED" in rc, "Roll 0080 must reject failed preflight candidates"
+          assert "GV TRAVEL PREFLIGHT/STAGING FAILED; RETRYING AT T-MINUS-EIGHT" not in rc, "Roll 0080 must not begin a journey after failed readiness preflight"
+          assert "gv-galaxy-route-engine-003.js" in rc, "Roll 0080 must load the reserve recovery route-engine revision"
+          assert "VERSION!=='0003'" in rc and "GALAXY ROUTE ENGINE 003 EXPORT MISSING" in rc, "Roll 0080 must validate the route engine 003 export"
           assert "const data=JSON.parse(" in rc, "Boundary data must be bundled, not fetched at runtime"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess the already J2000-aligned GeoJSON"
           assert "GV_IAU_BOUNDARY_WIDTH=0.5" in rc and "GV_IAU_BOUNDARY_OPACITY=0.58" in rc
@@ -75,11 +80,11 @@ jobs:
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" not in rc and "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.css" not in rc
-          assert "survey:'https://stpubdata.s3.us-east-1.amazonaws.com/mast/skybackgrounds/DSSColor'" in rc, "Build 0079 must use the selected STScI S3 DSS2 Color HiPS endpoint"
-          assert "survey:'https://casda.csiro.au/hips/DSS2/color/'" not in rc, "Build 0079 must not retain CASDA as the active survey"
-          assert rc.count("1-9/durationSeconds") == 2, "Build 0079 must release HiPS tile fetching at T-minus nine seconds in both navigation paths"
-          assert "1-2/durationSeconds" not in rc, "Build 0079 must not retain the old T-minus-two tile-fetch gate"
-          print("BUILD 0079 STATIC VALIDATION PASSED: selected STScI S3 DSS2 Color source, release identity, bundled closed IAU polygon data, no runtime fetch, no double precession, overlay attach/show, closed-ring geometry validation, Random Galaxy reserve recovery with dedicated HD preparation and staging watchdogs, T-minus-nine HiPS tile-fetch timing, and immutable pins.")
+          assert "survey:'https://stpubdata.s3.us-east-1.amazonaws.com/mast/skybackgrounds/DSSColor'" in rc, "Build 0080 must use the selected STScI S3 DSS2 Color HiPS endpoint"
+          assert "survey:'https://casda.csiro.au/hips/DSS2/color/'" not in rc, "Build 0080 must not retain CASDA as the active survey"
+          assert rc.count("1-9/durationSeconds") == 2, "Build 0080 must release HiPS tile fetching at T-minus nine seconds in both navigation paths"
+          assert "1-2/durationSeconds" not in rc, "Build 0080 must not retain the old T-minus-two tile-fetch gate"
+          print("BUILD 0080 STATIC VALIDATION PASSED: release identity, destination-selection timeout/retry handling, single in-flight selection, invalid/duplicate candidate reserve recovery, HD preparation/staging watchdogs, bundled IAU polygons, STScI S3 DSS2 Color source, T-minus-nine HiPS tile-fetch timing, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
