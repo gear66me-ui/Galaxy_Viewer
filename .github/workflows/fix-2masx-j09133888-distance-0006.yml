@@ -19,7 +19,7 @@ jobs:
         with:
           ref: release
       - name: Correct and validate the identified Hubble record
-        shell: python
+        shell: python {0}
         run: |
           import json
           import subprocess
