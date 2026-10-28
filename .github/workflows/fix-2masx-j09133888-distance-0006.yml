@@ -1,0 +1,102 @@
+name: Correct 2MASX J09133888-1019196 distance and FLRW redshift — catalog 0006
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/fix-2masx-j09133888-distance-0006.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  correct-target-record-only:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Correct and validate the identified Hubble record
+        shell: python
+        run: |
+          import json
+          import subprocess
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          records = data.get("records", [])
+          matches = [
+              r for r in records
+              if str(r.get("providerKey", "")).casefold() == "hubble"
+              and str(r.get("archiveId", "")).casefold() == "heic0810be"
+          ]
+          if len(matches) != 1:
+              raise SystemExit(f"Expected exactly one Hubble/heic0810be record; found {len(matches)}. No catalog edits made.")
+
+          r = matches[0]
+          # NASA/ESA quote ~700 million light-years. This is Earth-to-system distance,
+          # not the ~130,000 light-year separation between the two galaxy nuclei.
+          distance_mly = 700.0
+          # Flat LCDM inversion for luminosity distance D_L=700 Mly, H0=67.6 km/s/Mpc,
+          # Omega_m=0.315. Solve D_L(z)=(1+z)c/H0 integral_0^z dz'/E(z').
+          import math
+          c = 299792.458
+          H0 = 67.6
+          om = 0.315
+          target_mpc = distance_mly / 3.261563777
+          def dl(z):
+              n = 4000
+              dz = z / n
+              s = 0.0
+              for i in range(n + 1):
+                  x = i * dz
+                  e = math.sqrt(om * (1 + x)**3 + (1 - om))
+                  s += (1/e) * (1 if i in (0,n) else 4 if i % 2 else 2)
+              dc = (c/H0) * dz * s / 3
+              return (1+z)*dc
+          lo, hi = 0.0, 0.2
+          for _ in range(80):
+              mid = (lo+hi)/2
+              if dl(mid) < target_mpc:
+                  lo = mid
+              else:
+                  hi = mid
+          z = (lo+hi)/2
+
+          r["distanceMly"] = distance_mly
+          r["redshift"] = round(z, 6)
+          r["distanceDisplay"] = "700 million light-years"
+          r["distanceMethod"] = "NASA_ESA_Hubble_object_distance_700_Mly"
+          r["distanceEvidence"] = "NASA Science and ESA/Hubble object pages state 700 million light-years; 130,000 light-years is the separation within the interacting pair."
+          science = r.setdefault("science", {})
+          science["distanceMly"] = distance_mly
+          science["distanceDisplay"] = "700 million light-years"
+          science["distanceMethod"] = "NASA_ESA_Hubble_object_distance_700_Mly"
+          science["distanceEvidence"] = r["distanceEvidence"]
+          science["redshift"] = round(z, 6)
+          science["redshiftMethod"] = "flat_LCDM_luminosity_distance_inversion_H0_67.6_Om0_0.315"
+          science["redshiftDistanceBasisMly"] = distance_mly
+
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          check = json.loads(path.read_text(encoding="utf-8"))
+          verified = [x for x in check["records"] if str(x.get("providerKey","")).casefold()=="hubble" and str(x.get("archiveId","")).casefold()=="heic0810be"]
+          assert len(verified) == 1
+          assert verified[0].get("distanceMly") == 700.0
+          assert abs(float(verified[0].get("redshift")) - z) < 1e-9
+          print(f"Validated Hubble/heic0810be: distance={distance_mly} Mly; FLRW redshift={z:.6f}")
+          print("Only the target record's distance and redshift metadata were changed.")
+
+          subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+          subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
+          subprocess.run(["git", "add", str(path)], check=True)
+          diff = subprocess.run(["git", "diff", "--cached", "--quiet"])
+          if diff.returncode == 0:
+              print("Catalog already correct; no catalog commit needed.")
+          elif diff.returncode == 1:
+              subprocess.run(["git", "commit", "-m", "Correct 2MASX J09133888-1019196 distance and FLRW redshift in catalog 0006"], check=True)
+              subprocess.run(["git", "push", "origin", "HEAD:release"], check=True)
+          else:
+              raise SystemExit("Unable to determine whether the catalog changed.")
