@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#04142e"/><stop offset=".55" stop-color="#082b61"/><stop offset="1" stop-color="#075b9b"/></linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e8fdff"/><stop offset=".35" stop-color="#21c8ff"/><stop offset=".7" stop-color="#1266e8"/><stop offset="1" stop-color="#b8f8ff"/></linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <style>.line{fill:none;stroke:#52d8ff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;filter:url(#glow)}.star{fill:#fff;stroke:#b8f4ff;stroke-width:1.2;filter:url(#glow)}.major{fill:#fff7d6;stroke:#fff;stroke-width:1.2;filter:url(#glow)}</style>
+  </defs>
+  <rect x="4" y="4" width="248" height="248" rx="38" fill="url(#rim)"/>
+  <rect x="13" y="13" width="230" height="230" rx="31" fill="#00142d" stroke="#86edff" stroke-width="2"/>
+  <rect x="21" y="21" width="214" height="214" rx="26" fill="url(#bg)" stroke="#25caff" stroke-width="2"/>
+  <rect x="31" y="31" width="194" height="194" rx="20" fill="none" stroke="#b4f5ff" stroke-width="1.3" opacity=".65"/>
+  <g opacity=".7" fill="#c6f5ff"><circle cx="51" cy="57" r="1.2"/><circle cx="202" cy="61" r="1.1"/><circle cx="199" cy="193" r="1.4"/><circle cx="58" cy="201" r="1"/><circle cx="83" cy="42" r=".9"/><circle cx="166" cy="210" r=".9"/></g>
+  <!-- Centaurus proposal: southern cross-like forequarters with the long body and hindquarter chain -->
+  <g class="line">
+    <path d="M47 153 L76 123 L103 96 L133 82 L160 97 L190 119 L174 145 L145 154 L117 142 L103 96"/>
+    <path d="M133 82 L145 55"/>
+    <path d="M76 123 L79 166 L117 142"/>
+    <path d="M160 97 L173 72"/>
+  </g>
+  <g>
+    <circle class="major" cx="47" cy="153" r="6.1"/><circle class="star" cx="76" cy="123" r="4.4"/>
+    <circle class="star" cx="103" cy="96" r="4.8"/><circle class="major" cx="133" cy="82" r="6.4"/>
+    <circle class="star" cx="160" cy="97" r="4.6"/><circle class="major" cx="190" cy="119" r="6.2"/>
+    <circle class="star" cx="174" cy="145" r="4.5"/><circle class="star" cx="145" cy="154" r="4.5"/>
+    <circle class="star" cx="117" cy="142" r="4.5"/><circle class="star" cx="79" cy="166" r="4.4"/>
+    <circle class="major" cx="145" cy="55" r="5.5"/><circle class="star" cx="173" cy="72" r="4.4"/>
+  </g>
+  <g stroke="#fff8d8" stroke-width="1.25" stroke-linecap="round" opacity=".9"><path d="M35 153h24 M47 141v24 M178 119h24 M190 107v24"/></g>
+</svg>
