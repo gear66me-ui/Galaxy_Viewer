@@ -1,4 +1,4 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0071
+name: Validate and Deploy RC-V1.0.0.9 Build 0072
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0071 and bundled closed IAU constellation polygons
+      - name: Validate Build 0072 and bundled closed IAU constellation polygons
         shell: bash
         run: |
           set -euo pipefail
@@ -36,13 +36,13 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0071.py","build":"0071"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0071", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0071.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0072.py","build":"0072"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0072", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0072.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0071"' in rc
-          assert "const GV200001_BUILD='0071'" in rc
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0072"' in rc
+          assert "const GV200001_BUILD='0072'" in rc
           assert "onRandom:()=>{gvSetTripCycle(true);return navigateRandom()}" in rc
           assert "const data=JSON.parse(" in rc, "Boundary data must be bundled, not fetched at runtime"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess the already J2000-aligned GeoJSON"
@@ -62,12 +62,11 @@ jobs:
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" not in rc and "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.css" not in rc
-          assert "survey:'https://skies.esac.esa.int/DSSColor'" in rc, "Build 0071 must use the resilient ESA DSSColor HiPS mirror endpoint"
-          assert rc.count("1-9/durationSeconds") == 2, "Build 0071 must release HiPS tile fetching at T-minus nine seconds in both navigation paths"
-          assert "1-2/durationSeconds" not in rc, "Build 0071 must not retain the old T-minus-two tile-fetch gate"
-          assert "survey:'https://irsa.ipac.caltech.edu/data/hips/CDS/DSS2/color'" not in rc, "Do not boot with the failing direct IPAC/IRSA URL"
-          assert "survey:'https://skies.esac.esa.int/DSSColor'" in rc, "Build 0071 must use the resilient ESA DSSColor HiPS mirror endpoint"
-          print("BUILD 0071 STATIC VALIDATION PASSED: release identity, bundled closed IAU polygon data, no runtime fetch, no double precession, overlay attach/show, closed-ring geometry validation, Random Galaxy handler, T-minus-nine HiPS tile-fetch timing, and immutable pins.")
+          assert "survey:'https://irsa.ipac.caltech.edu/data/hips/CDS/DSS2/color'" in rc, "Build 0072 must use the requested IPAC DSS2 Color HiPS endpoint"
+          assert "survey:'https://skies.esac.esa.int/DSSColor'" not in rc, "Build 0072 must not silently switch the survey source to ESA"
+          assert rc.count("1-9/durationSeconds") == 2, "Build 0072 must release HiPS tile fetching at T-minus nine seconds in both navigation paths"
+          assert "1-2/durationSeconds" not in rc, "Build 0072 must not retain the old T-minus-two tile-fetch gate"
+          print("BUILD 0072 STATIC VALIDATION PASSED: IPAC DSS2 Color source, release identity, bundled closed IAU polygon data, no runtime fetch, no double precession, overlay attach/show, closed-ring geometry validation, Random Galaxy handler, T-minus-nine HiPS tile-fetch timing, and immutable pins.")
           PY
 
       - name: Configure GitHub Pages
@@ -78,7 +77,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p _site
-          rsync -a --exclude='.git/' --exclude='_site/' --exclude='viewer/artwork/runtime/survey-thumbnails/' --exclude='viewer/artwork/runtime/mirrors/' --exclude='**/[Mm]irror/' --exclude='**/[Mm]irrors/' --exclude='**/[Tt]humbnail*/' --exclude='**/[Tt]humbnails/' ./ _site/
+          rsync -a --exclude='.git/' --exclude='_site/' --exclude='viewer/artwork/runtime/survey-thumbnails/' --exclude='viewer/artwork/runtime/mirrors/' --exclude='**/[Mm]irror/' --exclude='**/[Mm]irrors/' --exclude='**/[Tt]humbnail*/' --exclude='**/[Tt]humbnails/' --exclude='**/[Tt]humbnails/' ./ _site/
           if find _site -type d | grep -Ei '/(mirror|mirrors|thumbnail|thumbnails|survey-thumbnails)$'; then
             echo "ERROR: thumbnail or mirror directories leaked into deployment staging"
             exit 1
