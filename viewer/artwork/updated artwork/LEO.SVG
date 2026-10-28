@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#07132e"/><stop offset=".55" stop-color="#15285e"/><stop offset="1" stop-color="#5a3a83"/></linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff0d0"/><stop offset=".3" stop-color="#63dfff"/><stop offset=".65" stop-color="#6b7cff"/><stop offset="1" stop-color="#ffd2a1"/></linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <style>.line{fill:none;stroke:#65dfff;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round;filter:url(#glow)}.star{fill:#fff;stroke:#d4f7ff;stroke-width:1.1;filter:url(#glow)}.major{fill:#fff0c7;stroke:#fff;stroke-width:1.2;filter:url(#glow)}</style>
+  </defs>
+  <rect x="4" y="4" width="248" height="248" rx="38" fill="url(#rim)"/>
+  <rect x="13" y="13" width="230" height="230" rx="31" fill="#070f2c" stroke="#a4eaff" stroke-width="2"/>
+  <rect x="21" y="21" width="214" height="214" rx="26" fill="url(#bg)" stroke="#71dfff" stroke-width="2"/>
+  <rect x="31" y="31" width="194" height="194" rx="20" fill="none" stroke="#d5f7ff" stroke-width="1.3" opacity=".65"/>
+  <g opacity=".7" fill="#dcecff"><circle cx="52" cy="57" r="1.2"/><circle cx="201" cy="60" r="1.1"/><circle cx="202" cy="195" r="1.4"/><circle cx="57" cy="199" r="1"/><circle cx="166" cy="42" r=".9"/><circle cx="82" cy="212" r=".9"/></g>
+  <!-- Leo's familiar sickle/head and triangular hindquarters -->
+  <g class="line">
+    <path d="M51 128 L77 115 L96 88 L126 71 L154 81 L177 103 L166 130 L139 145 L115 137 L96 88"/>
+    <path d="M115 137 L88 162 L66 184"/>
+    <path d="M139 145 L169 165 L197 148 L177 103"/>
+  </g>
+  <g>
+    <circle class="major" cx="51" cy="128" r="6.1"/><circle class="star" cx="77" cy="115" r="4.4"/>
+    <circle class="star" cx="96" cy="88" r="4.8"/><circle class="major" cx="126" cy="71" r="6.4"/>
+    <circle class="star" cx="154" cy="81" r="4.6"/><circle class="major" cx="177" cy="103" r="6.2"/>
+    <circle class="star" cx="166" cy="130" r="4.5"/><circle class="star" cx="139" cy="145" r="4.5"/>
+    <circle class="star" cx="115" cy="137" r="4.5"/><circle class="star" cx="88" cy="162" r="4.4"/>
+    <circle class="star" cx="66" cy="184" r="4.4"/><circle class="star" cx="169" cy="165" r="4.5"/>
+    <circle class="major" cx="197" cy="148" r="5.5"/>
+  </g>
+  <g stroke="#fff0c7" stroke-width="1.25" stroke-linecap="round" opacity=".9"><path d="M39 128h24 M51 116v24 M165 103h24 M177 91v24"/></g>
+</svg>
