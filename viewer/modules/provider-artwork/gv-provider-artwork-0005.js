@@ -46,7 +46,7 @@ function constellationSources(name){
   const raw=String(name??'').trim().toUpperCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   if(!raw)return[];
   const k=CONSTELLATION_ALIASES[raw]||raw;
-  const p='Constellations%202/'+encodeURIComponent(k)+'.SVG';
+  const p='Constellations/'+encodeURIComponent(k)+'.SVG';
   return [CDN_ART+p,PAGES_ART+p,ART+p];
 }
 // Bounded LRU cache for successful and in-flight artwork image probes.
