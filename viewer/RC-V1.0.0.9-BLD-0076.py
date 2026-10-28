@@ -29,7 +29,7 @@ HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f7740afe2
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc36a2f156517f9a77865da0c1c13d49175/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7dcd8a191372e112b07bb20d0518a739a7c05865/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
-GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@9f01995c0bba922a1a58f322671d66f38f15f55a/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-003.js?v=0003"
+GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@c7d25fe8f3cbb646ce30e89c79550c59f9cc1438/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0003"
 GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@34d6f9b9417438afd56317bc838b93eb655c7d15/viewer/modules/galaxy-navigator/gv-galaxy-navigator-014.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js"
 
@@ -986,7 +986,7 @@ if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0020'||typeof window.Gala
 if(!window.GalaxyCoordinateOverlay||window.GalaxyCoordinateOverlay.VERSION!=='0008'||typeof window.GalaxyCoordinateOverlay.mount!=='function')throw new Error('COORDINATE OVERLAY 0008 EXPORT MISSING');
 if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
-if(window.GalaxyRouteEngine?.VERSION!=='0003')throw new Error('GALAXY ROUTE ENGINE 003 EXPORT MISSING');
+if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 013 EXPORT MISSING');
 
 /* GV IAU CONSTELLATION REGION POLYGONS — BUILD 0042
