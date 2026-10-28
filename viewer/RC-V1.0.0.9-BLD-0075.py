@@ -296,7 +296,7 @@ const gvModuleLoadPromise=Promise.all([
     loadScript(config.galaxyNavigatorUrl).catch(error=>{console.error('GALAXY NAVIGATOR LOAD FAILED',error)}),
     loadScript(config.headsUpDisplayUrl).catch(error=>{console.error('HEADS-UP DISPLAY LOAD FAILED',error)}),
     loadScript(config.travelPresentationUrl).catch(error=>{console.error('TRAVEL PRESENTATION LOAD FAILED',error)}),
-    loadScript(fresh(config.destinationPresentationUrl)).catch(error=>{console.error('DESTINATION PRESENTATION LOAD FAILED',error)}),
+    loadScript(fresh(config.destinationPresentationUrl)).then(()=>{if(window.GalaxyDestinationPresentation?.VERSION!=='0061'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION CDN EXPORT MISSING');}).catch(error=>{console.warn('DESTINATION PRESENTATION CDN LOAD/EXPORT FAILED; RETRYING GITHUB PAGES',error);return loadScript(fresh('https://gear66me-ui.github.io/Galaxy_Viewer/viewer/modules/destination-presentation/gv-destination-presentation-0061.js')).then(()=>{if(window.GalaxyDestinationPresentation?.VERSION!=='0061'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0061 EXPORT MISSING AFTER GITHUB PAGES RETRY');});}),
     Promise.resolve()
 ]);
 if(!document.querySelector(`link[href="${config.aladinCssUrl}"]`)){
