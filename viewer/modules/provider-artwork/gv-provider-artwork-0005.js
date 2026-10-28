@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const VERSION='0007';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
-const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@5f87ef4a67a4b3a93cc8c6f27a116e1b4e4a4f2c/viewer/artwork/';
+const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/';
 const PAGES_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
 const PROVIDER_ARTWORK=Object.freeze({
   HUBBLE:'Hubble/Hubble.jpg',
@@ -46,7 +46,7 @@ function constellationSources(name){
   const raw=String(name??'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   if(!raw)return[];
   const k=CONSTELLATION_ALIASES[raw]||raw;
-  const p='Constellations%202/'+encodeURIComponent(k)+'.SVG';
+  const p='Constellations/'+encodeURIComponent(k)+'.SVG';
   return [CDN_ART+p,PAGES_ART+p,ART+p];
 }
 // Bounded LRU cache for successful and in-flight artwork image probes.
