@@ -111,8 +111,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@c824f16398ec8aae39885c101545173e7846ad33/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/c824f16398ec8aae39885c101545173e7846ad33/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
-    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@a53b616f6e0adfd29c7c98845b43bf2eeee850f2/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@78e542d3c361e41088bc172595f5d2f6bccad496/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
+    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f042834d8e6a4ea2959ad88c2dc16628219309da/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f4c018c449911b8888ade7781be5202739141589/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
 });
 
 
