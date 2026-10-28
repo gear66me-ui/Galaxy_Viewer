@@ -194,7 +194,7 @@ await A.init;
 // ============================================================================
 const aladin=A.aladin('#aladin-cosmic-command-test',{
     backgroundColor:'rgb(5, 22, 52)',
-    survey:'https://irsa.ipac.caltech.edu/data/hips/CDS/DSS2/color',
+    survey:'https://skies.esac.esa.int/DSSColor',
     projection:'MOL',
     fov:360,
     showReticle:false,
