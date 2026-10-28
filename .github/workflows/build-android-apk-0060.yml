@@ -5,6 +5,8 @@ on:
     branches: [release]
     paths:
       - 'android/galaxy-viewer-web-browser/**'
+      - 'viewer/modules/provider-artwork/**'
+      - 'viewer/artwork/Constellations 2/**'
       - '.github/workflows/build-android-apk-0060.yml'
   workflow_dispatch:
 
