@@ -95,7 +95,7 @@ jobs:
           verified = [x for x in check["records"] if norm(x.get("archiveId")) == "heic0810be" or "2masx j09133888 1019196" in norm(x.get("name")) or "2masx j09133888 1019196" in norm(x.get("objectName")) or "2masx j09133888 1019196" in norm(x.get("pseudonym"))]
           assert len(verified) == 1
           assert verified[0].get("distanceMly") == 700.0
-          assert abs(float(verified[0].get("redshift")) - z) < 1e-9
+          assert float(verified[0].get("redshift")) == round(z, 6)
           print(f"Validated Hubble/heic0810be: distance={distance_mly} Mly; FLRW redshift={z:.6f}")
           print("Verified target identity:", {k: verified[0].get(k) for k in ("providerKey", "archiveId", "name", "objectName", "pseudonym")})
           print("Only the target record's distance and redshift metadata were changed.")
