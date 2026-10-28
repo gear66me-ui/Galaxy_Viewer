@@ -3782,7 +3782,7 @@ async function navigateRandom(){
             }
             if(nextWarm&&destination===nextWarm.destination){
                 try{
-                    preloadedPrepared=nextWarm.prepared?await gvAwaitDestinationReadiness(nextWarm.prepared,candidateDeadline,'prewarmed HD image'):null;
+                    preloadedPrepared=nextWarm.prepared?await gvAwaitDestinationReadiness(nextWarm.prepared,performance.now()+GV_HD_PREPARATION_TIMEOUT_MS,'prewarmed HD image'):null;
                     prewarmedPresentationDestination=nextWarm.presentationReady?destination:null;
                     console.info(preloadedPrepared?'GV NEXT DESTINATION PREWARM CACHE HIT':'GV NEXT DESTINATION PREWARM CACHE MISS',{name:destination?.name||destination?.designation||''});
                 }catch(error){
