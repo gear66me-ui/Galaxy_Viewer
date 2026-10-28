@@ -46805,9 +46805,19 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0113,
-      "science": {},
-      "redshift": 1e-06
+      "distanceMly": 0.00815,
+      "science": {
+        "distanceMly": 0.00815,
+        "distanceDisplay": "8,150 light-years",
+        "distanceEstimated": true,
+        "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+        "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
+      },
+      "redshift": 1e-06,
+      "distanceDisplay": "8,150 light-years",
+      "distanceEstimated": true,
+      "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+      "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
     },
     {
       "providerKey": "hubble",
@@ -47636,9 +47646,19 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0113,
-      "science": {},
-      "redshift": 1e-06
+      "distanceMly": 0.00815,
+      "science": {
+        "distanceMly": 0.00815,
+        "distanceDisplay": "8,150 light-years",
+        "distanceEstimated": true,
+        "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+        "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
+      },
+      "redshift": 1e-06,
+      "distanceDisplay": "8,150 light-years",
+      "distanceEstimated": true,
+      "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+      "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
     },
     {
       "providerKey": "hubble",
@@ -58197,9 +58217,19 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0113,
-      "science": {},
-      "redshift": 1e-06
+      "distanceMly": 0.00815,
+      "science": {
+        "distanceMly": 0.00815,
+        "distanceDisplay": "8,150 light-years",
+        "distanceEstimated": true,
+        "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+        "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
+      },
+      "redshift": 1e-06,
+      "distanceDisplay": "8,150 light-years",
+      "distanceEstimated": true,
+      "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+      "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
     },
     {
       "providerKey": "noirlab",
@@ -66138,9 +66168,19 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0113,
-      "science": {},
-      "redshift": 1e-06
+      "distanceMly": 0.00815,
+      "science": {
+        "distanceMly": 0.00815,
+        "distanceDisplay": "8,150 light-years",
+        "distanceEstimated": true,
+        "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+        "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
+      },
+      "redshift": 1e-06,
+      "distanceDisplay": "8,150 light-years",
+      "distanceEstimated": true,
+      "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+      "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
     },
     {
       "providerKey": "noirlab",
@@ -66738,9 +66778,19 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0113,
-      "science": {},
-      "redshift": 1e-06
+      "distanceMly": 0.00815,
+      "science": {
+        "distanceMly": 0.00815,
+        "distanceDisplay": "8,150 light-years",
+        "distanceEstimated": true,
+        "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+        "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
+      },
+      "redshift": 1e-06,
+      "distanceDisplay": "8,150 light-years",
+      "distanceEstimated": true,
+      "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+      "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
     },
     {
       "providerKey": "noirlab",
@@ -66988,9 +67038,19 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.0113,
-      "science": {},
-      "redshift": 1e-06
+      "distanceMly": 0.00815,
+      "science": {
+        "distanceMly": 0.00815,
+        "distanceDisplay": "8,150 light-years",
+        "distanceEstimated": true,
+        "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+        "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
+      },
+      "redshift": 1e-06,
+      "distanceDisplay": "8,150 light-years",
+      "distanceEstimated": true,
+      "distanceMethod": "adopted_associated_star_distance_2.5_kpc_2020",
+      "distanceEvidence": "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; adopted central value 8,150 light-years"
     },
     {
       "providerKey": "noirlab",
