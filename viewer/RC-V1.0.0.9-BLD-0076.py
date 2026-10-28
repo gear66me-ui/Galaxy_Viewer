@@ -3362,6 +3362,8 @@ document.addEventListener('visibilitychange',()=>{
 });
 
 const GV_RANDOM_READINESS_TIMEOUT_MS=3000;
+const GV_HD_PREPARATION_TIMEOUT_MS=30000;
+const GV_HD_STAGING_TIMEOUT_MS=12000;
 let gvDestinationAttemptGeneration=0;
 function gvAwaitDestinationReadiness(promise,deadline,label,attemptGeneration=null){
     const remaining=deadline-performance.now();
@@ -3379,9 +3381,8 @@ function gvAwaitDestinationReadiness(promise,deadline,label,attemptGeneration=nu
 }
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,switchToSphericalAtApex=false,prewarmedPresentationDestination=null}={}){
     const attemptGeneration=++gvDestinationAttemptGeneration;
-    const readinessDeadline=performance.now()+GV_RANDOM_READINESS_TIMEOUT_MS;
     const readinessController=new AbortController();
-    const awaitReadiness=(promise,label)=>gvAwaitDestinationReadiness(promise,readinessDeadline,label,attemptGeneration);
+    const awaitReadiness=(promise,label)=>{const timeoutMs=label==='HD image preparation'?GV_HD_PREPARATION_TIMEOUT_MS:label==='HD layer staging'?GV_HD_STAGING_TIMEOUT_MS:GV_RANDOM_READINESS_TIMEOUT_MS;return gvAwaitDestinationReadiness(promise,performance.now()+timeoutMs,label,attemptGeneration)};
     gvHdTravelRetired=false;
     const v=validateDestination(destination),sourceDestination=activeDestination;
     if(directHdStaged){const stale=directHdStaged;directHdStaged=null;try{aladin.removeImageLayer?.(stale.layerName)}catch(_){}if(stale.objectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(stale.objectUrl)}
@@ -3781,7 +3782,7 @@ async function navigateRandom(){
             }
             if(nextWarm&&destination===nextWarm.destination){
                 try{
-                    preloadedPrepared=nextWarm.prepared?await gvAwaitDestinationReadiness(nextWarm.prepared,candidateDeadline,'prewarmed HD image'):null;
+                    preloadedPrepared=nextWarm.prepared?await gvAwaitDestinationReadiness(nextWarm.prepared,performance.now()+GV_HD_PREPARATION_TIMEOUT_MS,'prewarmed HD image'):null;
                     prewarmedPresentationDestination=nextWarm.presentationReady?destination:null;
                     console.info(preloadedPrepared?'GV NEXT DESTINATION PREWARM CACHE HIT':'GV NEXT DESTINATION PREWARM CACHE MISS',{name:destination?.name||destination?.designation||''});
                 }catch(error){
