@@ -28,13 +28,23 @@ jobs:
           path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json")
           data = json.loads(path.read_text(encoding="utf-8"))
           records = data.get("records", [])
+          def norm(v):
+              return " ".join(str(v or "").casefold().replace("_", " ").replace("-", " ").split())
           matches = [
               r for r in records
-              if str(r.get("providerKey", "")).casefold() == "hubble"
-              and str(r.get("archiveId", "")).casefold() == "heic0810be"
+              if (
+                  norm(r.get("archiveId")) == "heic0810be"
+                  or "2masx j09133888 1019196" in norm(r.get("name"))
+                  or "2masx j09133888 1019196" in norm(r.get("objectName"))
+                  or "2masx j09133888 1019196" in norm(r.get("pseudonym"))
+              )
           ]
           if len(matches) != 1:
-              raise SystemExit(f"Expected exactly one Hubble/heic0810be record; found {len(matches)}. No catalog edits made.")
+              print("Candidate records:", [
+                  {k: r.get(k) for k in ("providerKey", "archiveId", "name", "objectName", "pseudonym", "distanceMly", "redshift")}
+                  for r in records if "09133888" in str(r).casefold() or "heic0810be" in str(r).casefold()
+              ])
+              raise SystemExit(f"Expected exactly one matching 2MASX/HEIC record; found {len(matches)}. No catalog edits made.")
 
           r = matches[0]
           # NASA/ESA quote ~700 million light-years. This is Earth-to-system distance,
@@ -82,11 +92,12 @@ jobs:
 
           path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
           check = json.loads(path.read_text(encoding="utf-8"))
-          verified = [x for x in check["records"] if str(x.get("providerKey","")).casefold()=="hubble" and str(x.get("archiveId","")).casefold()=="heic0810be"]
+          verified = [x for x in check["records"] if norm(x.get("archiveId")) == "heic0810be" or "2masx j09133888 1019196" in norm(x.get("name")) or "2masx j09133888 1019196" in norm(x.get("objectName")) or "2masx j09133888 1019196" in norm(x.get("pseudonym"))]
           assert len(verified) == 1
           assert verified[0].get("distanceMly") == 700.0
           assert abs(float(verified[0].get("redshift")) - z) < 1e-9
           print(f"Validated Hubble/heic0810be: distance={distance_mly} Mly; FLRW redshift={z:.6f}")
+          print("Verified target identity:", {k: verified[0].get(k) for k in ("providerKey", "archiveId", "name", "objectName", "pseudonym")})
           print("Only the target record's distance and redshift metadata were changed.")
 
           subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
