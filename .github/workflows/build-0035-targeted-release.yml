@@ -50,6 +50,7 @@ jobs:
           assert "const GV_HD_STAGING_TIMEOUT_MS=12000;" in rc, "HD staging must receive a 12-second watchdog"
           assert "label==='HD image preparation'?GV_HD_PREPARATION_TIMEOUT_MS" in rc, "HD preparation must not be rejected by the 3-second metadata watchdog"
           assert "label==='HD layer staging'?GV_HD_STAGING_TIMEOUT_MS" in rc, "HD staging must use its dedicated watchdog"
+          assert "gvAwaitDestinationReadiness(nextWarm.prepared,performance.now()+GV_HD_PREPARATION_TIMEOUT_MS,'prewarmed HD image')" in rc, "Prewarmed HD image handoff must use the HD preparation timeout"
           assert "readinessDeadline" not in rc, "Do not reuse a pre-travel deadline after the journey has started"
           assert "navigationRuntime.rejectCurrentDestination(destination" in rc, "Roll 0079 must use the existing reserve bank for candidate recovery"
           assert "GV CANDIDATE REJECTED — PRETRAVEL READINESS/STAGING FAILED" in rc, "Roll 0079 must reject failed preflight candidates"
