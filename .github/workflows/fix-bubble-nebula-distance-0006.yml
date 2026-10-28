@@ -1,0 +1,121 @@
+name: Fix Bubble Nebula distance — AVM runtime catalog 0006
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/fix-bubble-nebula-distance-0006.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  correct-runtime-and-archive-old-files:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Correct six Bubble Nebula runtime records and archive superseded files
+        shell: python
+        run: |
+          import json
+          import subprocess
+          from pathlib import Path
+
+          root = Path("viewer/image-databases/master-database/avm-metadata")
+          path = root / "gv-avm-runtime-catalog-0006.json"
+          data = json.loads(path.read_text(encoding="utf-8"))
+
+          targets = {
+              ("hubble", "heic1608a"),
+              ("hubble", "opo0004a"),
+              ("noirlab", "noao-bubble"),
+              ("noirlab", "noao-ngc7635podi"),
+              ("noirlab", "noao0702a"),
+              ("noirlab", "noao1207a"),
+          }
+          found = {}
+          for record in data.get("records", []):
+              key = (
+                  str(record.get("providerKey", "")).casefold(),
+                  str(record.get("archiveId", "")).casefold(),
+              )
+              if key in targets:
+                  found.setdefault(key, []).append(record)
+
+          missing = sorted(targets - set(found))
+          duplicates = {str(k): len(v) for k, v in found.items() if len(v) != 1}
+          if missing or duplicates:
+              raise SystemExit(
+                  f"Aborting without catalog edits: missing={missing}; duplicate matches={duplicates}"
+              )
+
+          for key in sorted(targets):
+              record = found[key][0]
+              record["distanceMly"] = 0.00815
+              science = record.setdefault("science", {})
+              science["distanceMly"] = 0.00815
+              science["distanceDisplay"] = "8,150 light-years"
+              science["distanceEstimated"] = True
+              science["distanceMethod"] = "adopted_associated_star_distance_2.5_kpc_2020"
+              science["distanceEvidence"] = (
+                  "BD+60°2522 associated-star distance 2.5 ± 0.2 kpc; "
+                  "adopted central value 8,150 light-years"
+              )
+              record["distanceDisplay"] = "8,150 light-years"
+              record["distanceEstimated"] = True
+              record["distanceMethod"] = "adopted_associated_star_distance_2.5_kpc_2020"
+              record["distanceEvidence"] = science["distanceEvidence"]
+
+          # Preserve all other catalog fields, including the existing redshift values.
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+
+          check = json.loads(path.read_text(encoding="utf-8"))
+          verified = {}
+          for record in check.get("records", []):
+              key = (
+                  str(record.get("providerKey", "")).casefold(),
+                  str(record.get("archiveId", "")).casefold(),
+              )
+              if key in targets:
+                  verified.setdefault(key, []).append(record)
+          assert set(verified) == targets
+          assert all(len(verified[k]) == 1 for k in targets)
+          assert all(verified[k][0].get("distanceMly") == 0.00815 for k in targets)
+          assert all(verified[k][0].get("science", {}).get("distanceMly") == 0.00815 for k in targets)
+          print("Validated all six Bubble Nebula records in gv-avm-runtime-catalog-0006.json at 0.00815 Mly.")
+          print("Existing redshift fields were preserved.")
+
+          archive = root / "archive"
+          archive.mkdir(exist_ok=True)
+          superseded = [
+              "gv-avm-runtime-catalog-0004.json",
+              "gv-avm-runtime-catalog-0005.json",
+              "avm-runtime-distance-map-0004.csv",
+              "gv-decoded-image-metadata-summary.json",
+          ]
+          for name in superseded:
+              src = root / name
+              dst = archive / name
+              if src.exists():
+                  if dst.exists():
+                      raise SystemExit(f"Archive destination already exists; refusing to overwrite: {dst}")
+                  subprocess.run(["git", "mv", str(src), str(dst)], check=True)
+                  print(f"Archived {name}")
+              else:
+                  print(f"Already absent from active folder: {name}")
+
+          subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+          subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
+          subprocess.run(["git", "add", "-A", str(root)], check=True)
+          diff = subprocess.run(["git", "diff", "--cached", "--quiet"])
+          if diff.returncode == 0:
+              print("No changes required.")
+          elif diff.returncode == 1:
+              subprocess.run(["git", "commit", "-m", "Fix Bubble Nebula distances in AVM runtime catalog 0006 and archive older files"], check=True)
+              subprocess.run(["git", "push", "origin", "HEAD:release"], check=True)
+          else:
+              raise SystemExit("Unable to determine whether changes were staged.")
