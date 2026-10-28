@@ -1,4 +1,4 @@
-name: Restore and Deploy RC-V1.0.0.9 Build 0076
+name: Restore and Deploy RC-V1.0.0.9 Build 0075
 
 on:
   push:
@@ -27,7 +27,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate restored Build 0076 and bundled closed IAU constellation polygons
+      - name: Validate restored Build 0075 and bundled closed IAU constellation polygons
         shell: bash
         run: |
           set -euo pipefail
@@ -36,14 +36,14 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0076.py","build":"0076"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0076", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0076.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0075.py","build":"0075"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0075", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0075.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0076"' in rc
-          assert "const GV200001_BUILD='0076'" in rc
-          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0076 must validate the pinned Route Engine 002 export"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0075"' in rc
+          assert "const GV200001_BUILD='0075'" in rc
+          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0075 must validate the pinned Route Engine 002 export"
           assert "const data=JSON.parse(" in rc, "Boundary data must remain bundled"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess already aligned GeoJSON"
           assert "GV_IAU_BOUNDARY_WIDTH=0.5" in rc and "GV_IAU_BOUNDARY_OPACITY=0.58" in rc
@@ -53,7 +53,7 @@ jobs:
           assert len(pins) == 10, f"Expected 10 immutable dependency pins; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
-          print("BUILD 0076 ROLLBACK VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
+          print("BUILD 0075 ROLLBACK VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
