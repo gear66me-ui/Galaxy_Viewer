@@ -1,7 +1,7 @@
 (()=>{'use strict';
-const VERSION='0006';
+const VERSION='0007';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
-const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@07b9250b7169a0839f05dcfb361e45721710ebba/viewer/artwork/';
+const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@c44cb47cf506724cbc034e8afe6ffde85cd7b9a3/viewer/artwork/';
 const PAGES_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
 const PROVIDER_ARTWORK=Object.freeze({
   HUBBLE:'Hubble/Hubble.jpg',
