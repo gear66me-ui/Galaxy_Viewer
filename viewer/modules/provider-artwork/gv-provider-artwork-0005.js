@@ -101,34 +101,39 @@ function loadImage(img,sources,onReady,onFail){
   const token=(imageRequestTokens.get(img)||0)+1;
   imageRequestTokens.set(img,token);
   const active=()=>imageRequestTokens.get(img)===token;
+  let index=0,finished=false;
   img.onload=null;
   img.onerror=null;
-  let round=0;
-  const next=()=>{
-    if(!active())return;
-    if(round>=3){onFail?.();return}
-    const currentRound=round++;
-    // Race the CDN, Pages, and raw GitHub copies together. Serial fallback
-    // made one slow host delay an icon even when another copy was available.
-    const candidates=urls.map((base,index)=>{
-      const sep=base.includes('?')?'&':'?';
-      const url=currentRound?base+sep+'gv_art_retry='+(currentRound*urls.length+index+1)+'&t='+Date.now():base;
-      return loadSource(url).then(readyUrl=>({readyUrl}));
-    });
-    firstSuccessful(candidates).then(({readyUrl})=>{
-      if(!active())return;
-      let fired=false;
-      const ready=()=>{if(!active()||fired)return;fired=true;onReady?.()};
-      img.onload=ready;
-      img.onerror=()=>{if(active())setTimeout(next,120*round)};
-      img.src=readyUrl;
-      if(active()&&img.complete&&img.naturalWidth>0)Promise.resolve().then(ready);
-    }).catch(error=>{
-      console.warn('GV ARTWORK SOURCE ROUND FAILED',{round:currentRound+1,urls,error:String(error?.message||error)});
-      if(active())setTimeout(next,120*round);
-    });
+  const fail=()=>{
+    if(!active()||finished)return;
+    if(index>=urls.length){
+      finished=true;
+      img.removeAttribute('src');
+      console.error('GV ARTWORK ALL SOURCES FAILED',{alt:img.alt||'',sources:urls});
+      onFail?.();
+      return;
+    }
+    const url=urls[index++];
+    img.onload=()=>{
+      if(!active()||finished)return;
+      finished=true;
+      onReady?.(url);
+    };
+    img.onerror=()=>{
+      if(!active()||finished)return;
+      console.warn('GV ARTWORK IMAGE REQUEST FAILED',{alt:img.alt||'',url,remaining:urls.length-index});
+      fail();
+    };
+    // Assign directly to the displayed image. This avoids probing with a
+    // separate Image object and then relying on a second request/cache hit.
+    img.src=url;
+    if(img.complete&&img.naturalWidth>0){
+      finished=true;
+      onReady?.(url);
+    }
   };
-  next();
+  if(!urls.length){onFail?.();return}
+  fail();
 }
 globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVIDER_ARTWORK,key,path,icon,iconSources,constellationSources,loadImage,cacheDiagnostics:()=>Object.freeze({entries:imageCache.size,limit:IMAGE_CACHE_LIMIT})});
 })();
