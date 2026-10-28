@@ -153,6 +153,19 @@ const Runtime={
   while(this.reserveCursor<this.active.reserve.length){const r=this.active.reserve[this.reserveCursor++],k=key(r);if(this.quarantine.has(k))continue;if(previous&&!compat(norm(previous),norm(r)).compatible)continue;return r}
   return null
  },
+ async rejectCurrentDestination(record,reason='READINESS_FAILED'){
+  const rejectedKey=key(record);
+  if(!this.active||!rejectedKey)return null;
+  const slot=this.active.route.findIndex(candidate=>key(candidate)===rejectedKey);
+  this.quarantineRecord(record,{reason});
+  if(slot<0){log('RECOVERY CANDIDATE NOT IN ACTIVE ROUTE',{key:rejectedKey,reason});return null}
+  const previous=slot>0?this.active.route[slot-1]:null;
+  const replacement=await this.takeReserve(previous);
+  if(!replacement){log('RECOVERY RESERVE EXHAUSTED',{key:rejectedKey,reason,slot});return null}
+  this.active.route[slot]=replacement;
+  log('RECOVERY RESERVE CANDIDATE SELECTED',{rejected:rejectedKey,replacement:key(replacement),reason,slot,reserveRemaining:this.active.reserve.length-this.reserveCursor});
+  return replacement;
+ },
  async nextDestination(){
   if(!this.active)throw Error('ROUTE ENGINE NOT INITIALIZED');
   let previous=null;
