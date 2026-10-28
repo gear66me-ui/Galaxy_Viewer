@@ -986,7 +986,7 @@ if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0020'||typeof window.Gala
 if(!window.GalaxyCoordinateOverlay||window.GalaxyCoordinateOverlay.VERSION!=='0008'||typeof window.GalaxyCoordinateOverlay.mount!=='function')throw new Error('COORDINATE OVERLAY 0008 EXPORT MISSING');
 if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
-if(window.GalaxyRouteEngine?.VERSION!=='0002')throw new Error('GALAXY ROUTE ENGINE 002 EXPORT MISSING');
+if(window.GalaxyRouteEngine?.VERSION!=='0003')throw new Error('GALAXY ROUTE ENGINE 003 EXPORT MISSING');
 if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!=='function')throw new Error('GALAXY NAVIGATOR 013 EXPORT MISSING');
 
 /* GV IAU CONSTELLATION REGION POLYGONS — BUILD 0042
