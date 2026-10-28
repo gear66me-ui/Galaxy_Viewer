@@ -150,7 +150,7 @@ const config=window.GV_BOOT_CONFIG;
 (()=>{'use strict';
 const VERSION='0007';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
-const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@ef294d3ea2deff72ebc01ee762559e8eecd46465/viewer/artwork/';
+const CDN_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
 const PAGES_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
 const PROVIDER_ARTWORK=Object.freeze({
   HUBBLE:'Hubble/Hubble.jpg',
