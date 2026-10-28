@@ -43997,9 +43997,20 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 0.13,
-      "science": {},
-      "redshift": 9e-06
+      "distanceMly": 700.0,
+      "science": {
+        "distanceMly": 700.0,
+        "distanceDisplay": "700 million light-years",
+        "distanceMethod": "NASA_ESA_Hubble_object_distance_700_Mly",
+        "distanceEvidence": "NASA Science and ESA/Hubble object pages state 700 million light-years; 130,000 light-years is the separation within the interacting pair.",
+        "redshift": 0.046754,
+        "redshiftMethod": "flat_LCDM_luminosity_distance_inversion_H0_67.6_Om0_0.315",
+        "redshiftDistanceBasisMly": 700.0
+      },
+      "redshift": 0.046754,
+      "distanceDisplay": "700 million light-years",
+      "distanceMethod": "NASA_ESA_Hubble_object_distance_700_Mly",
+      "distanceEvidence": "NASA Science and ESA/Hubble object pages state 700 million light-years; 130,000 light-years is the separation within the interacting pair."
     },
     {
       "providerKey": "hubble",
