@@ -84,6 +84,18 @@ function loadSource(url){
   return promise;
 }
 const imageRequestTokens=new WeakMap();
+// Promise.any is not available in every Android WebView used by Galaxy Viewer.
+function firstSuccessful(promises){
+  return new Promise((resolve,reject)=>{
+    let pending=promises.length;
+    const errors=[];
+    if(!pending){reject(new Error('GV ARTWORK HAS NO SOURCES'));return}
+    promises.forEach(promise=>Promise.resolve(promise).then(resolve,error=>{
+      errors.push(error);
+      if(--pending===0)reject(new Error('GV ARTWORK SOURCES ALL FAILED: '+errors.map(e=>String(e?.message||e)).join(' | ')));
+    }));
+  });
+}
 function loadImage(img,sources,onReady,onFail){
   const urls=[...new Set((sources||[]).filter(Boolean))];
   const token=(imageRequestTokens.get(img)||0)+1;
@@ -103,7 +115,7 @@ function loadImage(img,sources,onReady,onFail){
       const url=currentRound?base+sep+'gv_art_retry='+(currentRound*urls.length+index+1)+'&t='+Date.now():base;
       return loadSource(url).then(readyUrl=>({readyUrl}));
     });
-    Promise.any(candidates).then(({readyUrl})=>{
+    firstSuccessful(candidates).then(({readyUrl})=>{
       if(!active())return;
       let fired=false;
       const ready=()=>{if(!active()||fired)return;fired=true;onReady?.()};
@@ -111,7 +123,8 @@ function loadImage(img,sources,onReady,onFail){
       img.onerror=()=>{if(active())setTimeout(next,120*round)};
       img.src=readyUrl;
       if(active()&&img.complete&&img.naturalWidth>0)Promise.resolve().then(ready);
-    }).catch(()=>{
+    }).catch(error=>{
+      console.warn('GV ARTWORK SOURCE ROUND FAILED',{round:currentRound+1,urls,error:String(error?.message||error)});
       if(active())setTimeout(next,120*round);
     });
   };
