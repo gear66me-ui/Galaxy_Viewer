@@ -1,7 +1,94 @@
-# Constellations 2 — review samples
+# Constellations 2 — Galaxy Viewer star-wire artwork
 
-Colored 256×256 SVG drafts traced from the **left-hand Galaxy Viewer diagrams** in `Galaxy_Viewer_88_Constellation_Audit.pdf`. The original line segment geometry and proportions are retained from those left-hand charts; linework is recolored in warm yellow with cyan-white star nodes and a cool blue galactic frame.
+All 88 SVGs are 256×256, in a restrained midnight-blue/cool-blue star-chart style with fine pale-blue connections and white/cyan star nodes. Geometry is generated from the coordinate and segment registers in `Galaxy_Viewer_88_Constellation_Audit.pdf` (J2000 RA/Dec, HIP IDs and named custom points). Each constellation is normalized to its own square while preserving the plotted wire pattern. Pegasus follows the minimalist star-map direction in the supplied reference image; no animal silhouettes or labels are added.
 
-Files: `ERIDANUS.SVG`, `HYDRA.SVG`, `ANDROMEDA.SVG`, `TAURUS.SVG`, `CANIS_MAJOR.SVG`, `URSA_MAJOR.SVG`, `CENTAURUS.SVG`, `PEGASUS.SVG`, `ORION.SVG`, `SAGITTARIUS.SVG`, `LEO.SVG`, `PHOENIX.SVG`.
+These are review assets only. Runtime artwork pointers and viewer code remain unchanged. The PDF notes that the IAU standardizes constellation names and boundaries, not one universal stick-figure line pattern.
 
-Review only: existing artwork and runtime pointers are unchanged. The PDF itself notes that the IAU standardizes constellation names and boundaries, not one universal stick-figure pattern.
+- `ANDROMEDA.SVG`
+- `ANTLIA.SVG`
+- `APUS.SVG`
+- `AQUARIUS.SVG`
+- `AQUILA.SVG`
+- `ARA.SVG`
+- `ARIES.SVG`
+- `AURIGA.SVG`
+- `BOOTES.SVG`
+- `CAELUM.SVG`
+- `CAMELOPARDALIS.SVG`
+- `CANCER.SVG`
+- `CANES_VENATICI.SVG`
+- `CANIS_MAJOR.SVG`
+- `CANIS_MINOR.SVG`
+- `CAPRICORNUS.SVG`
+- `CARINA.SVG`
+- `CASSIOPEIA.SVG`
+- `CENTAURUS.SVG`
+- `CEPHEUS.SVG`
+- `CETUS.SVG`
+- `CHAMAELEON.SVG`
+- `CIRCINUS.SVG`
+- `COLUMBA.SVG`
+- `COMA_BERENICES.SVG`
+- `CORONA_AUSTRALIS.SVG`
+- `CORONA_BOREALIS.SVG`
+- `CORVUS.SVG`
+- `CRATER.SVG`
+- `CRUX.SVG`
+- `CYGNUS.SVG`
+- `DELPHINUS.SVG`
+- `DORADO.SVG`
+- `DRACO.SVG`
+- `EQUULEUS.SVG`
+- `ERIDANUS.SVG`
+- `FORNAX.SVG`
+- `GEMINI.SVG`
+- `GRUS.SVG`
+- `HERCULES.SVG`
+- `HOROLOGIUM.SVG`
+- `HYDRA.SVG`
+- `HYDRUS.SVG`
+- `INDUS.SVG`
+- `LACERTA.SVG`
+- `LEO.SVG`
+- `LEO_MINOR.SVG`
+- `LEPUS.SVG`
+- `LIBRA.SVG`
+- `LUPUS.SVG`
+- `LYNX.SVG`
+- `LYRA.SVG`
+- `MENSA.SVG`
+- `MICROSCOPIUM.SVG`
+- `MONOCEROS.SVG`
+- `MUSCA.SVG`
+- `NORMA.SVG`
+- `OCTANS.SVG`
+- `OPHIUCHUS.SVG`
+- `ORION.SVG`
+- `PAVO.SVG`
+- `PEGASUS.SVG`
+- `PERSEUS.SVG`
+- `PHOENIX.SVG`
+- `PICTOR.SVG`
+- `PISCES.SVG`
+- `PISCIS_AUSTRINUS.SVG`
+- `PUPPIS.SVG`
+- `PYXIS.SVG`
+- `RETICULUM.SVG`
+- `SAGITTA.SVG`
+- `SAGITTARIUS.SVG`
+- `SCORPIUS.SVG`
+- `SCULPTOR.SVG`
+- `SCUTUM.SVG`
+- `SERPENS.SVG`
+- `SEXTANS.SVG`
+- `TAURUS.SVG`
+- `TELESCOPIUM.SVG`
+- `TRIANGULUM.SVG`
+- `TRIANGULUM_AUSTRALE.SVG`
+- `TUCANA.SVG`
+- `URSA_MAJOR.SVG`
+- `URSA_MINOR.SVG`
+- `VELA.SVG`
+- `VIRGO.SVG`
+- `VOLANS.SVG`
+- `VULPECULA.SVG`
