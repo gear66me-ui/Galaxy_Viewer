@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const VERSION='0005';
+const VERSION='0006';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
 const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@07b9250b7169a0839f05dcfb361e45721710ebba/viewer/artwork/';
 const PAGES_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
@@ -46,7 +46,7 @@ function constellationSources(name){
   const raw=String(name??'').trim().toUpperCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   if(!raw)return[];
   const k=CONSTELLATION_ALIASES[raw]||raw;
-  const p='Constellations/'+encodeURIComponent(k)+'.SVG';
+  const p='Constellations%202/'+encodeURIComponent(k)+'.SVG';
   return [CDN_ART+p,PAGES_ART+p,ART+p];
 }
 function trimImageCache(){while(imageCache.size>IMAGE_CACHE_LIMIT)imageCache.delete(imageCache.keys().next().value)}
