@@ -90,7 +90,7 @@ display(Javascript(r"""
 'use strict';
 const VERSION='RC-V1.0.0.9';
 const GV200001_BUILD='0072'
-const GV_RUNTIME='0133';
+const GV_RUNTIME='0134';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.9-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
