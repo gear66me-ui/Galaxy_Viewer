@@ -49,6 +49,9 @@ function constellationSources(name){
   const p='Constellations%202/'+encodeURIComponent(k)+'.SVG';
   return [CDN_ART+p,PAGES_ART+p,ART+p];
 }
+// Bounded LRU cache for successful and in-flight artwork image probes.
+const IMAGE_CACHE_LIMIT=36;
+const imageCache=new Map();
 function trimImageCache(){while(imageCache.size>IMAGE_CACHE_LIMIT)imageCache.delete(imageCache.keys().next().value)}
 function loadSource(url){
   if(imageCache.has(url)){const cached=imageCache.get(url);imageCache.delete(url);imageCache.set(url,cached);return cached;}
