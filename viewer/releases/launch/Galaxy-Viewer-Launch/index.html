@@ -21,7 +21,7 @@ const read=async u=>{
  finally{clearTimeout(timer)}
 };
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-// DIAGNOSTIC 0202 / ROLL 0053: surface the viewer's real boot exception instead of masking it as a readiness timeout.
+// DIAGNOSTIC 0203 / ROLL 0054: surface the viewer's real boot exception instead of masking it as a readiness timeout.
 window.__GV_BOOT_ERRORS=[];
 const gvNativeConsoleError=console.error.bind(console);
 console.error=(...args)=>{
@@ -125,6 +125,6 @@ try{
  await paint2();
  document.documentElement.dataset.gvSplashComplete='1';window.GalaxyViewerSetSplashComplete?.();splash.remove();curtain.remove();
  if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
-}catch(e){curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD — LAUNCH ROLL 0053\n\n'+String(e&&e.stack||e)}
+}catch(e){curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD — LAUNCH ROLL 0054\n\n'+String(e&&e.stack||e)}
 })();
 </script></body></html>
