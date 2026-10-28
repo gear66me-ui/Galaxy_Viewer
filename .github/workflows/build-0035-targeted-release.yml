@@ -62,11 +62,11 @@ jobs:
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.js" not in rc and "https://aladin.cds.unistra.fr/AladinLite/api/v3/3.8.2/aladin.css" not in rc
-          assert "survey:'https://irsa.ipac.caltech.edu/data/hips/CDS/2MASS/Color/'" in rc, "Build 0072 must use the full-sky IPAC 2MASS Color HiPS endpoint"
+          assert "survey:'https://irsa.ipac.caltech.edu/data/hips/CDS/DSS2/color/'" in rc, "Build 0072 must use the requested IPAC DSS2 Color HiPS endpoint"
           assert "survey:'https://skies.esac.esa.int/DSSColor'" not in rc, "Build 0072 must not silently switch the survey source to ESA"
           assert rc.count("1-9/durationSeconds") == 2, "Build 0072 must release HiPS tile fetching at T-minus nine seconds in both navigation paths"
           assert "1-2/durationSeconds" not in rc, "Build 0072 must not retain the old T-minus-two tile-fetch gate"
-          print("BUILD 0072 STATIC VALIDATION PASSED: full-sky IPAC 2MASS Color source, release identity, bundled closed IAU polygon data, no runtime fetch, no double precession, overlay attach/show, closed-ring geometry validation, Random Galaxy handler, T-minus-nine HiPS tile-fetch timing, and immutable pins.")
+          print("BUILD 0072 STATIC VALIDATION PASSED: requested IPAC DSS2 Color source, release identity, bundled closed IAU polygon data, no runtime fetch, no double precession, overlay attach/show, closed-ring geometry validation, Random Galaxy handler, T-minus-nine HiPS tile-fetch timing, and immutable pins.")
           PY
 
       - name: Configure GitHub Pages
