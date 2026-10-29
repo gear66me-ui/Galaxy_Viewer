@@ -89,7 +89,7 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.9';
-const GV200001_BUILD='0075'
+const GV200001_BUILD='0076'
 const GV_RUNTIME='0137';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.9-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
@@ -109,8 +109,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
-    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@da006f648bd48d034c5f11e25c73b99ba8a06cd6/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
-    providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/0fb1774fad247414ceff23d913c7db02bae3b0d4/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
+    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7fd8e81bf5ac61e64f07bb6cf1ebb60f0bb7c5fb/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
+    providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/7fd8e81bf5ac61e64f07bb6cf1ebb60f0bb7c5fb/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@0988a3e0a1302648f7a1dce21c3dddbffa110ff6/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@dec69c15f527df143909a34ace046b2d6e476dd5/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
 });
@@ -148,7 +148,7 @@ const config=window.GV_BOOT_CONFIG;
 
 // PROVIDER ARTWORK 0007 EMBEDDED FALLBACK: keep boot independent of third-party script CDN availability.
 (()=>{'use strict';
-const VERSION='0007';
+const VERSION='0008';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
 const CDN_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
 const PAGES_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
@@ -195,8 +195,9 @@ function constellationSources(name){
   const raw=String(name??'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   if(!raw)return[];
   const k=CONSTELLATION_ALIASES[raw]||raw;
+  // ROLL 0076: canonical release asset only; never serially probe mirrors.
   const p='Constellations/'+encodeURIComponent(k)+'.SVG';
-  return [CDN_ART+p,PAGES_ART+p,ART+p];
+  return [ART+p];
 }
 // Bounded LRU cache for successful and in-flight artwork image probes.
 const IMAGE_CACHE_LIMIT=36;
@@ -289,7 +290,7 @@ globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVID
 const gvModuleLoadPromise=Promise.all([
     loadScript(config.hamburgerBaseUrl).catch(error=>{console.error('HAMBURGER MODULE LOAD FAILED',error)}),
     loadScript(config.constellationOverlayUrl).catch(error=>{console.error('CONSTELLATION CDN LOAD FAILED; RETRYING RAW GITHUB',error);return loadScript(config.constellationOverlayFallbackUrl)}).catch(error=>{console.error('CONSTELLATION MODULE LOAD FAILED ON BOTH SOURCES',error)}),
-    loadScript(config.providerArtworkUrl).then(()=>{if(window.GVProviderArtwork?.VERSION!=='0007')throw new Error('PROVIDER ARTWORK CDN EXPORT MISSING');}).catch(error=>{console.warn('REMOTE PROVIDER ARTWORK LOAD FAILED; USING EMBEDDED 0007 MODULE',error);if(window.GVProviderArtwork?.VERSION!=='0007')return loadScript(config.providerArtworkFallbackUrl).then(()=>{if(window.GVProviderArtwork?.VERSION!=='0007')throw new Error('PROVIDER ARTWORK 0007 EXPORT MISSING AFTER ALL FALLBACKS');});}),
+    loadScript(config.providerArtworkUrl).then(()=>{if(window.GVProviderArtwork?.VERSION!=='0008')throw new Error('PROVIDER ARTWORK CDN EXPORT MISSING');}).catch(error=>{console.warn('REMOTE PROVIDER ARTWORK LOAD FAILED; USING EMBEDDED 0008 MODULE',error);if(window.GVProviderArtwork?.VERSION!=='0007')return loadScript(config.providerArtworkFallbackUrl).then(()=>{if(window.GVProviderArtwork?.VERSION!=='0007')throw new Error('PROVIDER ARTWORK 0008 EXPORT MISSING AFTER ALL FALLBACKS');});}),
     loadScript(config.coordinateUrl).catch(error=>console.error('COORDINATE OVERLAY LOAD FAILED',error)),
     loadScript(config.targetUrl).then(()=>{if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET MODULE LOADED WITHOUT 0007 EXPORT');}).catch(error=>{console.error('TARGET MODULE LOAD FAILED; RETRYING IMMUTABLE TARGET PIN',error);return loadScript(config.targetUrl+'?gv-target-retry=0007').then(()=>{if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT STILL MISSING AFTER RETRY');});}),
     loadScript(config.galaxyRouteEngineUrl).catch(error=>{console.error('ROUTE ENGINE LOAD FAILED',error)}),
@@ -1116,7 +1117,7 @@ const gvCosmicReveal=(()=>{
 // cache-busting query strings. Start the complete module set in parallel so a
 // cold CDN fetch for one module cannot serialize the entire boot sequence.
 await gvModuleLoadPromise;
-if(window.GVProviderArtwork?.VERSION!=='0007')throw new Error('PROVIDER ARTWORK 0007 EXPORT MISSING');
+if(window.GVProviderArtwork?.VERSION!=='0007')throw new Error('PROVIDER ARTWORK 0008 EXPORT MISSING');
 
 
 // ============================================================================
@@ -3402,7 +3403,8 @@ function gvStartNextTripPrewarm(){
             const presentation=await gvPresentationDestination(selected);
             if(generation!==gvNextTripPrewarmGeneration||gvNextTripPrewarm!==warm)throw new Error('PREWARM INVALIDATED BEFORE METADATA READY');
             warm.destination=presentation;warm.presentationReady=true;
-            console.info('GV NEXT DESTINATION METADATA READY',{name:presentation?.name||presentation?.designation||''});
+            gvPreloadConstellationArtwork(presentation?.constellation);
+            console.info('GV NEXT DESTINATION METADATA READY',{name:presentation?.name||presentation?.designation||'',constellation:presentation?.constellation||''});
             const record=await gvRuntimeAvmRecord(presentation);
             if(generation!==gvNextTripPrewarmGeneration||gvNextTripPrewarm!==warm)throw new Error('PREWARM INVALIDATED BEFORE IMAGE PREPARATION');
             const prepared=await gvPrepareDirectHd(presentation,Promise.resolve(record),controller.signal);
@@ -3444,7 +3446,7 @@ const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error
 // Keep image objects alive while their constellation artwork warms in parallel.
 const gvConstellationArtworkPrewarm=new Map();
 gvStartMemoryDiagnostics();
-const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=2;
+const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=12;
 function gvReleaseConstellationArtwork(url){
     const image=gvConstellationArtworkPrewarm.get(url);if(!image)return;
     try{image.onload=null;image.onerror=null;image.removeAttribute?.('src')}catch(_){}
@@ -3456,6 +3458,22 @@ function gvTrimConstellationArtworkCache(){
         if(stale===undefined)break;
         gvReleaseConstellationArtwork(stale);
     }
+}
+function gvPreloadConstellationArtwork(name){
+    const constellationName=String(name||'').trim();
+    const urls=window.GVProviderArtwork?.constellationSources?.(constellationName)||[];
+    const url=urls[0];
+    if(!url){console.warn('GV CONSTELLATION ARTWORK NAME MISSING',{name:constellationName});return null}
+    if(gvConstellationArtworkPrewarm.has(url)){
+        const cached=gvConstellationArtworkPrewarm.get(url);
+        if(cached?.complete&&cached.naturalWidth>0)console.info('GV CONSTELLATION ART CACHE HIT',{name:constellationName,url});
+        return cached;
+    }
+    const image=new Image();image.decoding='async';
+    image.onload=()=>{if(gvConstellationArtworkPrewarm.get(url)!==image)return;console.info('GV CONSTELLATION ART PRELOADED',{name:constellationName,url})};
+    image.onerror=()=>{if(gvConstellationArtworkPrewarm.get(url)!==image)return;console.error('GV CONSTELLATION ART ASSET FAILED',{name:constellationName,url});gvReleaseConstellationArtwork(url)};
+    gvConstellationArtworkPrewarm.set(url,image);gvTrimConstellationArtworkCache();image.src=url;
+    return image;
 }
 
 // ROLL 0025 — release transient renderer resources when Android backgrounds the viewer.
@@ -3550,20 +3568,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     const presentationBase=prewarmedPresentationDestination||await gvPresentationDestination(v.destination);
     // Warm the selected constellation art while the AVM record and HD image are
     // being prepared, so the travel banner can reveal it from cache at takeoff.
-    try{
-        const constellationName=String(presentationBase?.constellation||'').trim();
-        const constellationUrls=window.GVProviderArtwork?.constellationSources?.(constellationName)||[];
-        for(const url of constellationUrls){
-            if(!url||gvConstellationArtworkPrewarm.has(url))continue;
-            const image=new Image();
-            image.decoding='async';
-            image.onload=()=>{if(gvConstellationArtworkPrewarm.get(url)!==image)return;console.info('GV CONSTELLATION ART PREWARMED',{name:constellationName,url});};
-            image.onerror=()=>{if(gvConstellationArtworkPrewarm.get(url)!==image)return;console.warn('GV CONSTELLATION ART PREWARM MISSED',{name:constellationName,url});gvReleaseConstellationArtwork(url);};
-            gvConstellationArtworkPrewarm.set(url,image);
-            gvTrimConstellationArtworkCache();
-            image.src=url;
-        }
-    }catch(error){console.warn('GV CONSTELLATION ART PREWARM SKIPPED',error)}
+    try{gvPreloadConstellationArtwork(presentationBase?.constellation)}catch(error){console.error('GV CONSTELLATION ART PRELOAD FAILED',error)}
     // ROLL 0021: propagate the image-matched AVM FOV axes to every presentation surface.
     // The exact same AVM runtime record drives HD WCS construction; never collapse Y to X when Y exists.
     const presentationAvmRecord=await gvRuntimeAvmRecord(v.destination);
@@ -3669,7 +3674,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
 }
 // ============================================================================
 // SECTION 036A — PROVIDER SURVEY MODE
-// ECO: GV200-001 BUILD 0075
+// ECO: GV200-001 BUILD 0076
 // ============================================================================
 function gvSurveyThumbnailCandidates(record,provider=''){
     const out=[];
