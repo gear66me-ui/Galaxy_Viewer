@@ -65,7 +65,10 @@ jobs:
           assert r"normalize('NFD').replace(/[\u0300-\u036f]/g,'')" in artwork, "Shared constellation normalizer must use valid Unicode escapes"
           assert "return [...new Set([" in artwork and "raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/" in artwork and "gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/" in artwork, "Constellation art must include CDN, raw GitHub, and GitHub Pages fallback sources"
           assert "preloadConstellations" in artwork and "preloadAllConstellations" in artwork, "All-constellation preload API must be exported"
-          assert "preloadConstellations?.(10)" in rc, "Ten-icon background preload must start on viewer startup"
+          assert "function preloadConstellation(name)" in artwork, "Selected constellation preload API missing"
+          assert "const IMAGE_CACHE_LIMIT=96;" in artwork, "Icon cache must hold the complete constellation set"
+          assert "@fd5e3c47412967b1814ce4c1a7f660e3955ad8d5/viewer/modules/provider-artwork/gv-provider-artwork-0005.js" in rc, "Build must pin the repaired artwork loader"
+          assert "preloadConstellations?.(88)" in rc, "All 88 constellation icons must preload on viewer startup"
           assert "GV CONSTELLATION ART SOURCE FAILED; TRYING FALLBACK" in rc, "Destination artwork preloader must recover from a failed source"
           assert "GV CONSTELLATION ART ALL SOURCES FAILED" in rc, "All-source failures must be diagnosed"
           print("BUILD 0076 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
