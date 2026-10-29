@@ -1,7 +1,7 @@
 (()=>{'use strict';
-const VERSION='0008';
+const VERSION='0009';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
-const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7fd8e81bf5ac61e64f07bb6cf1ebb60f0bb7c5fb/viewer/artwork/';
+const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/';
 const PAGES_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
 const PROVIDER_ARTWORK=Object.freeze({
   HUBBLE:'Hubble/Hubble.jpg',
@@ -43,12 +43,16 @@ const CONSTELLATION_ALIASES=Object.freeze({
 AND:'ANDROMEDA',ANT:'ANTLIA',APS:'APUS',AQR:'AQUARIUS',AQL:'AQUILA',ARA:'ARA',ARI:'ARIES',AUR:'AURIGA',BOO:'BOOTES',CAE:'CAELUM',CAM:'CAMELOPARDALIS',CNC:'CANCER',CVN:'CANES_VENATICI',CMA:'CANIS_MAJOR',CMI:'CANIS_MINOR',CAP:'CAPRICORNUS',CAR:'CARINA',CAS:'CASSIOPEIA',CEN:'CENTAURUS',CEP:'CEPHEUS',CET:'CETUS',CHA:'CHAMAELEON',CIR:'CIRCINUS',COL:'COLUMBA',COM:'COMA_BERENICES',CRA:'CORONA_AUSTRALIS',CRB:'CORONA_BOREALIS',CRV:'CORVUS',CRT:'CRATER',CRU:'CRUX',CYG:'CYGNUS',DEL:'DELPHINUS',DOR:'DORADO',DRA:'DRACO',EQU:'EQUULEUS',ERI:'ERIDANUS',FOR:'FORNAX',GEM:'GEMINI',GRU:'GRUS',HER:'HERCULES',HOR:'HOROLOGIUM',HYA:'HYDRA',HYI:'HYDRUS',IND:'INDUS',LAC:'LACERTA',LEO:'LEO',LMI:'LEO_MINOR',LEP:'LEPUS',LIB:'LIBRA',LUP:'LUPUS',LYN:'LYNX',LYR:'LYRA',MEN:'MENSA',MIC:'MICROSCOPIUM',MON:'MONOCEROS',MUS:'MUSCA',NOR:'NORMA',OCT:'OCTANS',OPH:'OPHIUCHUS',ORI:'ORION',PAV:'PAVO',PEG:'PEGASUS',PER:'PERSEUS',PHE:'PHOENIX',PIC:'PICTOR',PSC:'PISCES',PSA:'PISCIS_AUSTRINUS',PUP:'PUPPIS',PYX:'PYXIS',RET:'RETICULUM',SGE:'SAGITTA',SGR:'SAGITTARIUS',SCO:'SCORPIUS',SCL:'SCULPTOR',SCT:'SCUTUM',SER:'SERPENS',SEX:'SEXTANS',TAU:'TAURUS',TEL:'TELESCOPIUM',TRI:'TRIANGULUM',TRA:'TRIANGULUM_AUSTRALE',TUC:'TUCANA',UMA:'URSA_MAJOR',UMI:'URSA_MINOR',VEL:'VELA',VIR:'VIRGO',VOL:'VOLANS',VUL:'VULPECULA'
 });
 function constellationSources(name){
-  const raw=String(name??'').trim().toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
+  const raw=String(name??'').trim().toUpperCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'').replace(/[^A-Z0-9]+/g,'_').replace(/^_+|_+$/g,'');
   if(!raw)return[];
   const k=CONSTELLATION_ALIASES[raw]||raw;
-  // ROLL 0076: one canonical release asset URL. Do not serially probe mirrors.
   const p='Constellations/'+encodeURIComponent(k)+'.SVG';
-  return [CDN_ART+p];
+  // Resilient fallback chain: CDN, raw release, then GitHub Pages.
+  return [...new Set([
+    CDN_ART+p,
+    'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/'+p,
+    'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/'+p
+  ])];
 }
 // Bounded LRU cache for successful and in-flight artwork image probes.
 const IMAGE_CACHE_LIMIT=36;
@@ -136,5 +140,17 @@ function loadImage(img,sources,onReady,onFail){
   if(!urls.length){onFail?.();return}
   fail();
 }
-globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVIDER_ARTWORK,key,path,icon,iconSources,constellationSources,loadImage,cacheDiagnostics:()=>Object.freeze({entries:imageCache.size,limit:IMAGE_CACHE_LIMIT})});
+const CONSTELLATION_NAMES=Object.freeze(Object.values(CONSTELLATION_ALIASES));
+let preloadStarted=false;
+function preloadConstellations(limit=10){
+  if(preloadStarted)return Promise.resolve({started:false,queued:0});
+  preloadStarted=true;
+  const count=Math.max(0,Math.min(88,Number(limit)||10));
+  const names=CONSTELLATION_NAMES.slice(0,count);
+  let cursor=0,loaded=0,failed=0;
+  const worker=async()=>{while(cursor<names.length){const name=names[cursor++];try{await firstSuccessful(constellationSources(name).map(loadSource));loaded++;}catch(_){failed++;}}};
+  return Promise.all(Array.from({length:Math.min(4,names.length)},worker)).then(()=>Object.freeze({started:true,queued:names.length,loaded,failed}));
+}
+function preloadAllConstellations(){return preloadConstellations(88)}
+globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVIDER_ARTWORK,key,path,icon,iconSources,constellationSources,loadImage,preloadConstellations,preloadAllConstellations,constellationNames:CONSTELLATION_NAMES,cacheDiagnostics:()=>Object.freeze({entries:imageCache.size,limit:IMAGE_CACHE_LIMIT})});
 })();
