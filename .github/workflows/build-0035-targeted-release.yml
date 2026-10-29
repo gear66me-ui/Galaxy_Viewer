@@ -67,7 +67,9 @@ jobs:
           assert "preloadConstellations" in artwork and "preloadAllConstellations" in artwork, "All-constellation preload API must be exported"
           assert "function preloadConstellation(name)" in artwork, "Selected constellation preload API missing"
           assert "const IMAGE_CACHE_LIMIT=96;" in artwork, "Icon cache must hold the complete constellation set"
-          assert "@fd5e3c47412967b1814ce4c1a7f660e3955ad8d5/viewer/modules/provider-artwork/gv-provider-artwork-0005.js" in rc, "Build must pin the repaired artwork loader"
+          loader_pins = re.findall(r"https://cdn\\.jsdelivr\\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})/viewer/modules/provider-artwork/gv-provider-artwork-0005\\.js", rc)
+          loader_fallback_pins = re.findall(r"https://raw\\.githubusercontent\\.com/gear66me-ui/Galaxy_Viewer/([0-9a-f]{40})/viewer/modules/provider-artwork/gv-provider-artwork-0005\\.js", rc)
+          assert len(loader_pins) == 1 and len(loader_fallback_pins) == 1 and loader_pins[0] == loader_fallback_pins[0], "Build must pin the repaired artwork loader to one matching immutable commit"
           assert "preloadConstellations?.(88)" in rc, "All 88 constellation icons must preload on viewer startup"
           assert "GV CONSTELLATION ART SOURCE FAILED; TRYING FALLBACK" in rc, "Destination artwork preloader must recover from a failed source"
           assert "GV CONSTELLATION ART ALL SOURCES FAILED" in rc, "All-source failures must be diagnosed"
