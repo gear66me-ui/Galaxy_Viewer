@@ -1821,12 +1821,12 @@ gvSurveySelectStyle.textContent=`
   font:400 12.6px/1 "GV Space Age",sans-serif;letter-spacing:.65px;text-transform:uppercase;
   text-shadow:0 0 4px rgba(255,245,220,.95),0 0 10px rgba(255,153,55,.85)
 }
-.gv-survey-control-button::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.24) 0%,rgba(255,205,128,.08) 29%,transparent 48%);pointer-events:none}
+
 .gv-survey-control-button:active:not(:disabled){transform:translateY(1px) scale(.985);filter:brightness(1.13)}
 .gv-survey-control-button:disabled{opacity:1!important;filter:saturate(.82) brightness(.88);cursor:default}
 .gv-survey-provider-tile{position:relative;z-index:1;display:grid;place-items:center;width:34px;height:34px;grid-column:1;box-sizing:border-box;border:1px solid rgba(67,207,255,.9);border-radius:8px;background:linear-gradient(145deg,#0B2749 0%,#06214A 52%,#02070F 100%);box-shadow:inset 0 1px 1px rgba(225,251,255,.42),inset 0 -2px 4px rgba(0,0,0,.58),0 0 4px rgba(67,207,255,.48)}
-.gv-survey-provider-tile::after{content:"";position:absolute;inset:1px;border-radius:7px;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(118,225,255,.04) 35%,transparent 52%);pointer-events:none}
-.gv-survey-provider-icon{position:relative;z-index:2;display:block;width:27px;height:27px;grid-column:1;object-fit:contain;filter:drop-shadow(0 0 3px rgba(255,205,120,.72))}
+
+.gv-survey-provider-icon{position:relative;z-index:2;display:block;width:29px;height:29px;grid-column:1;place-self:center;object-fit:contain;filter:drop-shadow(0 0 3px rgba(255,205,120,.72))}
 .gv-survey-select-label{position:relative;z-index:1;display:block;grid-column:2;min-width:0;padding-left:0;padding-right:0;white-space:nowrap;text-align:left;transform:none}
 .gv-survey-selector{width:var(--gv-survey-control-width,236px)!important;max-width:calc(100vw - 28px)!important;box-sizing:border-box!important}
 #gv-target-host .gv-target-survey-button.gv-open,#gv-target-host .gv-target-survey-button.gv-selected{
