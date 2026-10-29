@@ -1523,7 +1523,7 @@
         "redshiftSource": "https://chandra.harvard.edu/photo/2026/redpotato/",
         "redshiftEvidence": "Calculated from provider-published distance 7000.000000 Mly assuming luminosity distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315)."
       },
-      "redshift": 0.38573345
+      "redshift": 3.2496
     },
     {
       "providerKey": "chandra",
