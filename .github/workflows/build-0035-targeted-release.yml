@@ -55,6 +55,7 @@ jobs:
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "gvPreloadConstellationArtwork(presentation?.constellation)" in rc, "Next-destination constellation preload must run during trip planning"
+          assert "gvPreloadConstellationArtwork(destination?.constellation)" in rc, "First destination constellation must preload before the first trip"
           assert "gvPreloadConstellationArtwork(presentationBase?.constellation)" in rc, "Selected constellation preload must start before travel"
           assert "const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=12" in rc
           artwork = (root / "viewer/modules/provider-artwork/gv-provider-artwork-0005.js").read_text()
