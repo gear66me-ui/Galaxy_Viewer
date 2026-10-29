@@ -55,7 +55,7 @@ function constellationSources(name){
   ])];
 }
 // Bounded LRU cache for successful and in-flight artwork image probes.
-const IMAGE_CACHE_LIMIT=36;
+const IMAGE_CACHE_LIMIT=96;
 const imageCache=new Map();
 function trimImageCache(){while(imageCache.size>IMAGE_CACHE_LIMIT)imageCache.delete(imageCache.keys().next().value)}
 function loadSource(url){
@@ -140,17 +140,32 @@ function loadImage(img,sources,onReady,onFail){
   if(!urls.length){onFail?.();return}
   fail();
 }
-const CONSTELLATION_NAMES=Object.freeze(Object.values(CONSTELLATION_ALIASES));
-let preloadStarted=false;
-function preloadConstellations(limit=10){
-  if(preloadStarted)return Promise.resolve({started:false,queued:0});
-  preloadStarted=true;
-  const count=Math.max(0,Math.min(88,Number(limit)||10));
+const CONSTELLATION_NAMES=Object.freeze([...new Set(Object.values(CONSTELLATION_ALIASES))]);
+const constellationPreloadJobs=new Map();
+function preloadConstellation(name){
+  const urls=constellationSources(name);
+  if(!urls.length)return Promise.reject(new Error('GV CONSTELLATION NAME MISSING: '+String(name??'')));
+  const jobKey=urls[0];
+  if(constellationPreloadJobs.has(jobKey))return constellationPreloadJobs.get(jobKey);
+  const job=(async()=>{
+    const errors=[];
+    // One request at a time per icon: use the known-good raw source first,
+    // then CDN and Pages. Never fan out three requests for every constellation.
+    for(const url of urls){try{return await loadSource(url);}catch(error){errors.push(error);}}
+    throw new Error('GV CONSTELLATION ALL SOURCES FAILED '+String(name)+': '+errors.map(e=>String(e?.message||e)).join(' | '));
+  })();
+  constellationPreloadJobs.set(jobKey,job);
+  job.catch(()=>{if(constellationPreloadJobs.get(jobKey)===job)constellationPreloadJobs.delete(jobKey);});
+  return job;
+}
+function preloadConstellations(limit=88){
+  const parsed=Number(limit);
+  const count=Math.max(0,Math.min(88,Number.isFinite(parsed)?Math.floor(parsed):88));
   const names=CONSTELLATION_NAMES.slice(0,count);
   let cursor=0,loaded=0,failed=0;
-  const worker=async()=>{while(cursor<names.length){const name=names[cursor++];try{await firstSuccessful(constellationSources(name).map(loadSource));loaded++;}catch(_){failed++;}}};
+  const worker=async()=>{while(cursor<names.length){const name=names[cursor++];try{await preloadConstellation(name);loaded++;}catch(error){failed++;console.warn('GV CONSTELLATION PRELOAD FAILED',{name,error:String(error?.message||error)});}}};
   return Promise.all(Array.from({length:Math.min(4,names.length)},worker)).then(()=>Object.freeze({started:true,queued:names.length,loaded,failed}));
 }
 function preloadAllConstellations(){return preloadConstellations(88)}
-globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVIDER_ARTWORK,key,path,icon,iconSources,constellationSources,loadImage,preloadConstellations,preloadAllConstellations,constellationNames:CONSTELLATION_NAMES,cacheDiagnostics:()=>Object.freeze({entries:imageCache.size,limit:IMAGE_CACHE_LIMIT})});
+globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVIDER_ARTWORK,key,path,icon,iconSources,constellationSources,loadImage,preloadConstellation,preloadConstellations,preloadAllConstellations,constellationNames:CONSTELLATION_NAMES,cacheDiagnostics:()=>Object.freeze({entries:imageCache.size,limit:IMAGE_CACHE_LIMIT})});
 })();
