@@ -1,4 +1,5 @@
 name: Restore and Deploy RC-V1.0.0.9 Build 0076
+# Release BLD 0076 includes the finalized icon alignment and sheen cleanup.
 
 on:
   push:
