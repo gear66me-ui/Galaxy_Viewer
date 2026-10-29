@@ -1,0 +1,172 @@
+name: Exhaustive Constellation Source Health Audit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [release]
+    paths:
+      - "viewer/artwork/Constellations/**"
+      - "viewer/modules/provider-artwork/gv-provider-artwork-0005.js"
+      - ".github/workflows/constellation-source-health-audit.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: constellation-source-health-audit-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out release source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+
+      - name: Audit all canonical SVGs and all three sources
+        id: audit
+        shell: bash
+        run: |
+          python - <<'PY'
+          import concurrent.futures, csv, json, re, sys, time
+          from pathlib import Path
+          from urllib.error import HTTPError, URLError
+          from urllib.request import Request, urlopen
+          import xml.etree.ElementTree as ET
+
+          root = Path("viewer/artwork/Constellations")
+          files = sorted(p for p in root.iterdir() if p.is_file() and p.suffix.upper() == ".SVG")
+          names = [p.stem for p in files]
+          expected = 88
+          loader = Path("viewer/modules/provider-artwork/gv-provider-artwork-0005.js").read_text(encoding="utf-8")
+          alias_block = re.search(r"const CONSTELLATION_ALIASES=Object\.freeze\(\{(.*?)\}\);", loader, re.S)
+          aliases = dict(re.findall(r"([A-Z0-9]+):'([A-Z0-9_]+)'", alias_block.group(1))) if alias_block else {}
+          canon = set(names)
+          alias_errors = []
+          for alias, target in aliases.items():
+              if target not in canon:
+                  alias_errors.append({"alias": alias, "target": target, "error": "target file missing"})
+          if len(files) != expected:
+              alias_errors.append({"error": f"expected {expected} canonical SVGs, found {len(files)}"})
+          if len(canon) != len(names):
+              alias_errors.append({"error": "duplicate canonical filename stems"})
+          if "OPHIUCHUS" not in canon:
+              alias_errors.append({"error": "OPHIUCHUS.SVG missing"})
+          for required in ("AND", "OPH", "OPHICUS", "OPHIUCUS", "ORI", "PEG", "PHE"):
+              if required not in aliases:
+                  alias_errors.append({"alias": required, "error": "expected alias missing"})
+
+          bases = [
+              ("raw-github", "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/Constellations/"),
+              ("jsdelivr", "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Constellations/"),
+              ("github-pages", "https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/Constellations/"),
+          ]
+
+          def check(item):
+              name, source, base = item
+              url = base + name + ".SVG"
+              started = time.monotonic()
+              result = {"icon": name, "source": source, "url": url, "ok": False, "status": None, "bytes": 0, "content_type": "", "elapsed_ms": 0, "error": ""}
+              try:
+                  req = Request(url, headers={"User-Agent": "GalaxyViewer-Constellation-Source-Audit/1.0", "Accept": "image/svg+xml,text/xml,application/xml,*/*"})
+                  with urlopen(req, timeout=15) as response:
+                      body = response.read(2_000_000)
+                      result["status"] = response.status
+                      result["content_type"] = response.headers.get("Content-Type", "")
+                  result["bytes"] = len(body)
+                  if result["status"] != 200:
+                      result["error"] = f"HTTP {result['status']}"
+                  else:
+                      try:
+                          doc = ET.fromstring(body)
+                          tag = doc.tag.rsplit("}", 1)[-1].lower()
+                          viewbox = doc.attrib.get("viewBox") or doc.attrib.get("viewbox")
+                          if tag != "svg":
+                              result["error"] = f"root element is {tag!r}, not svg"
+                          elif not viewbox:
+                              result["error"] = "SVG has no viewBox"
+                          elif len(body) < 100:
+                              result["error"] = "SVG response suspiciously small"
+                          else:
+                              result["ok"] = True
+                      except Exception as e:
+                          result["error"] = "invalid SVG/XML: " + str(e)
+              except HTTPError as e:
+                  result["status"] = e.code
+                  result["error"] = f"HTTP {e.code}"
+              except Exception as e:
+                  result["error"] = f"{type(e).__name__}: {e}"
+              result["elapsed_ms"] = round((time.monotonic() - started) * 1000)
+              return result
+
+          jobs = [(name, source, base) for name in names for source, base in bases]
+          with concurrent.futures.ThreadPoolExecutor(max_workers=18) as pool:
+              results = list(pool.map(check, jobs))
+          by_icon = {}
+          for r in results:
+              by_icon.setdefault(r["icon"], []).append(r)
+          icon_summary = []
+          for name in names:
+              checks = by_icon[name]
+              good = [r["source"] for r in checks if r["ok"]]
+              icon_summary.append({"icon": name, "healthy_sources": good, "healthy_source_count": len(good), "all_sources_healthy": len(good) == len(bases), "any_source_healthy": bool(good)})
+          failures = [r for r in results if not r["ok"]]
+          no_fallback = [r["icon"] for r in icon_summary if not r["any_source_healthy"]]
+          report = {
+              "branch": "release",
+              "commit": __import__("os").environ.get("GITHUB_SHA", ""),
+              "canonical_svg_count": len(files),
+              "expected_canonical_svg_count": expected,
+              "alias_count": len(aliases),
+              "source_url_checks": len(results),
+              "source_count_per_icon": len(bases),
+              "healthy_url_count": sum(1 for r in results if r["ok"]),
+              "failed_url_count": len(failures),
+              "icons_with_at_least_one_healthy_source": len(icon_summary) - len(no_fallback),
+              "icons_with_no_healthy_source": no_fallback,
+              "alias_errors": alias_errors,
+              "icons": icon_summary,
+              "url_results": results,
+          }
+          Path("constellation-source-health.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
+          with open("constellation-source-health.csv", "w", newline="", encoding="utf-8") as f:
+              w = csv.DictWriter(f, fieldnames=["icon", "source", "url", "ok", "status", "bytes", "content_type", "elapsed_ms", "error"])
+              w.writeheader()
+              w.writerows(results)
+          with open(__import__("os").environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as s:
+              s.write("# Constellation source-health audit\n\n")
+              s.write(f"- Canonical SVGs found: **{len(files)}/{expected}**\n")
+              s.write(f"- Source URLs checked: **{len(results)}** (all three sources for each file)\n")
+              s.write(f"- Healthy URLs: **{report['healthy_url_count']}/{len(results)}**\n")
+              s.write(f"- Icons with at least one healthy source: **{report['icons_with_at_least_one_healthy_source']}/{len(icon_summary)}**\n")
+              s.write(f"- Icons with no healthy source: **{len(no_fallback)}**\n")
+              s.write(f"- Alias / inventory errors: **{len(alias_errors)}**\n\n")
+              s.write("| Icon | Healthy source(s) | Result |\n|---|---|---|\n")
+              for row in icon_summary:
+                  s.write(f"| {row['icon']} | {', '.join(row['healthy_sources']) or 'NONE'} | {'PASS' if row['any_source_healthy'] else 'FAIL'} |\n")
+              if alias_errors:
+                  s.write("\n## Alias / inventory errors\n")
+                  for err in alias_errors:
+                      s.write(f"- `{json.dumps(err)}`\n")
+              if failures:
+                  s.write("\n## Failed source URLs\n")
+                  for r in failures:
+                      s.write(f"- `{r['icon']}` / {r['source']}: {r['error']} ({r['url']})\n")
+          print(json.dumps({k: report[k] for k in ("canonical_svg_count", "alias_count", "source_url_checks", "healthy_url_count", "failed_url_count", "icons_with_at_least_one_healthy_source", "icons_with_no_healthy_source", "alias_errors")}, indent=2))
+          if len(files) != expected or alias_errors or no_fallback:
+              sys.exit(1)
+          PY
+
+      - name: Upload detailed audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: constellation-source-health-${{ github.run_number }}
+          path: |
+            constellation-source-health.json
+            constellation-source-health.csv
+          if-no-files-found: warn
+          retention-days: 30
