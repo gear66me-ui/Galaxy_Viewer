@@ -181,6 +181,38 @@ for(const key of [
 
 
 // ============================================================================
+ // SECTION 012A — PARALLEL MODULE LOAD / RECOVERY
+ // ECO: GV200-001
+ // ============================================================================
+ // Define this promise before the first await. The launch readiness gate waits
+ // for this same binding later in boot; leaving it undefined aborts the entire
+ // viewer before the initial destination can be shown.
+ const gvModuleLoadPromise=Promise.all([
+     loadScript(config.hamburgerBaseUrl).catch(error=>{console.error('HAMBURGER MODULE LOAD FAILED',error)}),
+     loadScript(config.constellationOverlayUrl)
+       .catch(error=>{console.error('CONSTELLATION CDN LOAD FAILED; RETRYING RAW GITHUB',error);return loadScript(config.constellationOverlayFallbackUrl)})
+       .catch(error=>{console.error('CONSTELLATION MODULE LOAD FAILED ON BOTH SOURCES',error)}),
+     loadScript(config.providerArtworkUrl)
+       .then(()=>{if(window.GVProviderArtwork?.VERSION!=='0009')throw new Error('PROVIDER ARTWORK CDN EXPORT VERSION MISMATCH')})
+       .catch(error=>{
+         console.warn('REMOTE PROVIDER ARTWORK LOAD FAILED; RETRYING RAW GITHUB / KEEPING EMBEDDED 0009',error);
+         return loadScript(config.providerArtworkFallbackUrl)
+           .then(()=>{if(window.GVProviderArtwork?.VERSION!=='0009')throw new Error('PROVIDER ARTWORK RAW EXPORT VERSION MISMATCH')})
+           .catch(fallbackError=>{
+             console.warn('REMOTE PROVIDER ARTWORK SOURCES FAILED; EMBEDDED 0009 REMAINS ACTIVE',fallbackError);
+             if(window.GVProviderArtwork?.VERSION!=='0009')throw fallbackError;
+           });
+       }),
+     loadScript(config.coordinateUrl).catch(error=>{console.error('COORDINATE OVERLAY LOAD FAILED',error)}),
+     loadScript(config.targetUrl).catch(error=>{console.error('TARGET SURVEY LOAD FAILED',error)}),
+     loadScript(config.galaxyRouteEngineUrl).catch(error=>{console.error('ROUTE ENGINE LOAD FAILED',error)}),
+     loadScript(config.galaxyNavigatorUrl).catch(error=>{console.error('GALAXY NAVIGATOR LOAD FAILED',error)}),
+     loadScript(config.headsUpDisplayUrl).catch(error=>{console.error('HEADS-UP DISPLAY LOAD FAILED',error)}),
+     loadScript(config.travelPresentationUrl).catch(error=>{console.error('TRAVEL PRESENTATION LOAD FAILED',error)}),
+     loadScript(config.destinationPresentationUrl).catch(error=>{console.error('DESTINATION PRESENTATION LOAD FAILED',error)})
+ ]);
+
+// ============================================================================
 // SECTION 013 — ALADIN JAVASCRIPT LOAD
 // ECO: GV200-001
 // ============================================================================
