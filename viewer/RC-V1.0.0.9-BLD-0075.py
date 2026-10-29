@@ -146,7 +146,7 @@ function loadScript(url){
 // ============================================================================
 const config=window.GV_BOOT_CONFIG;
 
-// PROVIDER ARTWORK 0007 EMBEDDED FALLBACK: keep boot independent of third-party script CDN availability.
+// PROVIDER ARTWORK 0008 EMBEDDED FALLBACK: keep boot independent of third-party script CDN availability.
 (()=>{'use strict';
 const VERSION='0008';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
@@ -290,7 +290,7 @@ globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVID
 const gvModuleLoadPromise=Promise.all([
     loadScript(config.hamburgerBaseUrl).catch(error=>{console.error('HAMBURGER MODULE LOAD FAILED',error)}),
     loadScript(config.constellationOverlayUrl).catch(error=>{console.error('CONSTELLATION CDN LOAD FAILED; RETRYING RAW GITHUB',error);return loadScript(config.constellationOverlayFallbackUrl)}).catch(error=>{console.error('CONSTELLATION MODULE LOAD FAILED ON BOTH SOURCES',error)}),
-    loadScript(config.providerArtworkUrl).then(()=>{if(window.GVProviderArtwork?.VERSION!=='0008')throw new Error('PROVIDER ARTWORK CDN EXPORT MISSING');}).catch(error=>{console.warn('REMOTE PROVIDER ARTWORK LOAD FAILED; USING EMBEDDED 0008 MODULE',error);if(window.GVProviderArtwork?.VERSION!=='0007')return loadScript(config.providerArtworkFallbackUrl).then(()=>{if(window.GVProviderArtwork?.VERSION!=='0007')throw new Error('PROVIDER ARTWORK 0008 EXPORT MISSING AFTER ALL FALLBACKS');});}),
+    loadScript(config.providerArtworkUrl).then(()=>{if(window.GVProviderArtwork?.VERSION!=='0008')throw new Error('PROVIDER ARTWORK CDN EXPORT MISSING');}).catch(error=>{console.warn('REMOTE PROVIDER ARTWORK LOAD FAILED; USING EMBEDDED 0008 MODULE',error);if(window.GVProviderArtwork?.VERSION!=='0008')return loadScript(config.providerArtworkFallbackUrl).then(()=>{if(window.GVProviderArtwork?.VERSION!=='0008')throw new Error('PROVIDER ARTWORK 0008 EXPORT MISSING AFTER ALL FALLBACKS');});}),
     loadScript(config.coordinateUrl).catch(error=>console.error('COORDINATE OVERLAY LOAD FAILED',error)),
     loadScript(config.targetUrl).then(()=>{if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET MODULE LOADED WITHOUT 0007 EXPORT');}).catch(error=>{console.error('TARGET MODULE LOAD FAILED; RETRYING IMMUTABLE TARGET PIN',error);return loadScript(config.targetUrl+'?gv-target-retry=0007').then(()=>{if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT STILL MISSING AFTER RETRY');});}),
     loadScript(config.galaxyRouteEngineUrl).catch(error=>{console.error('ROUTE ENGINE LOAD FAILED',error)}),
@@ -1117,7 +1117,7 @@ const gvCosmicReveal=(()=>{
 // cache-busting query strings. Start the complete module set in parallel so a
 // cold CDN fetch for one module cannot serialize the entire boot sequence.
 await gvModuleLoadPromise;
-if(window.GVProviderArtwork?.VERSION!=='0007')throw new Error('PROVIDER ARTWORK 0008 EXPORT MISSING');
+if(window.GVProviderArtwork?.VERSION!=='0008')throw new Error('PROVIDER ARTWORK 0008 EXPORT MISSING');
 
 
 // ============================================================================
