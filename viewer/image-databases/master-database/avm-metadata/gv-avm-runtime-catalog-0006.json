@@ -1510,7 +1510,7 @@
       "cdMatrix": null,
       "projection": null,
       "coordinateFrame": null,
-      "distanceMly": 7000,
+      "distanceMly": 11700.0,
       "science": {
         "distanceMly": 7000,
         "distanceDisplay": "7,000.00 million light-years",
