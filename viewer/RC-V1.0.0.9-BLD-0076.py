@@ -109,8 +109,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
-    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7fd8e81bf5ac61e64f07bb6cf1ebb60f0bb7c5fb/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
-    providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/7fd8e81bf5ac61e64f07bb6cf1ebb60f0bb7c5fb/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
+    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@2eba72bc18ac3275febbb3aacf218b286b90af1b/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
+    providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/2eba72bc18ac3275febbb3aacf218b286b90af1b/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@0988a3e0a1302648f7a1dce21c3dddbffa110ff6/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@dec69c15f527df143909a34ace046b2d6e476dd5/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
 });
@@ -197,7 +197,7 @@ function constellationSources(name){
   const k=CONSTELLATION_ALIASES[raw]||raw;
   // ROLL 0076: canonical release asset only; never serially probe mirrors.
   const p='Constellations/'+encodeURIComponent(k)+'.SVG';
-  return [ART+p];
+  return [CDN_ART+p];
 }
 // Bounded LRU cache for successful and in-flight artwork image probes.
 const IMAGE_CACHE_LIMIT=36;
