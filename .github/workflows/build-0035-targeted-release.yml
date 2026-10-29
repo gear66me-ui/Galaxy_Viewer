@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate restored Build 0075 and bundled closed IAU constellation polygons
+      - name: Validate Build 0076 and reliable constellation artwork loading
         shell: bash
         run: |
           set -euo pipefail
@@ -59,8 +59,12 @@ jobs:
           assert "gvPreloadConstellationArtwork(presentationBase?.constellation)" in rc, "Selected constellation preload must start before travel"
           assert "const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=12" in rc
           artwork = (root / "viewer/modules/provider-artwork/gv-provider-artwork-0005.js").read_text()
-          assert "const VERSION='0008'" in artwork
-          assert "return [CDN_ART+p]" in artwork and "return [CDN_ART+p,PAGES_ART+p,ART+p]" not in artwork, "Constellation art must use one verified CDN source without sequential mirror fallbacks"
+          assert "const VERSION='0009'" in artwork
+          assert "return [...new Set([" in artwork and "raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/" in artwork and "gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/" in artwork, "Constellation art must include CDN, raw GitHub, and GitHub Pages fallback sources"
+          assert "preloadConstellations" in artwork and "preloadAllConstellations" in artwork, "All-constellation preload API must be exported"
+          assert "preloadConstellations?.(10)" in rc, "Ten-icon background preload must start on viewer startup"
+          assert "GV CONSTELLATION ART SOURCE FAILED; TRYING FALLBACK" in rc, "Destination artwork preloader must recover from a failed source"
+          assert "GV CONSTELLATION ART ALL SOURCES FAILED" in rc, "All-source failures must be diagnosed"
           print("BUILD 0076 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
           PY
 
