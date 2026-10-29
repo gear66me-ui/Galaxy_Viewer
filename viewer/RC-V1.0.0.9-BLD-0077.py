@@ -109,8 +109,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
-    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3e6882629cc393f741114e38a4e1fdd09790a92d/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
-    providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/3e6882629cc393f741114e38a4e1fdd09790a92d/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
+    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@ce33f33c06569fc7a8eb8368dff72833955abc01/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
+    providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/ce33f33c06569fc7a8eb8368dff72833955abc01/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@0988a3e0a1302648f7a1dce21c3dddbffa110ff6/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@dec69c15f527df143909a34ace046b2d6e476dd5/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
 });
@@ -163,7 +163,30 @@ function constellationSources(name){const raw=String(name??'').trim().toUpperCas
 const IMAGE_CACHE_LIMIT=36;const imageCache=new Map();function trimImageCache(){while(imageCache.size>IMAGE_CACHE_LIMIT)imageCache.delete(imageCache.keys().next().value)}
 function loadSource(url){if(imageCache.has(url)){const cached=imageCache.get(url);imageCache.delete(url);imageCache.set(url,cached);return cached}const promise=new Promise((resolve,reject)=>{const probe=new Image();let settled=false;const timeout=setTimeout(()=>{if(settled)return;settled=true;if(imageCache.get(url)===promise)imageCache.delete(url);reject(new Error('GV ARTWORK LOAD TIMEOUT '+url))},900);probe.onload=()=>{if(settled)return;settled=true;clearTimeout(timeout);resolve(url)};probe.onerror=()=>{if(settled)return;settled=true;clearTimeout(timeout);if(imageCache.get(url)===promise)imageCache.delete(url);reject(new Error('GV ARTWORK LOAD FAILED '+url))};probe.src=url;if(probe.complete&&probe.naturalWidth>0){settled=true;clearTimeout(timeout);resolve(url)}});imageCache.set(url,promise);trimImageCache();return promise}
 const imageRequestTokens=new WeakMap();function firstSuccessful(promises){return new Promise((resolve,reject)=>{let pending=promises.length;const errors=[];if(!pending){reject(new Error('GV ARTWORK HAS NO SOURCES'));return}promises.forEach(promise=>Promise.resolve(promise).then(resolve,error=>{errors.push(error);if(--pending===0)reject(new Error('GV ARTWORK SOURCES ALL FAILED: '+errors.map(e=>String(e?.message||e)).join(' | ')))}))})}
-function loadImage(img,sources,onReady,onFail){const urls=[...new Set((sources||[]).filter(Boolean))];const token=(imageRequestTokens.get(img)||0)+1;imageRequestTokens.set(img,token);const active=()=>imageRequestTokens.get(img)===token;let index=0,finished=false;img.onload=null;img.onerror=null;const fail=()=>{if(!active()||finished)return;if(index>=urls.length){finished=true;img.removeAttribute('src');console.error('GV ARTWORK ALL SOURCES FAILED',{alt:img.alt||'',sources:urls});onFail?.();return}const url=urls[index++];img.onload=()=>{if(!active()||finished)return;finished=true;onReady?.(url)};img.onerror=()=>{if(!active()||finished)return;console.warn('GV ARTWORK IMAGE REQUEST FAILED',{alt:img.alt||'',url,remaining:urls.length-index});fail()};img.src=url;if(img.complete&&img.naturalWidth>0){finished=true;onReady?.(url)}};if(!urls.length){onFail?.();return}fail()}
+function loadImage(img,sources,onReady,onFail){
+  const urls=[...new Set((sources||[]).filter(Boolean))];
+  const token=(imageRequestTokens.get(img)||0)+1;
+  imageRequestTokens.set(img,token);
+  const active=()=>imageRequestTokens.get(img)===token;
+  let index=0,finished=false,sourceTimer=0;
+  img.onload=null;img.onerror=null;
+  const clearSourceTimer=()=>{if(sourceTimer){clearTimeout(sourceTimer);sourceTimer=0}};
+  const finish=url=>{if(!active()||finished)return;finished=true;clearSourceTimer();onReady?.(url)};
+  const fail=()=>{
+    if(!active()||finished)return;
+    clearSourceTimer();
+    if(index>=urls.length){finished=true;img.removeAttribute('src');console.error('GV ARTWORK ALL SOURCES FAILED',{alt:img.alt||'',sources:urls});onFail?.();return}
+    const url=urls[index++];
+    img.onload=()=>finish(url);
+    img.onerror=()=>{if(!active()||finished)return;clearSourceTimer();console.warn('GV ARTWORK IMAGE REQUEST FAILED',{alt:img.alt||'',url,remaining:urls.length-index});fail()};
+    // Advance even when Android WebView leaves an image request pending.
+    sourceTimer=setTimeout(()=>{if(!active()||finished)return;console.warn('GV ARTWORK IMAGE REQUEST TIMEOUT',{alt:img.alt||'',url,remaining:urls.length-index});fail()},1100);
+    img.src=url;
+    if(img.complete&&img.naturalWidth>0)finish(url);
+  };
+  if(!urls.length){onFail?.();return}
+  fail();
+}
 const CONSTELLATION_NAMES=Object.freeze([...new Set(Object.values(CONSTELLATION_ALIASES))]);const constellationPreloadJobs=new Map();function preloadConstellation(name){const urls=constellationSources(name);if(!urls.length)return Promise.reject(new Error('GV CONSTELLATION NAME MISSING: '+String(name??'')));const jobKey=urls[0];if(constellationPreloadJobs.has(jobKey))return constellationPreloadJobs.get(jobKey);const job=(async()=>{const errors=[];for(const url of urls){try{return await loadSource(url)}catch(error){errors.push(error)}}throw new Error('GV CONSTELLATION ALL SOURCES FAILED '+String(name)+': '+errors.map(e=>String(e?.message||e)).join(' | '))})();constellationPreloadJobs.set(jobKey,job);job.catch(()=>{if(constellationPreloadJobs.get(jobKey)===job)constellationPreloadJobs.delete(jobKey)});return job}function preloadConstellations(limit=88){const parsed=Number(limit);const count=Math.max(0,Math.min(88,Number.isFinite(parsed)?Math.floor(parsed):88));const names=CONSTELLATION_NAMES.slice(0,count);let cursor=0,loaded=0,failed=0;const worker=async()=>{while(cursor<names.length){const name=names[cursor++];try{await preloadConstellation(name);loaded++}catch(error){failed++;console.warn('GV CONSTELLATION PRELOAD FAILED',{name,error:String(error?.message||error)})}}};return Promise.all(Array.from({length:Math.min(4,names.length)},worker)).then(()=>Object.freeze({started:true,queued:names.length,loaded,failed}))}function preloadAllConstellations(){return preloadConstellations(88)}
 globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVIDER_ARTWORK,key,path,icon,iconSources,constellationSources,loadImage,preloadConstellation,preloadConstellations,preloadAllConstellations,constellationNames:CONSTELLATION_NAMES,cacheDiagnostics:()=>Object.freeze({entries:imageCache.size,limit:IMAGE_CACHE_LIMIT})});})();
 
