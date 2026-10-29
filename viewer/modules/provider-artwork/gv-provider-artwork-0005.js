@@ -1,7 +1,7 @@
 (()=>{'use strict';
 const VERSION='0008';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
-const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4b7dfee41f265f72f72926b6d5ae404ded61bf22/viewer/artwork/';
+const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7fd8e81bf5ac61e64f07bb6cf1ebb60f0bb7c5fb/viewer/artwork/';
 const PAGES_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
 const PROVIDER_ARTWORK=Object.freeze({
   HUBBLE:'Hubble/Hubble.jpg',
@@ -48,7 +48,7 @@ function constellationSources(name){
   const k=CONSTELLATION_ALIASES[raw]||raw;
   // ROLL 0076: one canonical release asset URL. Do not serially probe mirrors.
   const p='Constellations/'+encodeURIComponent(k)+'.SVG';
-  return [ART+p];
+  return [CDN_ART+p];
 }
 // Bounded LRU cache for successful and in-flight artwork image probes.
 const IMAGE_CACHE_LIMIT=36;
