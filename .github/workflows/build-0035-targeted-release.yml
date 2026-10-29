@@ -59,7 +59,7 @@ jobs:
           assert "const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=12" in rc
           artwork = (root / "viewer/modules/provider-artwork/gv-provider-artwork-0005.js").read_text()
           assert "const VERSION='0008'" in artwork
-          assert "return [ART+p]" in artwork and "return [CDN_ART+p,PAGES_ART+p,ART+p]" not in artwork, "Constellation art must use one canonical source without sequential mirror fallbacks"
+          assert "return [CDN_ART+p]" in artwork and "return [CDN_ART+p,PAGES_ART+p,ART+p]" not in artwork, "Constellation art must use one verified CDN source without sequential mirror fallbacks"
           print("BUILD 0076 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
           PY
 
