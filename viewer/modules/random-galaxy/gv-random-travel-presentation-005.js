@@ -3,7 +3,7 @@
 const VERSION='005';
 const FONT='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
 function constellationSources(name){return globalThis.GVProviderArtwork?.constellationSources(name)||[]}
-function loadConstellation(img,holder,name){const urls=constellationSources(name),key=clean(name).toUpperCase().replace(/[^A-Z]/g,'');img.classList.toggle('gv-pegasus-rotated',key==='PEGASUS'||key==='PEG');img.removeAttribute('src');holder.style.display='none';if(!urls.length)return;globalThis.GVProviderArtwork?.loadImage(img,urls,()=>{holder.style.display='flex'},()=>{img.removeAttribute('src');holder.style.display='none'})}
+function loadConstellation(img,holder,name){const urls=constellationSources(name),key=clean(name).toUpperCase().replace(/[^A-Z]/g,'');const rotate=key==='PEGASUS'||key==='PEG';img.classList.toggle('gv-pegasus-rotated',rotate);if(rotate)img.style.setProperty('transform','rotate(90deg) scaleX(-1)','important');else img.style.removeProperty('transform');img.removeAttribute('src');holder.style.display='none';if(!urls.length)return;globalThis.GVProviderArtwork?.loadImage(img,urls,()=>{holder.style.display='flex'},()=>{img.removeAttribute('src');holder.style.display='none'})}
 const clean=v=>String(v??'').replace(/\s+/g,' ').trim(),num=v=>{const n=Number(v);return Number.isFinite(n)?n:null};
 function iconUrl(d){const provider=clean(d?.provider);return globalThis.GVProviderArtwork?.iconSources(provider)||[]}
 function angle(a,b){const r=Math.PI/180,A=num(a?.ra)*r,B=num(b?.ra)*r,C=num(a?.dec)*r,D=num(b?.dec)*r;if(![A,B,C,D].every(Number.isFinite))return 0;return Math.acos(Math.max(-1,Math.min(1,Math.sin(C)*Math.sin(D)+Math.cos(C)*Math.cos(D)*Math.cos(A-B))))}
