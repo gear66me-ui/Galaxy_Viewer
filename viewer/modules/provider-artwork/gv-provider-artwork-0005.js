@@ -1,5 +1,5 @@
 (()=>{'use strict';
-const VERSION='0009';
+const VERSION='0010';
 const ART='https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/';
 const CDN_ART='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/';
 const PAGES_ART='https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/';
@@ -47,10 +47,10 @@ function constellationSources(name){
   if(!raw)return[];
   const k=CONSTELLATION_ALIASES[raw]||raw;
   const p='Constellations/'+encodeURIComponent(k)+'.SVG';
-  // Resilient fallback chain: CDN, raw release, then GitHub Pages.
+  // Raw GitHub first avoids a stale or stalled per-file CDN response; CDN and Pages remain fallbacks.
   return [...new Set([
-    CDN_ART+p,
     'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/'+p,
+    CDN_ART+p,
     'https://gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/'+p
   ])];
 }
@@ -70,7 +70,7 @@ function loadSource(url){
       settled=true;
       if(imageCache.get(url)===promise)imageCache.delete(url);
       reject(new Error('GV ARTWORK LOAD TIMEOUT '+url));
-    },900);
+    },3500);
     probe.onload=()=>{
       if(settled)return;
       settled=true;clearTimeout(timeout);resolve(url);
@@ -138,7 +138,7 @@ function loadImage(img,sources,onReady,onFail){
       if(!active()||finished)return;
       console.warn('GV ARTWORK IMAGE REQUEST TIMEOUT',{alt:img.alt||'',url,remaining:urls.length-index});
       fail();
-    },1100);
+    },3500);
     img.src=url;
     if(img.complete&&img.naturalWidth>0)finish(url);
   };
@@ -154,8 +154,7 @@ function preloadConstellation(name){
   if(constellationPreloadJobs.has(jobKey))return constellationPreloadJobs.get(jobKey);
   const job=(async()=>{
     const errors=[];
-    // One request at a time per icon: use the known-good raw source first,
-    // then CDN and Pages. Never fan out three requests for every constellation.
+    // One request at a time per icon: use the raw source first, then CDN and Pages. Never fan out three requests for every constellation.
     for(const url of urls){try{return await loadSource(url);}catch(error){errors.push(error);}}
     throw new Error('GV CONSTELLATION ALL SOURCES FAILED '+String(name)+': '+errors.map(e=>String(e?.message||e)).join(' | '));
   })();
