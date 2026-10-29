@@ -106,11 +106,17 @@ function loadImage(img,sources,onReady,onFail){
   const token=(imageRequestTokens.get(img)||0)+1;
   imageRequestTokens.set(img,token);
   const active=()=>imageRequestTokens.get(img)===token;
-  let index=0,finished=false;
+  let index=0,finished=false,sourceTimer=0;
   img.onload=null;
   img.onerror=null;
+  const clearSourceTimer=()=>{if(sourceTimer){clearTimeout(sourceTimer);sourceTimer=0}};
+  const finish=(url)=>{
+    if(!active()||finished)return;
+    finished=true;clearSourceTimer();onReady?.(url);
+  };
   const fail=()=>{
     if(!active()||finished)return;
+    clearSourceTimer();
     if(index>=urls.length){
       finished=true;
       img.removeAttribute('src');
@@ -119,23 +125,22 @@ function loadImage(img,sources,onReady,onFail){
       return;
     }
     const url=urls[index++];
-    img.onload=()=>{
-      if(!active()||finished)return;
-      finished=true;
-      onReady?.(url);
-    };
+    img.onload=()=>finish(url);
     img.onerror=()=>{
       if(!active()||finished)return;
+      clearSourceTimer();
       console.warn('GV ARTWORK IMAGE REQUEST FAILED',{alt:img.alt||'',url,remaining:urls.length-index});
       fail();
     };
-    // Assign directly to the displayed image. This avoids probing with a
-    // separate Image object and then relying on a second request/cache hit.
+    // Some Android WebViews leave image requests pending without firing either
+    // load or error. Time out each source so the fallback chain always advances.
+    sourceTimer=setTimeout(()=>{
+      if(!active()||finished)return;
+      console.warn('GV ARTWORK IMAGE REQUEST TIMEOUT',{alt:img.alt||'',url,remaining:urls.length-index});
+      fail();
+    },1100);
     img.src=url;
-    if(img.complete&&img.naturalWidth>0){
-      finished=true;
-      onReady?.(url);
-    }
+    if(img.complete&&img.naturalWidth>0)finish(url);
   };
   if(!urls.length){onFail?.();return}
   fail();
