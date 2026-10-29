@@ -976,7 +976,9 @@ const gvCosmicReveal=(()=>{
 // cache-busting query strings. Start the complete module set in parallel so a
 // cold CDN fetch for one module cannot serialize the entire boot sequence.
 await gvModuleLoadPromise;
-if(window.GVProviderArtwork?.VERSION!=='0008')throw new Error('PROVIDER ARTWORK 0008 EXPORT MISSING');
+if(window.GVProviderArtwork?.VERSION!=='0009')throw new Error('PROVIDER ARTWORK 0009 EXPORT MISSING');
+// Warm the next ten constellation icons off the critical startup path.
+Promise.resolve(window.GVProviderArtwork?.preloadConstellations?.(10)).then(result=>console.info('GV CONSTELLATION PRELOAD',result||'fallback unavailable')).catch(error=>console.warn('GV CONSTELLATION PRELOAD FAILED',error));
 
 
 // ============================================================================
