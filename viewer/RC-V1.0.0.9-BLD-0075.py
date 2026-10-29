@@ -109,10 +109,10 @@ window.GV_BOOT_CONFIG=Object.freeze({
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
-    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@0e3dfbfafad300a44e09921aba29bbd9a304a6f7/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
-    providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/0e3dfbfafad300a44e09921aba29bbd9a304a6f7/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
-    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@6697e835a18a12d158aff8c3e96e587c92db260a/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d341bb1e99b38cadea4275a72cd22289b8937e8b/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
+    providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d33ef742891bfc5ac61ed4de68d245235e7c1e48/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
+    providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/d33ef742891bfc5ac61ed4de68d245235e7c1e48/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
+    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d12fb99375f3f19a3e458fa5b7549be73adc20fd/viewer/modules/random-galaxy/gv-random-travel-presentation-005.js',
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7ac06c658b231df547ead018bbd0f55190ac343a/viewer/modules/destination-presentation/gv-destination-presentation-0061.js'
 });
 
 
