@@ -1,5 +1,5 @@
 name: Validate and Deploy RC-V1.0.0.9 Build 0076
-# ROLL 0076: deploy constellation artwork preload optimization; BLD 0075 remains the rollback baseline.
+# ROLL 0277: repair constellation-name normalization and validate icon readiness; preserve BLD 0076 baseline.
 
 on:
   push:
@@ -44,6 +44,8 @@ jobs:
           rc = (root / "viewer" / pointer["viewer"]).read_text()
           assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0076"' in rc
           assert "const GV200001_BUILD='0076'" in rc
+          assert "const GV_RUNTIME='0277';" in rc, "ROLL 0277 marker missing"
+          assert r"normalize('NFD').replace(/[\u0300-\u036f]/g,'')" in rc, "Embedded constellation normalizer must preserve ASCII names"
           assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0076 must preserve the pinned Route Engine 002 export"
           assert "const data=JSON.parse(" in rc, "Boundary data must remain bundled"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess already aligned GeoJSON"
@@ -60,6 +62,7 @@ jobs:
           assert "const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=12" in rc
           artwork = (root / "viewer/modules/provider-artwork/gv-provider-artwork-0005.js").read_text()
           assert "const VERSION='0009'" in artwork
+          assert r"normalize('NFD').replace(/[\u0300-\u036f]/g,'')" in artwork, "Shared constellation normalizer must use valid Unicode escapes"
           assert "return [...new Set([" in artwork and "raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/" in artwork and "gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/" in artwork, "Constellation art must include CDN, raw GitHub, and GitHub Pages fallback sources"
           assert "preloadConstellations" in artwork and "preloadAllConstellations" in artwork, "All-constellation preload API must be exported"
           assert "preloadConstellations?.(10)" in rc, "Ten-icon background preload must start on viewer startup"
