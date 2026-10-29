@@ -3428,6 +3428,7 @@ function gvStartFirstDestinationPreload(){
     const destination=activeRoute[0];
     if(!destination)return Promise.reject(new Error('GV FIRST DESTINATION MISSING'));
     const started=performance.now();
+    gvPreloadConstellationArtwork(destination?.constellation);
     // BUILD 0030: prepare the first HD image without warming its provider website.
     // Provider prewarming is strictly post-arrival.
     gvFirstDestinationPreload=gvPrepareDirectHd(destination).then(prepared=>{
@@ -3437,7 +3438,6 @@ function gvStartFirstDestinationPreload(){
     return gvFirstDestinationPreload;
 }
 // IMPORTANT: start only after the AVM/HD preparation functions and their let/const dependencies are initialized.
-const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error=>console.error('GV FIRST DESTINATION PRELOAD FAILED',error));
 
 // ============================================================================
 // SECTION 036 — DESTINATION → ALADIN HANDOFF
@@ -3475,6 +3475,7 @@ function gvPreloadConstellationArtwork(name){
     gvConstellationArtworkPrewarm.set(url,image);gvTrimConstellationArtworkCache();image.src=url;
     return image;
 }
+const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error=>console.error('GV FIRST DESTINATION PRELOAD FAILED',error));
 
 // ROLL 0025 — release transient renderer resources when Android backgrounds the viewer.
 // This does not pretend to clear Android's private HTTP cache. It releases live resources
