@@ -3323,18 +3323,44 @@ function gvTrimConstellationArtworkCache(){
 function gvPreloadConstellationArtwork(name){
     const constellationName=String(name||'').trim();
     const urls=window.GVProviderArtwork?.constellationSources?.(constellationName)||[];
-    const url=urls[0];
-    if(!url){console.warn('GV CONSTELLATION ARTWORK NAME MISSING',{name:constellationName});return null}
-    if(gvConstellationArtworkPrewarm.has(url)){
+    if(!urls.length){console.warn('GV CONSTELLATION ARTWORK NAME MISSING',{name:constellationName});return null}
+    // Reuse any already-loaded source, including a fallback that previously won.
+    for(const url of urls){
         const cached=gvConstellationArtworkPrewarm.get(url);
-        if(cached?.complete&&cached.naturalWidth>0)console.info('GV CONSTELLATION ART CACHE HIT',{name:constellationName,url});
-        return cached;
+        if(cached?.complete&&cached.naturalWidth>0){
+            console.info('GV CONSTELLATION ART CACHE HIT',{name:constellationName,url});
+            return cached;
+        }
     }
-    const image=new Image();image.decoding='async';
-    image.onload=()=>{if(gvConstellationArtworkPrewarm.get(url)!==image)return;console.info('GV CONSTELLATION ART PRELOADED',{name:constellationName,url})};
-    image.onerror=()=>{if(gvConstellationArtworkPrewarm.get(url)!==image)return;console.error('GV CONSTELLATION ART ASSET FAILED',{name:constellationName,url});gvReleaseConstellationArtwork(url)};
-    gvConstellationArtworkPrewarm.set(url,image);gvTrimConstellationArtworkCache();image.src=url;
-    return image;
+    const attempt=index=>{
+        if(index>=urls.length){
+            console.error('GV CONSTELLATION ART ALL SOURCES FAILED',{name:constellationName,sources:urls});
+            return null;
+        }
+        const url=urls[index];
+        const existing=gvConstellationArtworkPrewarm.get(url);
+        if(existing){
+            if(existing.complete&&existing.naturalWidth>0)return existing;
+            // An in-flight request is already being warmed; do not duplicate it.
+            if(!existing.complete)return existing;
+        }
+        const image=new Image();image.decoding='async';
+        gvConstellationArtworkPrewarm.set(url,image);gvTrimConstellationArtworkCache();
+        image.onload=()=>{
+            if(gvConstellationArtworkPrewarm.get(url)!==image)return;
+            console.info('GV CONSTELLATION ART PRELOADED',{name:constellationName,url});
+        };
+        image.onerror=()=>{
+            if(gvConstellationArtworkPrewarm.get(url)!==image)return;
+            console.warn('GV CONSTELLATION ART SOURCE FAILED; TRYING FALLBACK',{name:constellationName,url,next:index+1,total:urls.length});
+            gvReleaseConstellationArtwork(url);
+            attempt(index+1);
+        };
+        image.src=url;
+        if(image.complete&&image.naturalWidth>0)image.onload?.();
+        return image;
+    };
+    return attempt(0);
 }
 const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error=>console.error('GV FIRST DESTINATION PRELOAD FAILED',error));
 
