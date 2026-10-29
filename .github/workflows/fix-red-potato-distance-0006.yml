@@ -1,0 +1,64 @@
+name: Fix Red Potato Galaxy distance — AVM runtime catalog 0006
+
+on:
+  push:
+    branches: [release]
+    paths:
+      - .github/workflows/fix-red-potato-distance-0006.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fix-red-potato-distance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout release
+        uses: actions/checkout@v4
+        with:
+          ref: release
+      - name: Correct and validate Red Potato Galaxy distance
+        shell: python
+        run: |
+          import json
+          import subprocess
+          from pathlib import Path
+
+          path = Path("viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json")
+          data = json.loads(path.read_text(encoding="utf-8"))
+          records = data.get("records", [])
+          matches = [
+              r for r in records
+              if "MQN01 J004131.9-493704" in str(r.get("designation", "")).upper()
+              or "red potato galaxy" == str(r.get("name", "")).casefold().strip()
+              or "chandra-2026-redpotato" == str(r.get("archiveId", "")).casefold().strip()
+          ]
+          if len(matches) != 1:
+              raise SystemExit(f"Expected exactly one Red Potato Galaxy record; found {len(matches)}. No catalog changes made.")
+
+          record = matches[0]
+          old = record.get("distanceMly")
+          record["distanceMly"] = 11700.0
+
+          path.write_text(json.dumps(data, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+          check = json.loads(path.read_text(encoding="utf-8"))
+          verified = [
+              r for r in check["records"]
+              if "MQN01 J004131.9-493704" in str(r.get("designation", "")).upper()
+              or "red potato galaxy" == str(r.get("name", "")).casefold().strip()
+              or "chandra-2026-redpotato" == str(r.get("archiveId", "")).casefold().strip()
+          ]
+          assert len(verified) == 1 and float(verified[0]["distanceMly"]) == 11700.0
+          print(f"Red Potato Galaxy distanceMly: {old} -> 11700.0 (11.7 BLY)")
+          subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
+          subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
+          subprocess.run(["git", "add", str(path)], check=True)
+          diff = subprocess.run(["git", "diff", "--cached", "--quiet"])
+          if diff.returncode == 0:
+              print("Catalog already correct; no catalog commit needed.")
+          elif diff.returncode == 1:
+              subprocess.run(["git", "commit", "-m", "Fix Red Potato Galaxy distance in AVM runtime catalog 0006"], check=True)
+              subprocess.run(["git", "push", "origin", "HEAD:release"], check=True)
+          else:
+              raise SystemExit("Unable to determine whether the catalog changed.")
