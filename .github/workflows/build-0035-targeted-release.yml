@@ -1,5 +1,5 @@
-name: Restore and Deploy RC-V1.0.0.9 Build 0075
-# Restore and deploy the known-good BLD 0075; BLD 0076 is intentionally removed.
+name: Validate and Deploy RC-V1.0.0.9 Build 0076
+# ROLL 0076: deploy constellation artwork preload optimization; BLD 0075 remains the rollback baseline.
 
 on:
   push:
@@ -37,24 +37,30 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0075.py","build":"0075"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0075", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0075.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0076.py","build":"0076"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0076", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0076.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0075"' in rc
-          assert "const GV200001_BUILD='0075'" in rc
-          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0075 must validate the pinned Route Engine 002 export"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0076"' in rc
+          assert "const GV200001_BUILD='0076'" in rc
+          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0076 must preserve the pinned Route Engine 002 export"
           assert "const data=JSON.parse(" in rc, "Boundary data must remain bundled"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess already aligned GeoJSON"
           assert "GV_IAU_BOUNDARY_WIDTH=0.5" in rc and "GV_IAU_BOUNDARY_OPACITY=0.58" in rc
           assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0075; found {len(pins)}"
+          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0076; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
-          print("BUILD 0075 RESTORE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
+          assert "gvPreloadConstellationArtwork(presentation?.constellation)" in rc, "Next-destination constellation preload must run during trip planning"
+          assert "gvPreloadConstellationArtwork(presentationBase?.constellation)" in rc, "Selected constellation preload must start before travel"
+          assert "const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=12" in rc
+          artwork = (root / "viewer/modules/provider-artwork/gv-provider-artwork-0005.js").read_text()
+          assert "const VERSION='0008'" in artwork
+          assert "return [ART+p]" in artwork and "return [CDN_ART+p,PAGES_ART+p,ART+p]" not in artwork, "Constellation art must use one canonical source without sequential mirror fallbacks"
+          print("BUILD 0076 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
