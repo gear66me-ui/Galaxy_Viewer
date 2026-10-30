@@ -216,11 +216,11 @@ for(const key of [
        .catch(error=>{console.error('CONSTELLATION CDN LOAD FAILED; RETRYING RAW GITHUB',error);return loadScript(config.constellationOverlayFallbackUrl)})
        .catch(error=>{console.error('CONSTELLATION MODULE LOAD FAILED ON BOTH SOURCES',error)}),
      loadScript(config.providerArtworkUrl)
-       .then(()=>{if(window.GVProviderArtwork?.VERSION!=='0009')throw new Error('PROVIDER ARTWORK CDN EXPORT VERSION MISMATCH')})
+       .then(()=>{if(window.GVProviderArtwork?.VERSION!=='0010')throw new Error('PROVIDER ARTWORK CDN EXPORT VERSION MISMATCH')})
        .catch(error=>{
          console.warn('REMOTE PROVIDER ARTWORK LOAD FAILED; RETRYING RAW GITHUB / KEEPING EMBEDDED 0009',error);
          return loadScript(config.providerArtworkFallbackUrl)
-           .then(()=>{if(window.GVProviderArtwork?.VERSION!=='0009')throw new Error('PROVIDER ARTWORK RAW EXPORT VERSION MISMATCH')})
+           .then(()=>{if(window.GVProviderArtwork?.VERSION!=='0010')throw new Error('PROVIDER ARTWORK RAW EXPORT VERSION MISMATCH')})
            .catch(fallbackError=>{
              console.warn('REMOTE PROVIDER ARTWORK SOURCES FAILED; EMBEDDED 0009 REMAINS ACTIVE',fallbackError);
              if(window.GVProviderArtwork?.VERSION!=='0009')throw fallbackError;
