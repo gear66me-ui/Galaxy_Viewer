@@ -3564,7 +3564,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     // then the next galaxy HD is installed and activated.
     if(firstTrip){
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
-        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,constellationName:presentationDestination?.constellation||presentationBase?.constellation||'',registeredPromise:registeredTravelPromise,onTMinusEight:()=>{if(!installed)ensurePrepared().then(prepared=>installWhenReady(prepared,{stage:true})).catch(error=>console.error('GV FIRST-TRIP T-MINUS-EIGHT STAGE FAILED',error))},onArrival:()=>gvActivateStagedHd(presentationDestination)});
+        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,switchToSphericalAtApex:true,constellationName:presentationDestination?.constellation||presentationBase?.constellation||'',registeredPromise:registeredTravelPromise,onTMinusEight:()=>{if(!installed)ensurePrepared().then(prepared=>installWhenReady(prepared,{stage:true})).catch(error=>console.error('GV FIRST-TRIP T-MINUS-EIGHT STAGE FAILED',error))},onArrival:()=>gvActivateStagedHd(presentationDestination)});
         await travelPromise;
         if(activeDestination!==presentationDestination)return v.destination;
         if(stagedInstallPromise)await stagedInstallPromise.catch(error=>console.error('GV FIRST-TRIP STAGED LAYER SETTLE FAILED',error));
