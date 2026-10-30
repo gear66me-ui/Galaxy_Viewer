@@ -61,7 +61,7 @@ jobs:
           assert "gvPreloadConstellationArtwork(presentationBase?.constellation)" in rc, "Selected constellation preload must start before travel"
           assert "const GV_CONSTELLATION_ARTWORK_CACHE_LIMIT=12" in rc
           artwork = (root / "viewer/modules/provider-artwork/gv-provider-artwork-0005.js").read_text()
-          assert "const VERSION='0009'" in artwork
+          assert "const VERSION='0010'" in artwork
           assert r"normalize('NFD').replace(/[\u0300-\u036f]/g,'')" in artwork, "Shared constellation normalizer must use valid Unicode escapes"
           assert "return [...new Set([" in artwork and "raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/artwork/" in artwork and "gear66me-ui.github.io/Galaxy_Viewer/viewer/artwork/" in artwork, "Constellation art must include CDN, raw GitHub, and GitHub Pages fallback sources"
           assert "preloadConstellations" in artwork and "preloadAllConstellations" in artwork, "All-constellation preload API must be exported"
