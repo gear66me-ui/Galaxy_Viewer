@@ -1,5 +1,5 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0077
-# BUILD 0077: repair constellation-name normalization and validate icon readiness; preserve BLD 0077 baseline.
+name: Validate and Deploy RC-V1.0.0.9 Build 0078
+# BUILD 0078: repair constellation-name normalization and validate icon readiness; preserve BLD 0078 baseline.
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0077 and reliable constellation artwork loading
+      - name: Validate Build 0078 and reliable constellation artwork loading
         shell: bash
         run: |
           set -euo pipefail
@@ -37,23 +37,23 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0077.py","build":"0077"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0077", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0077.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0078.py","build":"0078"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0078", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0078.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0077"' in rc
-          assert "const GV200001_BUILD='0077'" in rc
-          assert "const GV_RUNTIME='0077';" in rc, "BUILD 0077 marker missing"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0078"' in rc
+          assert "const GV200001_BUILD='0078'" in rc
+          assert "const GV_RUNTIME='0078';" in rc, "BUILD 0078 marker missing"
           assert r"normalize('NFD').replace(/[\u0300-\u036f]/g,'')" in rc, "Embedded constellation normalizer must preserve ASCII names"
-          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0077 must preserve the pinned Route Engine 002 export"
+          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0078 must preserve the pinned Route Engine 002 export"
           assert "const data=JSON.parse(" in rc, "Boundary data must remain bundled"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess already aligned GeoJSON"
           assert "GV_IAU_BOUNDARY_WIDTH=0.5" in rc and "GV_IAU_BOUNDARY_OPACITY=0.58" in rc
           assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0077; found {len(pins)}"
+          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0078; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "gvPreloadConstellationArtwork(presentation?.constellation)" in rc, "Next-destination constellation preload must run during trip planning"
@@ -73,7 +73,7 @@ jobs:
           assert "preloadConstellations?.(88)" in rc, "All 88 constellation icons must preload on viewer startup"
           assert "GV CONSTELLATION ART SOURCE FAILED; TRYING FALLBACK" in rc, "Destination artwork preloader must recover from a failed source"
           assert "GV CONSTELLATION ART ALL SOURCES FAILED" in rc, "All-source failures must be diagnosed"
-          print("BUILD 0077 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
+          print("BUILD 0078 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
