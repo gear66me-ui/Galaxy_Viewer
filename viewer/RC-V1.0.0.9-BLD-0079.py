@@ -1247,7 +1247,14 @@ let gvGridEnabled=false;
 let gvConstellationPromise=null;
 function gvSetConstellationsEnabled(enabled){
     if(!gvConstellationPromise)gvConstellationPromise=window.GalaxyViewerConstellationOverlay.mount(aladin).catch(error=>{gvConstellationPromise=null;console.error('CONSTELLATION OVERLAY INIT FAILED',error);throw error});
-    gvConstellationPromise.then(layer=>layer.setEnabled(!!enabled)).catch(error=>console.error('CONSTELLATION TOGGLE FAILED',error));
+    gvConstellationPromise.then(layer=>{
+        layer.setEnabled(!!enabled);
+        const center=aladin.getRaDec?.();
+        const ra=Number(Array.isArray(center)?center[0]:(center?.ra??center?.[0]));
+        const dec=Number(Array.isArray(center)?center[1]:(center?.dec??center?.[1]));
+        const name=Number.isFinite(ra)&&Number.isFinite(dec)?window.GalaxyViewerConstellationRegions?.getConstellationAt?.(ra,dec):null;
+        layer.setCenterConstellation(name||null);
+    }).catch(error=>console.error('CONSTELLATION TOGGLE FAILED',error));
 }
 const hamburger=window.GalaxyViewerHamburgerMenu.init({
     host:hosts.hamburger,
