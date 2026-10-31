@@ -3959,6 +3959,7 @@ async function navigateRandom(){
         if(routeIndex===0&&gvFirstDestinationPreload){
             gvFirstDestinationPreload.then(warm=>{if(warm?.destination===destination)console.info('GV FIRST DESTINATION PRELOAD READY FOR ACTIVE TRIP')}).catch(error=>console.error('GV FIRST DESTINATION PRELOAD UNAVAILABLE',error));
         }
+        if(randomAttempt!==gvRandomNavigationGeneration)return;
         if(historyIndex<history.length-1)history.splice(historyIndex+1);
         history.push(destination);if(history.length>130)history.shift();
         historyIndex=history.length-1;
