@@ -3,7 +3,7 @@
  */
 (() => {
   "use strict";
-  const VERSION = "0020";
+  const VERSION = "0021";
   const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
   const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
   const COLOR = "#8EDCFF", WIDTH = 0.5, HIGHLIGHT_COLOR = "#FFE066", HIGHLIGHT_WIDTH = 0.9;
@@ -134,15 +134,11 @@
 
     // Static line highlight only: no star circles, glow layers, timers, or animation.
     for(const e of overlays.values()){e.obj.hide();e.highlight.hide();}
-    let enabled=false,highlightEntry=null;
-    function stopGlow(){
-      if(highlightEntry){highlightEntry.highlight.hide();if(!enabled)highlightEntry.obj.hide();}
-      highlightEntry=null;
-    }
+    let enabled=false,travelEntry=null,centerEntry=null,travelName=null,centerName=null,travelActive=false;
     function setEnabled(next){
       enabled=!!next;
       for(const e of overlays.values()){if(enabled)e.obj.show();else e.obj.hide();e.highlight.hide();}
-      if(!enabled)stopGlow();
+      if(enabled){if(centerEntry){centerEntry.obj.show();centerEntry.highlight.show();}if(travelActive&&travelEntry){travelEntry.obj.show();travelEntry.highlight.show();}}
       return enabled;
     }
     function findByName(name){
@@ -174,20 +170,19 @@
       // No substring fallback: it can select a neighboring constellation.
       return null;
     }
-    // Highlight the destination with a separate 0.5px static line overlay.
-    function startGlow(found,{travel=false}={}){
-      stopGlow();
-      if(!enabled&&!travel)return false;
-      highlightEntry=found;
-      found.obj.show();
-      found.highlight.show();
-      return true;
+    // Reticle and travel highlights are independent channels.
+    function setCenterConstellation(name){
+      const found=name?findByName(name):null;
+      if(centerEntry&&centerEntry!==found)centerEntry.highlight.hide();
+      centerEntry=found;centerName=name||null;
+      if(found&&enabled){found.obj.show();found.highlight.show();}
+      return !!found;
     }
     function setTravelGlow(name,active){
-      if(!active||!name){stopGlow();return false;}
-      const found=findByName(name);
-      if(!found)return false;
-      return startGlow(found,{travel:true});
+      if(!active||!name){if(travelEntry)travelEntry.highlight.hide();travelEntry=null;travelActive=false;travelName=null;return false;}
+      const found=findByName(name);if(!found)return false;
+      if(travelEntry&&travelEntry!==found)travelEntry.highlight.hide();
+      travelEntry=found;travelActive=true;travelName=name;found.obj.show();found.highlight.show();return true;
     }
     function setTravelGlowAt(ra,dec,active=true){
       console.warn("GV CONSTELLATION GLOW: coordinate fallback deprecated; pass archive constellation name");
@@ -197,14 +192,9 @@
       for(const e of overlays.values())for(const [sra,sdec] of e.points){const dot=Math.sin(targetDec*rad)*Math.sin(sdec*rad)+Math.cos(targetDec*rad)*Math.cos(sdec*rad)*Math.cos((targetRa-sra)*rad);if(dot>bestDot){bestDot=dot;best=e;}}
       if(!best)return false;console.info("GV CONSTELLATION GLOW: coordinate fallback matched",best.name);return startGlow(best,{travel:true});
     }
-    function setTravelGlowByName(name,active=true){
-      if(!active||!String(name||"").trim()){stopGlow();return false;}
-      const found=findByName(name);
-      if(!found){stopGlow();console.warn("GV CONSTELLATION GLOW: archive name has no exact overlay match",{archiveConstellation:name,available:[...overlays.keys()]});return false;}
-      console.info("GV CONSTELLATION GLOW: archive constellation matched",{archiveConstellation:name,overlay:found.name,starPoints:found.points.length,segments:found.segments});
-      return startGlow(found,{travel:true});
-    }
-    const result=Object.freeze({VERSION,get enabled(){return enabled;},setEnabled,setTravelGlow,setTravelGlowAt,setTravelGlowByName,clearTravelGlow:stopGlow,toggle(){return setEnabled(!enabled);},constellationCount:overlays.size,segmentCount:[...overlays.values()].reduce((n,e)=>n+e.segments,0)});
+    function setTravelGlowByName(name,active=true){return setTravelGlow(name,active);}
+    function clearTravelGlow(){return setTravelGlow(null,false);}
+    const result=Object.freeze({VERSION,get enabled(){return enabled;},setEnabled,setCenterConstellation,setTravelGlow,setTravelGlowAt,setTravelGlowByName,clearTravelGlow,toggle(){return setEnabled(!enabled);},get centerConstellation(){return centerName;},get travelConstellation(){return travelName;},constellationCount:overlays.size,segmentCount:[...overlays.values()].reduce((n,e)=>n+e.segments,0)});
     window.GalaxyViewerConstellations=result;return result;
   }
   window.GalaxyViewerConstellationOverlay=Object.freeze({VERSION,mount});
