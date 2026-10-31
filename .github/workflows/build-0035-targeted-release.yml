@@ -1,5 +1,5 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0080
-# BUILD 0080: repair constellation-name normalization and validate icon readiness; preserve BLD 0080 baseline.
+name: Validate and Deploy RC-V1.0.0.9 Build 0081
+# BUILD 0081: repair constellation-name normalization and validate icon readiness; preserve BLD 0081 baseline.
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0080 and live IAU reticle constellation label
+      - name: Validate Build 0081 and live IAU reticle constellation label
         shell: bash
         run: |
           set -euo pipefail
@@ -37,26 +37,28 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0080.py","build":"0080"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0080", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0080.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0081.py","build":"0081"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0081", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0081.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0080"' in rc
-          assert "const GV200001_BUILD='0080'" in rc
-          assert "const GV_RUNTIME='0080';" in rc, "BUILD 0080 marker missing"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0081"' in rc
+          assert "const GV200001_BUILD='0081'" in rc
+          assert "const GV_RUNTIME='0081';" in rc, "BUILD 0081 marker missing"
           assert r"normalize('NFD').replace(/[\u0300-\u036f]/g,'')" in rc, "Embedded constellation normalizer must preserve ASCII names"
-          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0080 must preserve the pinned Route Engine 002 export"
+          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0081 must preserve the pinned Route Engine 002 export"
           assert "const data=JSON.parse(" in rc, "Boundary data must remain bundled"
           assert "function getConstellationAt(ra,dec)" in rc, "Live IAU reticle lookup missing"
           assert "gv-constellation-center-label" in rc and "(top+38+10)+'px'" in rc, "Constellation label placement must remain 10px below SELECT SURVEY"
+          assert "labelLetterCount>12" in rc, "Main-screen names above 12 letters must use two centered rows"
+          assert "gvConstellationCenterLabel.append(prefix,constellation)" in rc, "Long main-screen labels must render as separate centered rows"
           assert "color:'#FFE066'" in rc and 'font:\'400 12.6px/1 "GV Space Age",sans-serif\'' in rc, "Constellation label must use Random Galaxy highlight gold and SELECT SURVEY typography"
           assert "precessB1875ToJ2000" not in rc, "Do not double-precess already aligned GeoJSON"
           assert "GV_IAU_BOUNDARY_WIDTH=0.5" in rc and "GV_IAU_BOUNDARY_OPACITY=0.58" in rc
           assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0080; found {len(pins)}"
+          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0081; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "gvPreloadConstellationArtwork(presentation?.constellation)" in rc, "Next-destination constellation preload must run during trip planning"
@@ -80,8 +82,8 @@ jobs:
           assert "const VERSION='006'" in travel
           assert "letterCount>12" in travel, "Constellation names above 12 letters must use the centered two-line layout"
           assert "gv-course-two-line .gv-travel-course-prefix" in travel and "gv-course-two-line .gv-travel-course-name" in travel, "Both trip-planner lines must be centered"
-          assert "travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@8ab7dbb04a42145dc972c600cb808bc73cec70bc/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js'" in rc, "Build 0080 must pin the new trip-planner presentation"
-          print("BUILD 0080 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
+          assert "travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@8ab7dbb04a42145dc972c600cb808bc73cec70bc/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js'" in rc, "Build 0081 must pin the new trip-planner presentation"
+          print("BUILD 0081 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
