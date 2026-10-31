@@ -3064,7 +3064,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
         aladin.setRotation(targetRotation);
         try{onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
-        const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);let projectionSwitchedAt55=false;lastSample=-1;
+        const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);let projectionSwitchedAt55=false;if(switchToSphericalAtApex&&Number.isFinite(zoomStartFov)&&zoomStartFov<=55){projectionSwitchedAt55=true;hamburger?.selectProjection?.('SPHERICAL');console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN: START FOV ≤55°')}lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{
                 const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed/10);
