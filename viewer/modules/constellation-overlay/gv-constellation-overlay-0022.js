@@ -1,0 +1,200 @@
+/* Galaxy Viewer constellation overlay module 0017.
+ * Fornax uses the verified three-star V; glow layers are made visible after each redraw.
+ */
+(() => {
+  "use strict";
+  const VERSION = "0022";
+  const LINE_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line.csv";
+  const STAR_URL = "https://cdn.jsdelivr.net/gh/creativival/hipparcos_planetarium_data_creator@main/data/hip_constellation_line_star.csv";
+  const COLOR = "#8EDCFF", WIDTH = 0.5, HIGHLIGHT_COLOR = "#FFE066", HIGHLIGHT_WIDTH = 0.9;
+  async function csv(url) { const r=await fetch(url,{cache:"force-cache"}); if(!r.ok)throw Error("CONSTELLATION DATA HTTP "+r.status); return r.text(); }
+  function parseStars(text) {
+    const map=new Map();
+    for(const line of text.split(/\r?\n/)){const c=line.trim().split(",");if(c.length<7)continue;
+      const id=Number(c[0]),h=Number(c[1]),m=Number(c[2]),s=Number(c[3]),ds=String(c[4]).trim(),d=Number(ds),dm=Number(c[5]),sec=Number(c[6]);
+      if(![id,h,m,s,d,dm,sec].every(Number.isFinite))continue;
+      const sign=(d<0||(d===0&&(dm<0||(dm===0&&sec<0))))?-1:1;
+      map.set(id,[(h+m/60+s/3600)*15,sign*(Math.abs(d)+Math.abs(dm)/60+Math.abs(sec)/3600)]);
+    } return map;
+  }
+  function parseLines(text){const rows=[];for(const line of text.split(/\r?\n/)){const c=line.trim().split(",");if(c.length>=3&&c[0]&&Number.isFinite(Number(c[1]))&&Number.isFinite(Number(c[2])))rows.push([c[0],Number(c[1]),Number(c[2])]);}return rows;}
+  const canon=v=>String(v||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+  async function mount(aladin) {
+    if(!aladin||typeof aladin.addOverlay!=="function"||!window.A?.graphicOverlay||!window.A?.polyline)throw Error("CONSTELLATIONS: Aladin overlay API unavailable");
+    const [lt,st]=await Promise.all([csv(LINE_URL),csv(STAR_URL)]),stars=parseStars(st),segments=parseLines(lt);
+    if(stars.size<100||segments.length<100)throw Error("CONSTELLATIONS: source data failed validation");
+    const overlays=new Map();
+    for(const [name,a,b] of segments){
+      let e=overlays.get(name);if(!e){e={name,obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};aladin.addOverlay(e.obj);aladin.addOverlay(e.highlight);overlays.set(name,e);}
+      const p1=stars.get(a),p2=stars.get(b);
+      for(const id of [a,b]){const p=stars.get(id);if(p&&!e.starIds.has(id)){e.starIds.add(id);e.points.push(p);}}
+      // Fornax and Camelopardalis are rebuilt below from verified IAU chart chains.
+      // Ignore upstream edges for both so they cannot distort the corrected figures.
+      if(!["FOR","FORNAX","CAM","CAMELOPARDALIS","LIB","LIBRA"].includes(canon(name))&&p1&&p2){
+        e.obj.add(window.A.polyline([p1,p2]));
+        e.highlight.add(window.A.polyline([p1,p2],{color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}));
+        e.segmentPairs.push([p1,p2]);e.segments++;
+      } else if(!["FOR","FORNAX","CAM","CAMELOPARDALIS","LIB","LIBRA"].includes(canon(name))) {
+        console.warn("GV CONSTELLATION: skipped segment with missing star coordinate",{constellation:name,start:a,end:b,hasStart:!!p1,hasEnd:!!p2});
+      }
+    }
+    // The line-source CSV omits principal stars not used by its asterism segments.
+    let fornax=[...overlays.values()].find(e=>["FOR","FORNAX"].includes(canon(e.name)));
+    if(!fornax){
+      fornax={name:"For",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
+      aladin.addOverlay(fornax.obj);aladin.addOverlay(fornax.highlight);overlays.set(fornax.name,fornax);
+    }
+    const fornaxPrincipalStars=[
+      {name:"Dalim (Alpha Fornacis)",ra:48.018875,dec:-28.9876111111},
+      {name:"Beta Fornacis",ra:42.2725833333,dec:-32.4058888889},
+      {name:"Nu Fornacis",ra:31.1226666667,dec:-29.2968055556}
+    ];
+    // The requested Fornax asterism is exactly two thin edges, Dalim—Beta—Nu.
+    // Reset the point list so only these three stars receive the Fornax glow.
+    fornax.points=fornaxPrincipalStars.map(star=>[star.ra,star.dec]);
+    fornax.segmentPairs=[
+      [fornax.points[0],fornax.points[1]],
+      [fornax.points[1],fornax.points[2]]
+    ];
+    fornax.segments=2;
+    for(const pair of fornax.segmentPairs){
+      fornax.obj.add(window.A.polyline(pair,{color:COLOR,lineWidth:WIDTH}));
+      fornax.highlight.add(window.A.polyline(pair,{color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}));
+    }
+    console.info("GV CONSTELLATION: Fornax V registered",{stars:fornaxPrincipalStars.map(s=>s.name),edges:2,closed:false});
+
+    // Camelopardalis: match the IAU chart's two open Hipparcos chains.
+    // Do not use the alternate simplified CAM edges from the upstream CSV.
+    const camelopardalisStars = [
+      {hip:33694,ra:105.016033,dec:76.977442},
+      {hip:29997,ra:94.711583,dec:69.320034},
+      {hip:22783,ra:73.512544,dec:66.342660},
+      {hip:23522,ra:75.854572,dec:60.442281},
+      {hip:23040,ra:74.321752,dec:53.752083},
+      {hip:17959,ra:57.589483,dec:71.332368},
+      {hip:17884,ra:57.380356,dec:65.526006},
+      {hip:16228,ra:52.267227,dec:59.940335}
+    ];
+    const camLines = [
+      [33694,29997],[29997,22783],[22783,23522],[23522,23040],
+      [22783,17959],[17959,17884],[17884,16228]
+    ];
+    let cam = [...overlays.values()].find(e => ["CAM","CAMELOPARDALIS"].includes(canon(e.name)));
+    if (!cam) {
+      cam = {name:"Cam",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
+      aladin.addOverlay(cam.obj); aladin.addOverlay(cam.highlight); overlays.set(cam.name,cam);
+    }
+    cam.points = camelopardalisStars.map(s => [s.ra,s.dec]);
+    cam.starIds = new Set(camelopardalisStars.map(s => s.hip));
+    cam.segmentPairs = camLines.map(([a,b]) => {
+      const p1=cam.points[camelopardalisStars.findIndex(s=>s.hip===a)];
+      const p2=cam.points[camelopardalisStars.findIndex(s=>s.hip===b)];
+      return [p1,p2];
+    });
+    cam.segments = cam.segmentPairs.length;
+    // Rebuild the object overlays so no upstream CAM segments remain visible.
+    cam.obj = window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH});
+    cam.highlight = window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH});
+    aladin.addOverlay(cam.obj); aladin.addOverlay(cam.highlight);
+    for (const pair of cam.segmentPairs) {
+      cam.obj.add(window.A.polyline(pair,{color:COLOR,lineWidth:WIDTH}));
+      cam.highlight.add(window.A.polyline(pair,{color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}));
+    }
+    console.info("GV CONSTELLATION: IAU Camelopardalis chains registered",{stars:camelopardalisStars.map(s=>s.hip),edges:cam.segments,closed:false});
+
+    // Libra: restore the fuller six-star stick figure from the reference chart.
+    // Replace upstream Libra edges so the intended crossbar and lower chains are explicit.
+    let libra = [...overlays.values()].find(e => ["LIB","LIBRA"].includes(canon(e.name)));
+    if (!libra) {
+      libra = {name:"Lib",obj:window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH}),highlight:window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}),segments:0,starIds:new Set(),points:[],segmentPairs:[]};
+      aladin.addOverlay(libra.obj); aladin.addOverlay(libra.highlight); overlays.set(libra.name,libra);
+    }
+    const libraStars = [
+      {id:1,ra:225.2967,dec:-8.5197},    // Delta Librae
+      {id:2,ra:222.7196,dec:-16.0418},   // Alpha Librae
+      {id:3,ra:226.0176,dec:-25.2819},   // Sigma Librae
+      {id:4,ra:233.8816,dec:-14.7895},   // Gamma Librae
+      {id:5,ra:234.2561,dec:-28.1351},   // Upsilon Librae
+      {id:6,ra:229.2517,dec:-9.3829}     // Beta Librae
+    ];
+    const libraById = new Map(libraStars.map(s=>[s.id,[s.ra,s.dec]]));
+    const libraEdges = [[6,1],[1,2],[6,2],[2,3],[6,4],[4,5]];
+    libra.obj = window.A.graphicOverlay({color:COLOR,lineWidth:WIDTH});
+    libra.highlight = window.A.graphicOverlay({color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH});
+    aladin.addOverlay(libra.obj); aladin.addOverlay(libra.highlight);
+    libra.points = libraStars.map(s=>[s.ra,s.dec]);
+    libra.starIds = new Set(libraStars.map(s=>s.id));
+    libra.segmentPairs = libraEdges.map(([a,b])=>[libraById.get(a),libraById.get(b)]);
+    libra.segments = libra.segmentPairs.length;
+    for (const pair of libra.segmentPairs) {
+      libra.obj.add(window.A.polyline(pair,{color:COLOR,lineWidth:WIDTH}));
+      libra.highlight.add(window.A.polyline(pair,{color:HIGHLIGHT_COLOR,lineWidth:HIGHLIGHT_WIDTH}));
+    }
+    console.info("GV CONSTELLATION: Libra six-star reference pattern registered",{stars:libraStars.map(s=>s.id),edges:libraEdges,segments:libra.segments});
+
+    // Static line highlight only: no star circles, glow layers, timers, or animation.
+    for(const e of overlays.values()){e.obj.hide();e.highlight.hide();}
+    let enabled=false,travelEntry=null,centerEntry=null,travelName=null,centerName=null,travelActive=false;
+    function setEnabled(next){
+      enabled=!!next;
+      for(const e of overlays.values()){if(enabled)e.obj.show();else e.obj.hide();e.highlight.hide();}
+      if(enabled){if(centerEntry){centerEntry.obj.show();centerEntry.highlight.show();}if(travelActive&&travelEntry){travelEntry.obj.show();travelEntry.highlight.show();}}
+      return enabled;
+    }
+    function findByName(name){
+      const wanted=canon(name);if(!wanted)return null;
+      const aliases={
+        ANDROMEDA:"AND",ANTLIA:"ANT",APUS:"APS",AQUARIUS:"AQR",AQUILA:"AQL",
+        ARIES:"ARI",AURIGA:"AUR",BOOTES:"BOO",CAELUM:"CAE",CAMELOPARDALIS:"CAM",
+        CANCER:"CNC",CANESVENATICI:"CVN",CANISMAJOR:"CMA",CANISMINOR:"CMI",
+        CAPRICORNUS:"CAP",CARINA:"CAR",CASSIOPEIA:"CAS",CENTAURUS:"CEN",CEPHEUS:"CEP",
+        CETUS:"CET",CHAMAELEON:"CHA",CIRCINUS:"CIR",COLUMBA:"COL",COMABERENICES:"COM",
+        CORONAAUSTRALIS:"CRA",CORONABOREALIS:"CRB",CORVUS:"CRV",CRATER:"CRT",CRUX:"CRU",
+        CYGNUS:"CYG",DELPHINUS:"DEL",DORADO:"DOR",DRACO:"DRA",EQUULEUS:"EQU",ERIDANUS:"ERI",
+        FORNAX:"FOR",GEMINI:"GEM",GRUS:"GRU",HERCULES:"HER",HOROLOGIUM:"HOR",HYDRA:"HYA",
+        HYDRUS:"HYI",INDUS:"IND",LACERTA:"LAC",LEO:"LEO",LEOMINOR:"LMI",LEPUS:"LEP",LIBRA:"LIB",
+        LUPUS:"LUP",LYNX:"LYN",LYRA:"LYR",MENSA:"MEN",MICROSCOPIUM:"MIC",MONOCEROS:"MON",
+        MUSCA:"MUS",NORMA:"NOR",OCTANS:"OCT",OPHIUCHUS:"OPH",ORION:"ORI",PAVO:"PAV",
+        PEGASUS:"PEG",PERSEUS:"PER",PHOENIX:"PHE",PICTOR:"PIC",PISCES:"PSC",
+        PISCISAUSTRINUS:"PSA",PUPPIS:"PUP",PYXIS:"PYX",RETICULUM:"RET",SAGITTA:"SGE",
+        SAGITTARIUS:"SGR",SCORPIUS:"SCO",SCULPTOR:"SCL",SCUTUM:"SCT",SERPENS:"SER",
+        SEXTANS:"SEX",TAURUS:"TAU",TELESCOPIUM:"TEL",TRIANGULUM:"TRI", TRIANGULUMAUSTRALE:"TRA",
+        TRIANGULUMAUSTRALIS:"TRA",TUCANA:"TUC",URSAMAJOR:"UMA",URSAMINOR:"UMI",
+        VELA:"VEL",VIRGO:"VIR",VOLANS:"VOL",VULPECULA:"VUL"
+      };
+      const alternate=aliases[wanted];
+      for(const [key,e] of overlays){
+        const k=canon(key);
+        if(k===wanted||k===alternate||aliases[k]===wanted||aliases[wanted]===k)return e;
+      }
+      // No substring fallback: it can select a neighboring constellation.
+      return null;
+    }
+    // Reticle and travel highlights are independent channels.
+    function setCenterConstellation(name){
+      const found=name?findByName(name):null;
+      if(centerEntry&&centerEntry!==found)centerEntry.highlight.hide();
+      centerEntry=found;centerName=name||null;
+      if(found&&enabled){found.obj.show();found.highlight.show();}
+      return !!found;
+    }
+    function setTravelGlow(name,active){
+      if(!active||!name){if(travelEntry)travelEntry.highlight.hide();travelEntry=null;travelActive=false;travelName=null;if(centerEntry&&enabled){centerEntry.obj.show();centerEntry.highlight.show();}return false;}
+      const found=findByName(name);if(!found)return false;
+      if(travelEntry&&travelEntry!==found)travelEntry.highlight.hide();
+      travelEntry=found;travelActive=true;travelName=name;found.obj.show();found.highlight.show();return true;
+    }
+    function setTravelGlowAt(ra,dec,active=true){
+      const targetRa=Number(ra),targetDec=Number(dec);
+      if(!active||!Number.isFinite(targetRa)||!Number.isFinite(targetDec))return setTravelGlow(null,false);
+      const rad=Math.PI/180;let best=null,bestDot=-Infinity;
+      for(const e of overlays.values())for(const [sra,sdec] of e.points){const dot=Math.sin(targetDec*rad)*Math.sin(sdec*rad)+Math.cos(targetDec*rad)*Math.cos(sdec*rad)*Math.cos((targetRa-sra)*rad);if(dot>bestDot){bestDot=dot;best=e;}}
+      return best?setTravelGlow(best.name,true):false;
+    }
+    function setTravelGlowByName(name,active=true){return setTravelGlow(name,active);}
+    function clearTravelGlow(){return setTravelGlow(null,false);}
+    const result=Object.freeze({VERSION,get enabled(){return enabled;},setEnabled,setCenterConstellation,setTravelGlow,setTravelGlowAt,setTravelGlowByName,clearTravelGlow,toggle(){return setEnabled(!enabled);},get centerConstellation(){return centerName;},get travelConstellation(){return travelName;},constellationCount:overlays.size,segmentCount:[...overlays.values()].reduce((n,e)=>n+e.segments,0)});
+    window.GalaxyViewerConstellations=result;return result;
+  }
+  window.GalaxyViewerConstellationOverlay=Object.freeze({VERSION,mount});
+})();
