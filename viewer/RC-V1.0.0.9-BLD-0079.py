@@ -1153,7 +1153,8 @@ if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!
       return {ra:((Math.atan2(x,y)+gvZ)/gvRad+360)%360,dec:Math.asin(Math.max(-1,Math.min(1,z)))/gvRad};
     }
     function gvHours(s){const p=String(s).split(':').map(Number);return (p[0]||0)+(p[1]||0)/60+(p[2]||0)/3600;}
-    const gvVi42Rows=GV_IAU_VI42_SPANS.map(v=>({lo:gvHours(v[0]),hi:gvHours(v[1]),dec:Number(v[2]),abbr:v[3]}));
+    function gvDegrees(s){const raw=String(s),sign=raw.startsWith('-')?-1:1,p=raw.replace(/^[+-]/,'').split(':').map(Number);return sign*((p[0]||0)+(p[1]||0)/60+(p[2]||0)/3600);}
+    const gvVi42Rows=GV_IAU_VI42_SPANS.map(v=>({lo:gvHours(v[0]),hi:gvHours(v[1]),dec:gvDegrees(v[2]),abbr:v[3]}));
     function getConstellationAt(ra,dec){
       ra=Number(ra);dec=Number(dec);
       if(!Number.isFinite(ra)||!Number.isFinite(dec)||dec < -90||dec > 90)return null;
