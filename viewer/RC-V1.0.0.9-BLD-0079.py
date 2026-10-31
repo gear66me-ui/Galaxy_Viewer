@@ -1948,8 +1948,8 @@ gvConstellationCenterLabel.textContent='CONSTELLATION —';
 gvConstellationCenterLabel.setAttribute('role','status');
 gvConstellationCenterLabel.setAttribute('aria-live','polite');
 Object.assign(gvConstellationCenterLabel.style,{
-    position:'fixed',left:'50%',top:'0px',zIndex:'8902',display:'none',width:'max-content',maxWidth:'calc(100vw - 24px)',boxSizing:'border-box',
-    transform:'translateX(-50%)',textAlign:'center',whiteSpace:'nowrap',
+    position:'fixed',left:'50%',top:'0px',zIndex:'8902',display:'none',width:'max-content',maxWidth:'calc(100vw - 32px)',boxSizing:'border-box',
+    transform:'translateX(-50%)',textAlign:'center',whiteSpace:'normal',overflowWrap:'normal',wordBreak:'normal',textWrap:'balance',lineHeight:'1.35',
     color:'#FFE066',font:'400 12.6px/1 "GV Space Age",sans-serif',letterSpacing:'.65px',
     textShadow:'0 0 4px rgba(255,245,190,.95),0 0 10px rgba(255,224,102,.85)',
     pointerEvents:'none',userSelect:'none'
@@ -2020,7 +2020,10 @@ function gvSyncSurveySelectButton(){
     // Size to the actual label text, not the selector's fixed width. The
     // fixed-position anchor and translate keep every constellation name centered.
     gvConstellationCenterLabel.style.width='max-content';
-    gvConstellationCenterLabel.style.maxWidth='calc(100vw - 24px)';
+    gvConstellationCenterLabel.style.maxWidth='calc(100vw - 32px)';
+    gvConstellationCenterLabel.style.whiteSpace='normal';
+    gvConstellationCenterLabel.style.textAlign='center';
+    gvConstellationCenterLabel.style.textWrap='balance';
     gvConstellationCenterLabel.style.left=center+'px';
     gvConstellationCenterLabel.style.transform='translateX(-50%)';
     gvConstellationCenterLabel.style.textAlign='center';
