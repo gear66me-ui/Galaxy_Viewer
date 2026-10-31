@@ -179,18 +179,17 @@
       return !!found;
     }
     function setTravelGlow(name,active){
-      if(!active||!name){if(travelEntry)travelEntry.highlight.hide();travelEntry=null;travelActive=false;travelName=null;return false;}
+      if(!active||!name){if(travelEntry)travelEntry.highlight.hide();travelEntry=null;travelActive=false;travelName=null;if(centerEntry&&enabled){centerEntry.obj.show();centerEntry.highlight.show();}return false;}
       const found=findByName(name);if(!found)return false;
       if(travelEntry&&travelEntry!==found)travelEntry.highlight.hide();
       travelEntry=found;travelActive=true;travelName=name;found.obj.show();found.highlight.show();return true;
     }
     function setTravelGlowAt(ra,dec,active=true){
-      console.warn("GV CONSTELLATION GLOW: coordinate fallback deprecated; pass archive constellation name");
       const targetRa=Number(ra),targetDec=Number(dec);
-      if(!active||!Number.isFinite(targetRa)||!Number.isFinite(targetDec)){stopGlow();return false;}
+      if(!active||!Number.isFinite(targetRa)||!Number.isFinite(targetDec))return setTravelGlow(null,false);
       const rad=Math.PI/180;let best=null,bestDot=-Infinity;
       for(const e of overlays.values())for(const [sra,sdec] of e.points){const dot=Math.sin(targetDec*rad)*Math.sin(sdec*rad)+Math.cos(targetDec*rad)*Math.cos(sdec*rad)*Math.cos((targetRa-sra)*rad);if(dot>bestDot){bestDot=dot;best=e;}}
-      if(!best)return false;console.info("GV CONSTELLATION GLOW: coordinate fallback matched",best.name);return startGlow(best,{travel:true});
+      return best?setTravelGlow(best.name,true):false;
     }
     function setTravelGlowByName(name,active=true){return setTravelGlow(name,active);}
     function clearTravelGlow(){return setTravelGlow(null,false);}
