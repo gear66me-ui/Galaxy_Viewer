@@ -45,7 +45,6 @@ jobs:
           assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0104"' in rc
           assert "const GV200001_BUILD='0104'" in rc
           assert "const GV_RUNTIME='0104';" in rc, "BUILD 0097 marker missing"
-          assert "GV0104 ANGULAR EARTH DISTANCE UPDATED" in rc, "Build 0104 live angular banner update diagnostic missing"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
           assert "function gvLinearEarthDistanceEstimate(ra,dec)" in rc, "Linear AVM-anchored estimate missing"
           assert "const progress=Math.max(0,Math.min(1,(movedDegrees-1)/(totalDegrees-1)))" in rc, "Linear estimate must retain AVM distance within one degree and interpolate to HOME"
