@@ -3606,11 +3606,12 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     gvHdTravelRetired=false;
     const v=validateDestination(destination),sourceDestination=activeDestination;
     if(directHdStaged){const stale=directHdStaged;directHdStaged=null;try{aladin.removeImageLayer?.(stale.layerName)}catch(_){}if(stale.objectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(stale.objectUrl)}
-    let recordPromise=preloadedAvmRecordPromise||null,preparedPromise=null,presentationStarted=false,travelCardStarted=false,resolveRegisteredTravel,rejectRegisteredTravel;
+    let recordPromise=preloadedAvmRecordPromise||null,recordRegistrationAttached=false,preparedPromise=null,presentationStarted=false,travelCardStarted=false,resolveRegisteredTravel,rejectRegisteredTravel;
     const registeredTravelPromise=new Promise((resolve,reject)=>{resolveRegisteredTravel=resolve;rejectRegisteredTravel=reject});
     const startRecordLookup=()=>{
-        if(!recordPromise){
-            recordPromise=gvRuntimeAvmRecord(v.destination);
+        if(!recordPromise)recordPromise=gvRuntimeAvmRecord(v.destination);
+        if(!recordRegistrationAttached){
+            recordRegistrationAttached=true;
             recordPromise.then(gvRegisteredTravelStateFromRecord).then(resolveRegisteredTravel,rejectRegisteredTravel);
         }
         return recordPromise;
