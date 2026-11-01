@@ -445,6 +445,7 @@ function gvInstallEarthBearingPointer(){
     reticle.appendChild(rotor);
 }
 let gvEarthPointerActive=false;
+let gvEarthPointerArrivalPresentationReady=false;
 let gvStartupMollweideScreen=true;
 let gvEarthPointerRa=HOME.ra,gvEarthPointerDec=HOME.dec;
 let gvEarthLastValidBearing=null;
@@ -472,7 +473,7 @@ function gvEarthPointerFovVisible(){
     }catch(_){return false}
 }
 function gvApplyEarthPointerFovVisibility(){
-    const visible=gvEarthPointerActive&&!gvStartupMollweideScreen&&gvEarthPointerFovVisible();
+    const visible=gvEarthPointerActive&&gvEarthPointerArrivalPresentationReady&&!gvStartupMollweideScreen&&!gvNavigationTravelActive&&gvEarthPointerFovVisible();
     const rotor=document.getElementById('gv-earth-bearing-rotor');
     if(rotor){rotor.style.display=visible?'block':'none';rotor.style.opacity=visible?'1':'0'}
     const banner=document.getElementById('gv-earth-distance-banner');
@@ -696,7 +697,7 @@ async function gvShowEarthDistance(destination,alreadyResolvedRuntimeRecord=fals
     gvInstallEarthDistanceBanner();
     const b=document.getElementById('gv-earth-distance-banner');
     if(!b||(gvNavigationTravelActive&&!allowDuringTravel))return;
-    if(gvStartupMollweideScreen||!gvEarthPointerActive){gvHideEarthDistance();return;}
+    if(gvStartupMollweideScreen||!gvEarthPointerActive||!gvEarthPointerArrivalPresentationReady){gvHideEarthDistance();return;}
     const generation=++gvEarthDistanceDisplayGeneration;
     try{
         // Resolve navigation destinations by exact image identity. Live-center matches are already exact records from this same runtime catalog; do not remap them by a possibly colliding archive ID.
@@ -3760,7 +3761,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     const startTravelWork=()=>{
         if(presentationStarted)return;
         presentationStarted=true;
-        gvStartupMollweideScreen=false;gvHideEarthDistance();gvEarthPointerActive=true;gvUpdateEarthBearingPointer();
+        gvStartupMollweideScreen=false;gvEarthPointerArrivalPresentationReady=false;gvHideEarthDistance();gvEarthPointerActive=true;gvUpdateEarthBearingPointer();
         if(firstTrip)destinationPresentation.depart();
         if(directHdPresentationObjectUrl)gvReleaseCleanImageObjectUrl(directHdPresentationObjectUrl)
         destinationPresentation.preview(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim()});
@@ -3867,6 +3868,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             gvEarthDistanceSyncGeneration++;
             gvEarthDistanceSyncPending=false;
             headsUpDisplay.render();
+            gvEarthPointerArrivalPresentationReady=true;
             gvShowEarthDistance(presentationDestination,true);
             gvPrewarmProviderWebsite(v.destination);
             gvStartNextTripPrewarm();
@@ -3897,6 +3899,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         gvEarthDistanceSyncGeneration++;
         gvEarthDistanceSyncPending=false;
         headsUpDisplay.render();
+        gvEarthPointerArrivalPresentationReady=true;
         gvShowEarthDistance(presentationDestination,true);
         gvPrewarmProviderWebsite(v.destination);
         gvStartNextTripPrewarm();
