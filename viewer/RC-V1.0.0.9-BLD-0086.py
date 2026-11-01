@@ -1031,7 +1031,7 @@ Promise.resolve(window.GVProviderArtwork?.preloadConstellations?.(88)).then(resu
 // ECO: GV200-001
 // ============================================================================
 if(window.GalaxyViewerHamburgerMenu?.version!=='0013')throw new Error('HAMBURGER 0013 EXPORT MISSING');
-if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0022'||typeof window.GalaxyViewerConstellationOverlay.mount!=='function')throw new Error('CONSTELLATION OVERLAY 0022 EXPORT MISSING');
+if(window.GalaxyViewerConstellationOverlay?.VERSION!=='0023'||typeof window.GalaxyViewerConstellationOverlay.mount!=='function')throw new Error('CONSTELLATION OVERLAY 0023 EXPORT MISSING');
 if(!window.GalaxyCoordinateOverlay||window.GalaxyCoordinateOverlay.VERSION!=='0008'||typeof window.GalaxyCoordinateOverlay.mount!=='function')throw new Error('COORDINATE OVERLAY 0008 EXPORT MISSING');
 if(window.GalaxyViewerTargetSimbad?.version!=='0007')throw new Error('TARGET SURVEY 0007 EXPORT MISSING');
 /* GV014: diagnostics intentionally not loaded. */
