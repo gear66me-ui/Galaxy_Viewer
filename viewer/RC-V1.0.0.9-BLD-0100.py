@@ -767,7 +767,7 @@ let gvEarthDistanceRulerAvmFovXDegrees=null;
 let gvEarthDistanceUserAdjustedView=false;
 let gvEarthDistanceLastObservedCenter=null;
 let gvEarthDistanceInteractionListenersInstalled=false;
-async function gvSyncEarthDistanceToCenter(){
+async function gvSyncEarthDistanceToCenter(allowDuringTravel=false){
     // Do not invalidate an in-flight catalog match on every 300 ms poll.
     // A busy request is allowed to finish; the next poll then samples the latest center.
     if(gvEarthDistanceSyncBusy){
