@@ -2034,9 +2034,9 @@ function gvSyncConstellationCenterLabel(force=false){
         gvConstellationCenterKey=key;
         const name=window.GalaxyViewerConstellationRegions?.getConstellationAt?.(ra,dec)||null;
         const labelName=String(name||'').trim().toUpperCase();
-        if(labelName===gvConstellationCenterName)return;
+        if(labelName===gvConstellationCenterName){if(gvConstellationPromise)gvConstellationPromise.then(layer=>layer.setCenterConstellation(name)).catch(error=>console.warn('GV CENTER HIGHLIGHT FAILED',error));return;}
         gvConstellationCenterName=labelName;
-        const labelLetterCount=[...labelName.replace(/\\s/g,'')].length;
+        const labelLetterCount=[...labelName.replace(/\s/g,'')].length;
         gvConstellationCenterLabel.replaceChildren();
         if(labelName&&labelLetterCount>12){
             const prefix=document.createElement('span');prefix.textContent='CONSTELLATION';prefix.style.display='block';prefix.style.textAlign='center';
