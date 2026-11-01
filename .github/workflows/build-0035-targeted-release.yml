@@ -1,5 +1,5 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0092
-# BUILD 0092: validate Random Galaxy non-blocking HD prewarm handoff; preserve existing release checks.
+name: Validate and Deploy RC-V1.0.0.9 Build 0093
+# BUILD 0093: validate Random Galaxy non-blocking HD prewarm handoff; preserve existing release checks.
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0092 and live IAU reticle constellation label
+      - name: Validate Build 0093 and live IAU reticle constellation label
         shell: bash
         run: |
           set -euo pipefail
@@ -37,25 +37,25 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0092.py","build":"0092"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0092", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0092.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0093.py","build":"0093"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0093", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0093.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0092"' in rc
-          assert "const GV200001_BUILD='0092'" in rc
-          assert "const GV_RUNTIME='0092';" in rc, "BUILD 0092 marker missing"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0093"' in rc
+          assert "const GV200001_BUILD='0093'" in rc
+          assert "const GV_RUNTIME='0093';" in rc, "BUILD 0093 marker missing"
           assert "GV RANDOM NAVIGATION NO-MOTION WATCHDOG ARMED" in rc, "Random navigation watchdog missing"
           assert "GV_RANDOM_NO_MOTION_LIMIT_MS" in rc and "10000" in rc, "Random navigation watchdog must be capped at 10 seconds"
           assert "gvStartRandomNavigationWatchdog(randomAttempt)" in rc, "Random navigation watchdog is not armed"
           assert r"normalize('NFD').replace(/[\u0300-\u036f]/g,'')" in rc, "Embedded constellation normalizer must preserve ASCII names"
-          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0092 must preserve the pinned Route Engine 002 export"
+          assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0093 must preserve the pinned Route Engine 002 export"
           assert "const data=JSON.parse(" in rc, "Boundary data must remain bundled"
           assert "function getConstellationAt(ra,dec)" in rc, "Live IAU reticle lookup missing"
           overlay = (root / "viewer/modules/constellation-overlay/gv-constellation-overlay-0023.js").read_text()
           assert 'const VERSION = "0023"' in overlay, "Constellation overlay 0023 missing"
           assert 'TRIANGULUMAUSTRALE:"TRA"' in overlay, "Triangulum Australe alias must resolve to TrA for yellow highlight"
-          assert "gv-constellation-overlay-0023.js" in rc and "VERSION!=='0023'" in rc, "Build 0092 must pin and require overlay 0023"
+          assert "gv-constellation-overlay-0023.js" in rc and "VERSION!=='0023'" in rc, "Build 0093 must pin and require overlay 0023"
           assert "gv-constellation-center-label" in rc and "(top+38+10)+'px'" in rc, "Constellation label placement must remain 10px below SELECT SURVEY"
           assert "labelLetterCount>12" in rc, "Main-screen names above 12 letters must use two centered rows"
           assert "gvConstellationCenterLabel.append(prefix,constellation)" in rc, "Long main-screen labels must render as separate centered rows"
@@ -92,13 +92,15 @@ jobs:
           assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0092; found {len(pins)}"
+          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0093; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "function gvUpdateLivePhysicalScale()" in rc
           ruler = rc[rc.index("function gvUpdateLivePhysicalScale()"):rc.index("function gvHideEarthDistance")]
-          assert "const distanceMly=Number(gvEarthDistanceRulerReferenceMly);" in ruler, "Build 0092 fixed arrival distance reference missing"
-          assert "2*distanceMly*1e6*Math.tan(fovX*Math.PI/360)" in ruler, "Build 0092 physical FOV formula missing"
+          assert "const distanceMly=Number(gvEarthDistanceRulerReferenceMly);" in ruler, "Build 0093 fixed arrival distance reference missing"
+          assert "2*distanceMly*1e6*Math.sin(fovX*Math.PI/360)" in ruler, "Build 0093 bounded spherical FOV formula missing"
+          assert "Math.tan(fovX*Math.PI/360)" not in ruler, "Unbounded tangent projection must not be used"
+          assert "fovX>180" in ruler, "Build 0093 must accept a 180-degree FOV without a singularity"
           assert "gvEarthDistanceTarget" not in ruler and "pix2world" not in ruler and "getRaDec" not in ruler, "Ruler must not depend on live-center matches or panning"
           assert "let gvEarthDistanceRulerReferenceMly=null;" in rc, "Fixed ruler reference state missing"
           assert "if(gvEarthDistanceArrivalDestination&&(gvEarthDistanceRulerReferenceMly===null||gvEarthDistanceRulerReferenceMly===undefined||!Number.isFinite(Number(gvEarthDistanceRulerReferenceMly))))gvEarthDistanceRulerReferenceMly=distanceMly;" in rc, "Arrival reference must be captured once and remain fixed"
@@ -124,8 +126,8 @@ jobs:
           assert "const VERSION='006'" in travel
           assert "letterCount>12" in travel, "Constellation names above 12 letters must use the centered two-line layout"
           assert "gv-course-two-line .gv-travel-course-prefix" in travel and "gv-course-two-line .gv-travel-course-name" in travel, "Both trip-planner lines must be centered"
-          assert "travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@8ab7dbb04a42145dc972c600cb808bc73cec70bc/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js'" in rc, "Build 0092 must pin the new trip-planner presentation"
-          print("BUILD 0092 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
+          assert "travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@8ab7dbb04a42145dc972c600cb808bc73cec70bc/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js'" in rc, "Build 0093 must pin the new trip-planner presentation"
+          print("BUILD 0093 RELEASE VALIDATION PASSED: pointer, manifest, source identity, bundled IAU polygons, Aladin assets, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
