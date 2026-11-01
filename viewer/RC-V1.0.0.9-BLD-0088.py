@@ -3039,14 +3039,37 @@ function gvRestoreDirectHd(){
         }
         if(!directHdDisplayWcs)return false;
         const destination=directHdDestination,objectUrl=directHdObjectUrl;
-        const layer=A.image(objectUrl,{name:directHdLayerName,imgFormat:'png',wcs:directHdDisplayWcs,opacity:1,successCallback:()=>{if(directHdObjectUrl!==objectUrl)return;directHdOverlay=layer;gvHdTravelRetired=false;applyDirectHdOpacity();console.info('GV HD RESTORED — EXISTING OBJECT URL REINSTALLED')},errorCallback:error=>console.warn('GV HD RESTORE FAILED',error)});
+        let layer;
+        layer=A.image(objectUrl,{name:directHdLayerName,imgFormat:'png',wcs:directHdDisplayWcs,opacity:1,successCallback:()=>{
+            if(directHdObjectUrl!==objectUrl)return;
+            directHdOverlay=layer;gvHdTravelRetired=false;applyDirectHdOpacity();
+            console.info('GV HD RESTORED — EXISTING OBJECT URL REINSTALLED');
+        },errorCallback:error=>{
+            if(directHdObjectUrl===objectUrl)directHdOverlay=null;
+            console.warn('GV HD RESTORE FAILED',error);
+            setTimeout(()=>gvRestoreAfterForeground('restore-image-error'),350);
+        }});
         directHdOverlay=layer;
         aladin.setOverlayImageLayer(layer,directHdLayerName);
+        gvHdTravelRetired=false;applyDirectHdOpacity();
+        console.info('GV HD RESTORE REATTACH REQUESTED',{layer:directHdLayerName});
         return true;
     }catch(error){console.warn('GV HD RESTORE SKIPPED',error);return false}
 }
-window.addEventListener('focus',()=>{if(document.visibilityState==='visible')setTimeout(gvRestoreDirectHd,0)});
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')setTimeout(gvRestoreDirectHd,0)});
+let gvForegroundRestoreGeneration=0;
+function gvRestoreAfterForeground(reason='foreground'){
+    const generation=++gvForegroundRestoreGeneration;
+    const delays=[0,250,600,1100,1800,2800,4200];
+    delays.forEach(delay=>setTimeout(()=>{
+        if(generation!==gvForegroundRestoreGeneration||document.visibilityState!=='visible')return;
+        if(!directHdObjectUrl||!directHdDestination||activeDestination!==directHdDestination)return;
+        const restored=gvRestoreDirectHd();
+        if(restored)console.info('GV FOREGROUND HD RESTORE ATTEMPT',{reason,delay,layer:directHdLayerName});
+    },delay));
+}
+window.addEventListener('focus',()=>{if(document.visibilityState==='visible')gvRestoreAfterForeground('focus')});
+window.addEventListener('pageshow',()=>{if(document.visibilityState==='visible')gvRestoreAfterForeground('pageshow')});
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')gvRestoreAfterForeground('visibilitychange')});
 function gvFlightClamp01(value){return Math.max(0,Math.min(1,Number(value)))}
 function gvFlightNavigationSmootherstep(value){const t=gvFlightClamp01(value);return 35*t**4-84*t**5+70*t**6-20*t**7}
 function gvFlightSmootherstep(value){const t=gvFlightClamp01(value);return t*t*t*(t*(t*6-15)+10)}
@@ -3659,14 +3682,41 @@ function gvReleaseTransientResourcesForBackground(reason='page-hidden'){
         gvBackgroundReleaseInProgress=false;
     }
 }
+function gvRefreshTravelConstellationArtwork(){
+    const hud=document.getElementById('gv-travel-hud');
+    if(!hud?.classList.contains('gv-visible'))return;
+    const artwork=window.GVProviderArtwork;
+    const name=String(activeDestination?.constellation||'').trim();
+    const constellationHolder=hud.querySelector('#gv-travel-constellation');
+    const constellationImage=constellationHolder?.querySelector('img');
+    if(name&&constellationHolder&&constellationImage&&artwork?.constellationSources&&artwork?.loadImage){
+        constellationHolder.style.display='none';
+        constellationImage.removeAttribute('src');
+        artwork.loadImage(constellationImage,artwork.constellationSources(name),()=>{constellationHolder.style.display='flex'},()=>{constellationHolder.style.display='none'});
+        try{gvPreloadConstellationArtwork(name)}catch(_){}
+        console.info('GV FOREGROUND CONSTELLATION ART REFRESH REQUESTED',{name});
+    }
+    const providerHolder=hud.querySelector('#gv-travel-provider-icon');
+    const providerImage=providerHolder?.querySelector('img');
+    const provider=String(activeDestination?.provider||'').trim();
+    if(provider&&providerHolder&&providerImage&&artwork?.iconSources&&artwork?.loadImage){
+        providerHolder.style.display='none';
+        providerImage.removeAttribute('src');
+        artwork.loadImage(providerImage,artwork.iconSources(provider),()=>{providerHolder.style.display='flex'},()=>{providerHolder.style.display='none'});
+    }
+}
 document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='hidden'){
         gvReleaseTransientResourcesForBackground('hidden');
     }else{
-        // Existing resume handlers reattach the preserved HD image; capture a post-return snapshot.
-        setTimeout(()=>{try{gvMemoryDiagnosticSnapshot('roll-0025-visible-return')}catch(_){}},250);
+        setTimeout(()=>{
+            try{gvMemoryDiagnosticSnapshot('roll-0025-visible-return')}catch(_){}
+            try{gvRefreshTravelConstellationArtwork()}catch(error){console.warn('GV FOREGROUND CONSTELLATION ART REFRESH FAILED',error)}
+            try{window.GV_RETRY_MID_TRIP_AVM?.()}catch(error){console.warn('GV MID-TRIP AVM RESUME RETRY FAILED',error)}
+        },250);
     }
 });
+window.addEventListener('pageshow',()=>{if(document.visibilityState==='visible')setTimeout(()=>{try{gvRefreshTravelConstellationArtwork()}catch(_){};try{window.GV_RETRY_MID_TRIP_AVM?.()}catch(_){}},300)});
 
 async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,preloadedPreparedPromise=null,preloadedAvmRecordPromise=null,switchToSphericalAtApex=false,prewarmedPresentationDestination=null,prewarmedPresentationPromise=null,isCurrent=()=>true}={}){
     gvHdTravelRetired=false;
@@ -3684,11 +3734,17 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     };
     const ensurePrepared=()=>{
         const record=startRecordLookup();
-        if(!preparedPromise){
-            if(preloadedPrepared)preparedPromise=Promise.resolve(preloadedPrepared);
-            else if(preloadedPreparedPromise)preparedPromise=Promise.resolve(preloadedPreparedPromise).catch(error=>{console.warn('GV ROLL 0085 PREWARM IMAGE FALLBACK',String(error?.message||error));return gvPrepareDirectHd(v.destination,record)});
-            else preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination,record)):gvPrepareDirectHd(v.destination,record);
+        if(preparedPromise){
+            return preparedPromise.then(prepared=>{
+                if(prepared?.imageObjectUrl&&gvHdObjectUrls.includes(prepared.imageObjectUrl))return prepared;
+                console.warn('GV PREPARED AVM IMAGE WAS RELEASED; REBUILDING FOR RESUME');
+                preparedPromise=null;
+                return ensurePrepared();
+            });
         }
+        if(preloadedPrepared)preparedPromise=Promise.resolve(preloadedPrepared);
+        else if(preloadedPreparedPromise)preparedPromise=Promise.resolve(preloadedPreparedPromise).catch(error=>{console.warn('GV ROLL 0085 PREWARM IMAGE FALLBACK',String(error?.message||error));return gvPrepareDirectHd(v.destination,record)});
+        else preparedPromise=(firstTrip&&gvFirstDestinationPreload)?gvFirstDestinationPreload.then(warm=>warm?.destination===v.destination?warm.prepared:gvPrepareDirectHd(v.destination,record)):gvPrepareDirectHd(v.destination,record);
         return preparedPromise;
     };
     const startTravelCard=()=>{
@@ -3754,7 +3810,12 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     // Activate the staged image as soon as Aladin confirms that its layer has loaded.
     let arrivalHdPreparationStarted=false;
     const startArrivalHdPreparation=()=>{
-        if(arrivalHdPreparationStarted||!isCurrent()||activeDestination!==presentationDestination)return;
+        if(!isCurrent()||activeDestination!==presentationDestination)return;
+        if(arrivalHdPreparationStarted){
+            if(directHdStaged?.destination===presentationDestination||directHdDestination===presentationDestination)return;
+            // Android may release a not-yet-active staged layer while backgrounding the app.
+            arrivalHdPreparationStarted=false;
+        }
         arrivalHdPreparationStarted=true;
         console.info('GV MID-TRIP AVM PREPARATION STARTED',{name:presentationDestination?.name||presentationDestination?.objectName||''});
         ensurePrepared()
@@ -3764,8 +3825,12 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
                 const activated=gvActivateStagedHd(presentationDestination);
                 console.info('GV MID-TRIP AVM IMAGE ACTIVATED',{activated,name:presentationDestination?.name||presentationDestination?.objectName||''});
             })
-            .catch(error=>console.error('GV MID-TRIP AVM PREPARATION/ACTIVATION FAILED',error));
+            .catch(error=>{
+                arrivalHdPreparationStarted=false;
+                console.error('GV MID-TRIP AVM PREPARATION/ACTIVATION FAILED',error);
+            });
     };
+    window.GV_RETRY_MID_TRIP_AVM=()=>{if(gvNavigationTravelActive)startArrivalHdPreparation()};
     // ROLL 0085: any existing next-trip HD prewarm continues in the background.
     // For a cold destination, the existing T-minus-eight hook starts preparation;
     // arrival retains its awaited safety net. Neither path delays camera takeoff.
@@ -3786,6 +3851,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         if(stagedInstallPromise)await stagedInstallPromise.catch(error=>console.error('GV FIRST-TRIP STAGED LAYER SETTLE FAILED',error));
         gvActivateStagedHd(presentationDestination);
         travelPresentation.end();
+        window.GV_RETRY_MID_TRIP_AVM=null;
         const arrivedPrepared=await ensurePrepared();
         directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
         destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:arrivedPrepared.cleanImageObjectUrl});
@@ -3814,6 +3880,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     if(stagedInstallPromise)await stagedInstallPromise.catch(error=>console.error('GV STAGED LAYER SETTLE FAILED',error));
     gvActivateStagedHd(presentationDestination);
     travelPresentation.end();
+    window.GV_RETRY_MID_TRIP_AVM=null;
     const arrivedPrepared=await ensurePrepared();
         directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
         destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:arrivedPrepared.cleanImageObjectUrl});
