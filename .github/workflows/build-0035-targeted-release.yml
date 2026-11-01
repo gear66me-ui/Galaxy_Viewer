@@ -97,11 +97,12 @@ jobs:
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "function gvUpdateLivePhysicalScale()" in rc
           ruler = rc[rc.index("function gvUpdateLivePhysicalScale()"):rc.index("function gvHideEarthDistance")]
-          assert "const screenWidthBly=46.5*Math.sin(fovX*Math.PI/360);" in ruler, "Build 0090 FOV-only ruler formula missing"
-          assert "gvEarthDistanceTarget" not in ruler and "distanceMly" not in ruler, "Ruler must not depend on AVM/live-center distance"
-          assert "pix2world" not in ruler and "getRaDec" not in ruler, "Ruler must not depend on sky coordinates or panning"
-          assert "GV0090 FOV-ONLY PHYSICAL SCALE" in ruler, "Build 0090 ruler diagnostics missing"
-          assert "46.5 BLY × sin(FOV/2)" in ruler, "Build 0090 ruler method documentation missing"
+          assert "const distanceMly=Number(gvEarthDistanceRulerReferenceMly);" in ruler, "Build 0091 fixed arrival distance reference missing"
+          assert "2*distanceMly*1e6*Math.tan(fovX*Math.PI/360)" in ruler, "Build 0091 physical FOV formula missing"
+          assert "gvEarthDistanceTarget" not in ruler and "pix2world" not in ruler and "getRaDec" not in ruler, "Ruler must not depend on live-center matches or panning"
+          assert "let gvEarthDistanceRulerReferenceMly=null;" in rc, "Fixed ruler reference state missing"
+          assert "if(gvEarthDistanceArrivalDestination&&!Number.isFinite(Number(gvEarthDistanceRulerReferenceMly)))gvEarthDistanceRulerReferenceMly=distanceMly;" in rc, "Arrival reference must be captured once and remain fixed"
+          assert "GV0091 FIXED ARRIVAL DISTANCE PHYSICAL SCALE" in ruler, "Build 0091 ruler diagnostics missing"
           assert "gvPreloadConstellationArtwork(presentation?.constellation)" in rc, "Next-destination constellation preload must run during trip planning"
           assert "gvPreloadConstellationArtwork(destination?.constellation)" in rc, "First destination constellation must preload before the first trip"
           assert "gvPreloadConstellationArtwork(presentationBase?.constellation)" in rc, "Selected constellation preload must start before travel"
