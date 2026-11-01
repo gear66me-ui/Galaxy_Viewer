@@ -1,5 +1,5 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0108
-# BUILD 0108: validate emission-distance display and preserve existing release checks.
+name: Validate and Deploy RC-V1.0.0.9 Build 0109
+# BUILD 0109: validate emission-distance display and preserve existing release checks.
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0108 linear AVM-anchored Earth distance and preserved release behavior
+      - name: Validate Build 0109 linear AVM-anchored Earth distance and preserved release behavior
         shell: bash
         run: |
           set -euo pipefail
@@ -37,20 +37,20 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0108.py","build":"0108"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0108", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0108.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0109.py","build":"0109"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0109", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0109.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0108"' in rc
-          assert "const GV200001_BUILD='0108'" in rc
-          assert "const GV_RUNTIME='0108';" in rc, "BUILD 0097 marker missing"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0109"' in rc
+          assert "const GV200001_BUILD='0109'" in rc
+          assert "const GV_RUNTIME='0109';" in rc, "BUILD 0097 marker missing"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
           assert "function gvLinearEarthDistanceEstimate(ra,dec)" in rc, "Linear AVM-anchored estimate missing"
           assert "const progress=Math.max(0,Math.min(1,movedDegrees/totalDegrees))" in rc, "Linear estimate must update continuously from the AVM anchor toward HOME"
           assert "const distanceMly=baseMly*(1-progress)" in rc, "Linear estimate must scale the fixed AVM distance anchor"
-          assert "GV0108 LINEAR AVM-ANCHORED EARTH DISTANCE UPDATED" in rc, "Build 0108 live linear estimate diagnostic missing"
-          assert "gvEarthDistanceLinearLabel" in rc, "Build 0108 linear banner state missing"
+          assert "GV0109 LINEAR AVM-ANCHORED EARTH DISTANCE UPDATED" in rc, "Build 0109 live linear estimate diagnostic missing"
+          assert "gvEarthDistanceLinearLabel" in rc, "Build 0109 linear banner state missing"
           assert "gvEarthDistanceArrivalDestination=presentationDestination" in rc, "Arrival galaxy must remain the fixed interpolation anchor"
           assert "gvAngularEarthDistanceLabel" not in rc and "const approxLy=angleDeg*1000" not in rc, "Remove arbitrary angular-to-light-years conversion"
           assert "GV RANDOM NAVIGATION NO-MOTION WATCHDOG ARMED" in rc, "Random navigation watchdog missing"
@@ -121,17 +121,17 @@ jobs:
           assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0108; found {len(pins)}"
+          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0109; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "function gvUpdateLivePhysicalScale()" in rc
           ruler = rc[rc.index("function gvUpdateLivePhysicalScale()"):rc.index("function gvHideEarthDistance")]
-          assert "rawFovX>180" not in ruler and "maximumFovDegrees" not in ruler and "rawFovX>0" in ruler, "Physical ruler must not impose an FOV cutoff; support the full positive FOV range"
-          assert "const screenWidthLy=diameterLy*Math.sin(halfFovRadians)" in ruler, "Ruler must use the spherical chord equation"
+          assert "const maximumFovDegrees=avmFovX*4" in ruler and "if(rawFovX>maximumFovDegrees)" in ruler, "Physical ruler must hide above 4x selected image AVM FOVX"
+          assert "const avmImageWidthLy=2*distanceMly*1e6*Math.tan(avmFovX*Math.PI/360)" in ruler and "const screenWidthLy=avmImageWidthLy*(rawFovX/avmFovX)" in ruler, "Ruler must use AVM distance/FOVX calibration and current-to-AVM FOVX ratio"
           assert "gvEarthDistanceRulerAvmFovXDegrees" in rc and "gvEarthDistanceRulerReferenceMly" in rc, "Fixed arrival AVM calibration must be captured"
-          assert "GV0108 SPHERICAL-CHORD PHYSICAL RULER" in ruler, "Build 0108 spherical-chord ruler diagnostics missing"
+          assert "GV0109 AVM-CALIBRATED PHYSICAL RULER" in ruler, "Build 0109 AVM-calibrated ruler diagnostics missing"
           assert "function gvEarthPointerFovVisible()" in rc and "return true;" in rc, "Earth pointer/banner must never be hidden by an FOV threshold"
-          assert "const diameterLy=46.5e9" in ruler and "Math.sin(halfFovRadians)" in ruler, "Spherical chord must use 46.5 billion light-year diameter"
+          assert "const diameterLy=46.5e9" not in ruler and "Math.sin(halfFovRadians)" not in ruler, "Remove the unsupported cosmological chord extrapolation"
           assert "gvEarthDistanceTarget" not in ruler, "Live-center matches must not alter the ruler equation"
           assert "gvPreloadConstellationArtwork(presentation?.constellation)" in rc, "Next-destination constellation preload must run during trip planning"
           assert "gvPreloadConstellationArtwork(destination?.constellation)" in rc, "First destination constellation must preload before the first trip"
@@ -162,8 +162,8 @@ jobs:
           assert "function formatDistanceLy(ly)" in destination and "label=unit===1e9?'BLY':unit===1e6?'MLY':unit===1e3?'KLY':'LY'" in destination, "Shared BLY/MLY/KLY formatter missing"
           assert "return f?f.value+' '+f.label:''" in destination, "Compact scale formatter must have a complete ternary expression"
           assert "rounded>=1000&&unit<1e9" in destination, "Rounded unit boundaries must promote rather than display 1000 KLY/MLY"
-          assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0108 must pin destination presentation 0063"
-          print("BUILD 0108 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
+          assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0109 must pin destination presentation 0063"
+          print("BUILD 0109 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
