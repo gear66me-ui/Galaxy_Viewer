@@ -763,7 +763,7 @@ let gvEarthDistanceSyncLastError='';
 let gvEarthDistanceLastTravelSyncAt=0;
 const GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS=100;
 let gvEarthDistanceLastTouchSyncAt=0;
-const GV_EARTH_DISTANCE_TOUCH_SYNC_INTERVAL_MS=100;
+const GV_EARTH_DISTANCE_TOUCH_SYNC_INTERVAL_MS=33;
 // Preserve the catalog-authoritative arrival distance until the user actually changes the sky view.
 let gvEarthDistanceArrivalDestination=null;
 // Fixed physical-scale reference and selected image AVM FOV captured once per navigation arrival.
