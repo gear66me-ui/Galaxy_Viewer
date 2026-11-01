@@ -112,7 +112,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@ae9eb4d29f5b0d6190bc72da3bca70b04eea6d23/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/ae9eb4d29f5b0d6190bc72da3bca70b04eea6d23/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@8ab7dbb04a42145dc972c600cb808bc73cec70bc/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@b36e5c1d694a80759e5b943b220db9c2b66efaed/viewer/modules/destination-presentation/gv-destination-presentation-0062.js'
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@86e5ac1eb855b7aa7955865032d97baa350cd905/viewer/modules/destination-presentation/gv-destination-presentation-0062.js'
 });
 
 
@@ -1212,7 +1212,7 @@ if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!
 
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0005'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0004 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0062'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0062 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0063'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0063 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
