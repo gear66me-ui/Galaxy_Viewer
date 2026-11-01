@@ -129,11 +129,12 @@ jobs:
           assert "gv-course-two-line .gv-travel-course-prefix" in travel and "gv-course-two-line .gv-travel-course-name" in travel, "Both trip-planner lines must be centered"
           assert "travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@8ab7dbb04a42145dc972c600cb808bc73cec70bc/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js'" in rc, "Build 0097 must pin the new trip-planner presentation"
           destination = (root / "viewer/modules/destination-presentation/gv-destination-presentation-0062.js").read_text()
-          assert "const VERSION='0062';" in destination, "Destination presentation 0062 missing"
+          assert "const VERSION='0063';" in destination, "Destination presentation 0063 missing"
           assert "presentMly*1_000_000/(1+z)" in destination, "Emission distance must use distance divided by (1 + redshift)"
           assert "gvdp-emission-distance-key" in destination, "Emission distance must render below emission age"
-          assert all(f"DISTANCE ({unit})" in destination for unit in ("GLY","MLY","KLY")), "Compact distance units missing"
-          assert "destination-presentation-0062.js" in rc and "VERSION" in destination, "Build 0098 must pin destination presentation 0062"
+          assert "function formatDistanceLy(ly)" in destination and "label=unit===1e9?'BLY':unit===1e6?'MLY':unit===1e3?'KLY':'LY'" in destination, "Shared BLY/MLY/KLY formatter missing"
+          assert "rounded>=1000&&unit<1e9" in destination, "Rounded unit boundaries must promote rather than display 1000 KLY/MLY"
+          assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0098 must pin destination presentation 0063"
           print("BUILD 0098 RELEASE VALIDATION PASSED: pointer, manifest, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
           PY
 
