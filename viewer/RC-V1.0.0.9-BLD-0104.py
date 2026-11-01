@@ -791,7 +791,7 @@ function gvLinearEarthDistanceEstimate(ra,dec){
     const totalDegrees=gvGreatCircleDegrees(baseRa,baseDec,HOME.ra,HOME.dec);
     const movedDegrees=gvGreatCircleDegrees(baseRa,baseDec,ra,dec);
     if(!Number.isFinite(totalDegrees)||!Number.isFinite(movedDegrees)||totalDegrees<=1)return null;
-    const progress=Math.max(0,Math.min(1,(movedDegrees-1)/(totalDegrees-1)));
+    const progress=Math.max(0,Math.min(1,movedDegrees/totalDegrees));
     const distanceMly=baseMly*(1-progress);
     const label=distanceMly<=0?'0.00 MLY':gvFormatEarthDistance({distanceMly});
     return {distanceMly,progress,movedDegrees,totalDegrees,label,anchorName:String(anchor?.name||anchor?.objectName||'selected galaxy')};
@@ -825,6 +825,7 @@ function gvSyncEarthDistanceToCenter(allowDuringTravel=false){
         gvEarthDistanceTargetKey=key;
         banner.innerHTML='<span class="gv-earth-distance-icon" aria-hidden="true">🌎</span><span>≈ '+text+'</span><span class="gv-earth-distance-tick" aria-hidden="true"></span>';
         gvApplyEarthPointerFovVisibility();
+        gvUpdateEarthBearingPointer();
         console.debug('GV0104 LINEAR AVM-ANCHORED EARTH DISTANCE UPDATED',{ra,dec,anchorRa:gvEarthDistanceArrivalDestination.ra,anchorDec:gvEarthDistanceArrivalDestination.dec,avmDistanceMly:gvEarthDistanceArrivalDestination.distanceMly,progress:result.progress,movedDegrees:result.movedDegrees,totalDegrees:result.totalDegrees,estimatedDistanceMly:result.distanceMly,display:text});
     }catch(error){console.warn('GV0104 LINEAR EARTH DISTANCE UPDATE FAILED',error)}
 }
@@ -895,7 +896,7 @@ try{aladin.on('positionChanged',()=>{if(gvZoomInteractionActive||gvNavigationTra
 try{aladin.on('zoomChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0005 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
 // Install once; retain a lower-frequency center fallback only while visible.
 gvInstallEarthDistanceInteractionListeners();
-setInterval(()=>{if(document.visibilityState==='visible'&&!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},250);
+setInterval(()=>{if(document.visibilityState==='visible'&&!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},50);
 
 // ============================================================================
 // SECTION 042 — HOME EARTH POINTER / WE ARE HERE
