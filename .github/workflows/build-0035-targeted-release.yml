@@ -1,5 +1,5 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0102
-# BUILD 0102: validate emission-distance display and preserve existing release checks.
+name: Validate and Deploy RC-V1.0.0.9 Build 0103
+# BUILD 0103: validate emission-distance display and preserve existing release checks.
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0102 emission distance cards and preserved release behavior
+      - name: Validate Build 0103 emission distance cards and preserved release behavior
         shell: bash
         run: |
           set -euo pipefail
@@ -37,14 +37,19 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0102.py","build":"0102"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0102", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0102.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0103.py","build":"0103"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0103", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0103.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0102"' in rc
-          assert "const GV200001_BUILD='0102'" in rc
-          assert "const GV_RUNTIME='0102';" in rc, "BUILD 0097 marker missing"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0103"' in rc
+          assert "const GV200001_BUILD='0103'" in rc
+          assert "const GV_RUNTIME='0103';" in rc, "BUILD 0097 marker missing"
+          assert "function gvAngularEarthDistanceLabel(ra,dec)" in rc, "Build 0103 direct angular Earth-distance equation missing"
+          assert "const approxLy=angleDeg*1000" in rc, "Build 0103 angular approximation scale missing"
+          assert "GV0103 ANGULAR EARTH DISTANCE UPDATED" in rc, "Build 0103 live angular banner update diagnostic missing"
+          assert "gvEarthDistanceAngularLabel" in rc, "Build 0103 angular banner state missing"
+          assert "gvLoadAvmRuntimeCatalog()" not in rc[rc.index("function gvSyncEarthDistanceToCenter"):rc.index("// The Earth-distance banner follows the nearest catalog target")], "Live Earth banner must not wait for AVM catalog matching"
           assert "GV RANDOM NAVIGATION NO-MOTION WATCHDOG ARMED" in rc, "Random navigation watchdog missing"
           assert "GV_RANDOM_NO_MOTION_LIMIT_MS" in rc and "10000" in rc, "Random navigation watchdog must be capped at 10 seconds"
           assert "gvStartRandomNavigationWatchdog(randomAttempt)" in rc, "Random navigation watchdog is not armed"
@@ -108,7 +113,7 @@ jobs:
           assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0102; found {len(pins)}"
+          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0103; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "function gvUpdateLivePhysicalScale()" in rc
@@ -151,8 +156,8 @@ jobs:
           assert "function formatDistanceLy(ly)" in destination and "label=unit===1e9?'BLY':unit===1e6?'MLY':unit===1e3?'KLY':'LY'" in destination, "Shared BLY/MLY/KLY formatter missing"
           assert "return f?f.value+' '+f.label:''" in destination, "Compact scale formatter must have a complete ternary expression"
           assert "rounded>=1000&&unit<1e9" in destination, "Rounded unit boundaries must promote rather than display 1000 KLY/MLY"
-          assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0102 must pin destination presentation 0063"
-          print("BUILD 0102 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
+          assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0103 must pin destination presentation 0063"
+          print("BUILD 0103 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
