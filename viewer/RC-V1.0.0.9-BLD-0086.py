@@ -7,7 +7,7 @@ import json
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.9"
 # BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
-BUILD_NUMBER = "0086"
+BUILD_NUMBER = "0087"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
@@ -89,8 +89,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.9';
-const GV200001_BUILD='0086'
-const GV_RUNTIME='0086';
+const GV200001_BUILD='0087'
+const GV_RUNTIME='0087';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.9-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
@@ -3071,9 +3071,31 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
+let gvTravelConstellationLastName=null;
+let gvTravelConstellationLastCheck=0;
+function gvUpdateTravelConstellationAt(ra,dec,force=false){
+    if(!gvNavigationTravelActive)return;
+    const now=performance.now();
+    if(!force&&now-gvTravelConstellationLastCheck<80)return;
+    gvTravelConstellationLastCheck=now;
+    const name=window.GalaxyViewerConstellationRegions?.getConstellationAt?.(Number(ra),Number(dec))||null;
+    const normalized=String(name||'').trim().toUpperCase();
+    if(normalized===gvTravelConstellationLastName)return;
+    gvTravelConstellationLastName=normalized;
+    if(!gvConstellationPromise)return;
+    gvConstellationPromise.then(layer=>{
+        // The center/reticle highlight must not survive into the travel channel.
+        layer.setCenterConstellation(null);
+        if(name){
+            let matched=layer.setTravelGlowByName?.(name,true)===true;
+            if(!matched)matched=layer.setTravelGlowAt?.(ra,dec,true)===true;
+            if(!matched)console.warn('GV TRAVEL CONSTELLATION NOT FOUND',{name,ra,dec});
+        }else layer.clearTravelGlow?.();
+    }).catch(error=>console.warn('GV TRAVEL CONSTELLATION UPDATE FAILED',error));
+}
 function gvSetTravelConstellationGlow(constellationName,ra,dec,active){
-    // Travel beacons must not depend on the user opening the CONSTELLATIONS menu.
-    // Lazily mount the overlay on the first trip; keep its ordinary line layer off.
+    // Travel beacons do not depend on the user opening the CONSTELLATIONS menu.
+    // Mount once, clear the old reticle highlight, then follow the moving center.
     if(!gvConstellationPromise){
         if(!window.GalaxyViewerConstellationOverlay?.mount){
             console.error('GV CONSTELLATION TRAVEL GLOW UNAVAILABLE: overlay export missing');
@@ -3089,15 +3111,26 @@ function gvSetTravelConstellationGlow(constellationName,ra,dec,active){
         });
     }
     gvConstellationPromise.then(layer=>{
-        if(!active){layer.clearTravelGlow?.();setTimeout(()=>gvSyncConstellationCenterLabel(true),0);return;}
-        const name=String(constellationName||'').trim();
-        let matched=false;
-        if(name&&typeof layer.setTravelGlowByName==='function')matched=layer.setTravelGlowByName(name,true)===true;
-        if(!matched){
-            console.warn('GV CONSTELLATION ARCHIVE NAME DID NOT MATCH; using coordinate fallback',{constellationName,ra,dec});
-            matched=layer.setTravelGlowAt?.(ra,dec,true)===true;
+        if(!active){
+            gvTravelConstellationLastName=null;
+            gvTravelConstellationLastCheck=0;
+            layer.clearTravelGlow?.();
+            setTimeout(()=>gvSyncConstellationCenterLabel(true),0);
+            return;
         }
-        if(!matched)console.error('GV CONSTELLATION TRAVEL BEACON COULD NOT BE ACTIVATED',{constellationName,ra,dec});
+        layer.setCenterConstellation(null);
+        gvTravelConstellationLastName=null;
+        gvTravelConstellationLastCheck=0;
+        const center=aladin.getRaDec?.();
+        const currentRa=Number(Array.isArray(center)?center[0]:(center?.ra??center?.[0]));
+        const currentDec=Number(Array.isArray(center)?center[1]:(center?.dec??center?.[1]));
+        if(Number.isFinite(currentRa)&&Number.isFinite(currentDec)){
+            gvUpdateTravelConstellationAt(currentRa,currentDec,true);
+        }else{
+            const name=String(constellationName||'').trim();
+            if(name)layer.setTravelGlowByName?.(name,true);
+            else layer.setTravelGlowAt?.(ra,dec,true);
+        }
     }).catch(error=>console.warn('GV CONSTELLATION TRAVEL GLOW FAILED',error));
 }
 async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoomOutComplete=null,onTMinusEight=null,onArrival=null,registeredPromise=null,switchToSphericalAtApex=false,constellationName='',isCurrent=()=>true}={}){
@@ -3134,6 +3167,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
                     if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
                     aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);
+                    gvUpdateTravelConstellationAt(pos[0],pos[1]);
                     aladin.setRotation(rotation);
                     lastSample=sample;
                 }
@@ -3202,8 +3236,8 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     // Phase 2 (30–70%): normal travel motion and app updates resume.
                     if(t<=zoomInThreshold&&state.fov>=GV_HD_RETIRE_FOV&&!gvHdTravelRetired){gvHdTravelRetired=true;applyDirectHdOpacity();console.info('GV HD RETIRED — 50° FOV THRESHOLD',{fov:Number(state.fov.toFixed(2))});}
                     aladin.setFov(state.fov);
-                    if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1])}
-                    else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);destinationCenterApplied=true}
+                    if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);gvUpdateTravelConstellationAt(pos[0],pos[1])}
+                    else if(state.translation>=1&&!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvUpdateTravelConstellationAt(ra1,dec1,true);destinationCenterApplied=true}
                     if(Math.abs(state.rotation-startRotation)>0.0001)aladin.setRotation(state.rotation);
                     lastSample=sample;
                 }
