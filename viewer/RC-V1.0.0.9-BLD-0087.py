@@ -7,7 +7,7 @@ import json
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.9"
 # BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
-BUILD_NUMBER = "0087"
+BUILD_NUMBER = "0088"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
@@ -89,8 +89,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.9';
-const GV200001_BUILD='0087'
-const GV_RUNTIME='0087';
+const GV200001_BUILD='0088'
+const GV_RUNTIME='0088';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.9-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
@@ -3750,6 +3750,22 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             return Promise.reject(error);
         }
     };
+    // BUILD 0088: begin the incoming AVM handoff at translation start, not at zoom-in/arrival.
+    // Activate the staged image as soon as Aladin confirms that its layer has loaded.
+    let arrivalHdPreparationStarted=false;
+    const startArrivalHdPreparation=()=>{
+        if(arrivalHdPreparationStarted||!isCurrent()||activeDestination!==presentationDestination)return;
+        arrivalHdPreparationStarted=true;
+        console.info('GV MID-TRIP AVM PREPARATION STARTED',{name:presentationDestination?.name||presentationDestination?.objectName||''});
+        ensurePrepared()
+            .then(prepared=>installWhenReady(prepared,{stage:true}))
+            .then(ready=>{
+                if(!ready||!isCurrent()||activeDestination!==presentationDestination)return;
+                const activated=gvActivateStagedHd(presentationDestination);
+                console.info('GV MID-TRIP AVM IMAGE ACTIVATED',{activated,name:presentationDestination?.name||presentationDestination?.objectName||''});
+            })
+            .catch(error=>console.error('GV MID-TRIP AVM PREPARATION/ACTIVATION FAILED',error));
+    };
     // ROLL 0085: any existing next-trip HD prewarm continues in the background.
     // For a cold destination, the existing T-minus-eight hook starts preparation;
     // arrival retains its awaited safety net. Neither path delays camera takeoff.
@@ -3763,7 +3779,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     if(firstTrip){
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
         console.info('GV ROLL 0085 CAMERA TAKEOFF',{name:presentationDestination?.name||presentationDestination?.objectName||''});
-        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,switchToSphericalAtApex:true,constellationName:presentationDestination?.constellation||presentationBase?.constellation||'',registeredPromise:registeredTravelPromise,isCurrent,onTMinusEight:()=>{if(!installed)ensurePrepared().then(prepared=>installWhenReady(prepared,{stage:true})).catch(error=>console.error('GV FIRST-TRIP T-MINUS-EIGHT STAGE FAILED',error))},onArrival:()=>gvActivateStagedHd(presentationDestination)});
+        const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,switchToSphericalAtApex:true,constellationName:presentationDestination?.constellation||presentationBase?.constellation||'',registeredPromise:registeredTravelPromise,isCurrent,onTMinusEight:startArrivalHdPreparation,onArrival:()=>gvActivateStagedHd(presentationDestination)});
         await travelPromise;
         if(!isCurrent()||activeDestination!==presentationDestination)return v.destination;
         gvStopRandomNavigationWatchdog();
@@ -3791,7 +3807,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     }
     const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
     console.info('GV ROLL 0085 CAMERA TAKEOFF',{name:presentationDestination?.name||presentationDestination?.objectName||''});
-    const travelPromise=gvFly130H(provisional,{firstHomeTrip:false,constellationName:presentationDestination?.constellation||presentationBase?.constellation||'',registeredPromise:registeredTravelPromise,switchToSphericalAtApex,isCurrent,onTMinusEight:()=>{if(!installed)ensurePrepared().then(prepared=>installWhenReady(prepared,{stage:true})).catch(error=>console.error('GV DIRECT HD T-MINUS-EIGHT STAGE FAILED',error))},onArrival:()=>gvActivateStagedHd(presentationDestination)});
+    const travelPromise=gvFly130H(provisional,{firstHomeTrip:false,constellationName:presentationDestination?.constellation||presentationBase?.constellation||'',registeredPromise:registeredTravelPromise,switchToSphericalAtApex,isCurrent,onZoomOutComplete:startArrivalHdPreparation,onTMinusEight:startArrivalHdPreparation,onArrival:()=>gvActivateStagedHd(presentationDestination)});
     await travelPromise;
     if(!isCurrent()||activeDestination!==presentationDestination)return v.destination;
     gvStopRandomNavigationWatchdog();
