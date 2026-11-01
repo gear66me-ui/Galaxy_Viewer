@@ -3471,7 +3471,7 @@ function gvStartNextTripPrewarm(){
             warm.preparedValue=prepared;
             console.info('GV NEXT DESTINATION IMAGE READY',{name:presentation?.name||presentation?.designation||'',resources:gvHdResourceSnapshot()});
             return prepared;
-        ]catch(error){
+        }catch(error){
             if(!warm.destination)rejectDestinationReady(error);
             if(gvNextTripPrewarm===warm)console.warn('GV NEXT DESTINATION PREWARM FAILED; SAFE FALLBACK ENABLED',String(error?.message||error));
             throw error;
