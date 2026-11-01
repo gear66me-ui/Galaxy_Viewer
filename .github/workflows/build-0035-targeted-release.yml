@@ -1,5 +1,5 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0103
-# BUILD 0103: validate emission-distance display and preserve existing release checks.
+name: Validate and Deploy RC-V1.0.0.9 Build 0104
+# BUILD 0104: validate emission-distance display and preserve existing release checks.
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0103 emission distance cards and preserved release behavior
+      - name: Validate Build 0104 linear AVM-anchored Earth distance and preserved release behavior
         shell: bash
         run: |
           set -euo pipefail
@@ -37,19 +37,23 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0103.py","build":"0103"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0103", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0103.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0104.py","build":"0104"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0104", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0104.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0103"' in rc
-          assert "const GV200001_BUILD='0103'" in rc
-          assert "const GV_RUNTIME='0103';" in rc, "BUILD 0097 marker missing"
-          assert "function gvAngularEarthDistanceLabel(ra,dec)" in rc, "Build 0103 direct angular Earth-distance equation missing"
-          assert "const approxLy=angleDeg*1000" in rc, "Build 0103 angular approximation scale missing"
-          assert "GV0103 ANGULAR EARTH DISTANCE UPDATED" in rc, "Build 0103 live angular banner update diagnostic missing"
-          assert "gvEarthDistanceAngularLabel" in rc, "Build 0103 angular banner state missing"
-          assert "gvLoadAvmRuntimeCatalog()" not in rc[rc.index("function gvSyncEarthDistanceToCenter"):rc.index("// The Earth-distance banner follows the nearest catalog target")], "Live Earth banner must not wait for AVM catalog matching"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0104"' in rc
+          assert "const GV200001_BUILD='0104'" in rc
+          assert "const GV_RUNTIME='0104';" in rc, "BUILD 0097 marker missing"
+          assert "GV0104 ANGULAR EARTH DISTANCE UPDATED" in rc, "Build 0104 live angular banner update diagnostic missing"
+          assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
+          assert "function gvLinearEarthDistanceEstimate(ra,dec)" in rc, "Linear AVM-anchored estimate missing"
+          assert "const progress=Math.max(0,Math.min(1,(movedDegrees-1)/(totalDegrees-1)))" in rc, "Linear estimate must retain AVM distance within one degree and interpolate to HOME"
+          assert "const distanceMly=baseMly*(1-progress)" in rc, "Linear estimate must scale the fixed AVM distance anchor"
+          assert "GV0104 LINEAR AVM-ANCHORED EARTH DISTANCE UPDATED" in rc, "Build 0104 live linear estimate diagnostic missing"
+          assert "gvEarthDistanceLinearLabel" in rc, "Build 0104 linear banner state missing"
+          assert "gvEarthDistanceArrivalDestination=presentationDestination" in rc, "Arrival galaxy must remain the fixed interpolation anchor"
+          assert "gvAngularEarthDistanceLabel" not in rc and "const approxLy=angleDeg*1000" not in rc, "Remove arbitrary angular-to-light-years conversion"
           assert "GV RANDOM NAVIGATION NO-MOTION WATCHDOG ARMED" in rc, "Random navigation watchdog missing"
           assert "GV_RANDOM_NO_MOTION_LIMIT_MS" in rc and "10000" in rc, "Random navigation watchdog must be capped at 10 seconds"
           assert "gvStartRandomNavigationWatchdog(randomAttempt)" in rc, "Random navigation watchdog is not armed"
@@ -68,7 +72,6 @@ jobs:
           assert "function gvRenderTravelConstellationLabel(name)" in rc, "Live travel constellation label renderer missing"
           assert "gvRenderTravelConstellationLabel(name);" in rc, "Travel boundary changes must update the visible constellation name immediately"
           assert "async function gvShowEarthDistance(destination,alreadyResolvedRuntimeRecord=false,allowDuringTravel=false)" in rc, "Earth distance display must accept live travel updates"
-          assert "async function gvSyncEarthDistanceToCenter(allowDuringTravel=false)" in rc, "Earth distance center matcher must support live translation updates"
           assert "gvSyncEarthDistanceToCenter(true)" in rc, "Translation frames must refresh Earth distance from the live reticle center"
           assert "GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS=100" in rc, "Travel distance refresh must be throttled to 100 ms"
           assert "Earth distance requires distanceMly, not redshift" in rc, "Missing redshift must not freeze live Earth distance"
@@ -113,7 +116,7 @@ jobs:
           assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0103; found {len(pins)}"
+          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0104; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "function gvUpdateLivePhysicalScale()" in rc
@@ -156,8 +159,8 @@ jobs:
           assert "function formatDistanceLy(ly)" in destination and "label=unit===1e9?'BLY':unit===1e6?'MLY':unit===1e3?'KLY':'LY'" in destination, "Shared BLY/MLY/KLY formatter missing"
           assert "return f?f.value+' '+f.label:''" in destination, "Compact scale formatter must have a complete ternary expression"
           assert "rounded>=1000&&unit<1e9" in destination, "Rounded unit boundaries must promote rather than display 1000 KLY/MLY"
-          assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0103 must pin destination presentation 0063"
-          print("BUILD 0103 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
+          assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0104 must pin destination presentation 0063"
+          print("BUILD 0104 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
