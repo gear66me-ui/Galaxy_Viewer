@@ -74,7 +74,7 @@ jobs:
           assert "gvSyncEarthDistanceToCenter(true)" in rc, "Translation frames must refresh Earth distance from the live reticle center"
           assert "GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS=100" in rc, "Travel distance refresh must be throttled to 100 ms"
           assert "Earth distance requires distanceMly, not redshift" in rc, "Missing redshift must not freeze live Earth distance"
-          assert "gvEarthDistanceSyncPendingTravel=gvEarthDistanceSyncPendingTravel||allowDuringTravel" in rc, "Travel requests must survive busy matching"
+          assert "if(gvNavigationTravelActive&&!allowDuringTravel)return;" in rc, "Earth-distance sync must suppress non-travel refreshes during scripted travel while allowing explicit travel updates"
           assert "GV_EARTH_DISTANCE_TOUCH_SYNC_INTERVAL_MS=100" in rc, "Touch-pan distance refresh must be throttled to 100 ms"
           assert "Refresh during the pan, not only after touchend" in rc, "Earth distance must refresh during each touch pan"
           assert "if(gvEarthDistanceTouchGestureActive)return;" not in rc, "Touch gesture must not block live center matching"
