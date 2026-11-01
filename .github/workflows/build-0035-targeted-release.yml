@@ -133,6 +133,7 @@ jobs:
           assert "presentMly*1_000_000/(1+z)" in destination, "Emission distance must use distance divided by (1 + redshift)"
           assert "gvdp-emission-distance-key" in destination, "Emission distance must render below emission age"
           assert "function formatDistanceLy(ly)" in destination and "label=unit===1e9?'BLY':unit===1e6?'MLY':unit===1e3?'KLY':'LY'" in destination, "Shared BLY/MLY/KLY formatter missing"
+          assert "return f?f.value+' '+f.label:''" in destination, "Compact scale formatter must have a complete ternary expression"
           assert "rounded>=1000&&unit<1e9" in destination, "Rounded unit boundaries must promote rather than display 1000 KLY/MLY"
           assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0098 must pin destination presentation 0063"
           print("BUILD 0098 RELEASE VALIDATION PASSED: pointer, manifest, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
