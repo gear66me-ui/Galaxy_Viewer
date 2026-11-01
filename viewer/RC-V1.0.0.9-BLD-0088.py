@@ -3060,12 +3060,17 @@ let gvForegroundRestoreGeneration=0;
 function gvRestoreAfterForeground(reason='foreground'){
     const generation=++gvForegroundRestoreGeneration;
     const delays=[0,250,600,1100,1800,2800,4200];
-    delays.forEach(delay=>setTimeout(()=>{
-        if(generation!==gvForegroundRestoreGeneration||document.visibilityState!=='visible')return;
-        if(!directHdObjectUrl||!directHdDestination||activeDestination!==directHdDestination)return;
-        const restored=gvRestoreDirectHd();
-        if(restored)console.info('GV FOREGROUND HD RESTORE ATTEMPT',{reason,delay,layer:directHdLayerName});
-    },delay));
+    const attempt=index=>{
+        const delay=index===0?delays[0]:delays[index]-delays[index-1];
+        setTimeout(()=>{
+            if(generation!==gvForegroundRestoreGeneration||document.visibilityState!=='visible')return;
+            if(!directHdObjectUrl||!directHdDestination||activeDestination!==directHdDestination)return;
+            const restored=gvRestoreDirectHd();
+            if(restored){console.info('GV FOREGROUND HD RESTORE REQUEST ACCEPTED',{reason,elapsedMs:delays[index],layer:directHdLayerName});return}
+            if(index+1<delays.length)attempt(index+1);
+        },delay);
+    };
+    attempt(0);
 }
 window.addEventListener('focus',()=>{if(document.visibilityState==='visible')gvRestoreAfterForeground('focus')});
 window.addEventListener('pageshow',()=>{if(document.visibilityState==='visible')gvRestoreAfterForeground('pageshow')});
@@ -3739,6 +3744,9 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
                 if(prepared?.imageObjectUrl&&gvHdObjectUrls.includes(prepared.imageObjectUrl))return prepared;
                 console.warn('GV PREPARED AVM IMAGE WAS RELEASED; REBUILDING FOR RESUME');
                 preparedPromise=null;
+                preloadedPrepared=null;
+                preloadedPreparedPromise=null;
+                if(firstTrip&&gvFirstDestinationPreload)gvFirstDestinationPreload=null;
                 return ensurePrepared();
             });
         }
