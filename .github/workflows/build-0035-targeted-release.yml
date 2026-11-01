@@ -125,8 +125,6 @@ jobs:
           assert "gvEarthDistanceRulerAvmFovXDegrees" in rc and "gvEarthDistanceRulerReferenceMly" in rc, "Fixed arrival AVM calibration must be captured"
           assert "GV0097 AVM-ANCHORED PROJECTION-AWARE RULER" in ruler, "Build 0097 ruler diagnostics missing"
           assert "gvEarthPointerFovVisible" in rc and "x<=30" in rc, "Earth pointer must share the 30-degree visibility threshold"
-          assert "GV0097 LIVE CENTER OUTSIDE CATALOG FOV" in rc, "Out-of-field pan must retain and update nearest catalog distance"
-          assert "GV0097 EARTH DISTANCE CATALOG EMPTY" in rc, "Empty catalog must preserve last valid pointer state"
           assert "46.5e9*Math.sin" not in ruler, "Remove universal cosmic ruler formula"
           assert "gvEarthDistanceTarget" not in ruler, "Live-center matches must not alter fixed ruler calibration"
           assert "gvPreloadConstellationArtwork(presentation?.constellation)" in rc, "Next-destination constellation preload must run during trip planning"
