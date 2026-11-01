@@ -3684,12 +3684,10 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             return Promise.reject(error);
         }
     };
-    // Register metadata and start HD preparation without making takeoff wait for it.
-    // The existing T-minus-eight hook stages the completed image; arrival retains its
-    // awaited safety net, so a slow image can never block the beginning of navigation.
-    let hdPreparationStartedAt=performance.now();
-    ensurePrepared().then(()=>console.info('GV ROLL 0085 HD PREPARATION READY',{ms:Math.round(performance.now()-hdPreparationStartedAt),name:presentationDestination?.name||presentationDestination?.objectName||''})).catch(error=>console.warn('GV ROLL 0085 HD PREPARATION DEFERRED TO ARRIVAL FALLBACK',String(error?.message||error)));
-    // Register the image and prepare presentation artwork before camera motion.
+    // ROLL 0085: any existing next-trip HD prewarm continues in the background.
+    // For a cold destination, the existing T-minus-eight hook starts preparation;
+    // arrival retains its awaited safety net. Neither path delays camera takeoff.
+    // Register presentation artwork before camera motion.
     if(!isCurrent())return v.destination;
     startTravelCard();
     startTravelWork();
