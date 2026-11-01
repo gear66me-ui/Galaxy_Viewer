@@ -728,7 +728,7 @@ async function gvShowEarthDistance(destination,alreadyResolvedRuntimeRecord=fals
         const card=document.querySelector('.gvdp-card');
         const place=()=>{const r=card?.getBoundingClientRect();b.style.bottom=`${r&&r.height?Math.max(0,innerHeight-r.top+6):130}px`;gvUpdateLivePhysicalScale()};
         place();
-        if(!b.classList.contains('gv-visible'))b.classList.add('gv-visible');
+        gvApplyEarthPointerFovVisibility();
     }catch(error){
         if(generation!==gvEarthDistanceDisplayGeneration)return;
         b.classList.remove('gv-visible');
