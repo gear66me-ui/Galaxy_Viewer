@@ -3446,14 +3446,15 @@ function gvStartNextTripPrewarm(){
     if(gvSurveyMode||navigationInFlight||gvNavigationTravelActive||gvNextTripPrewarm)return;
     const generation=++gvNextTripPrewarmGeneration;
     const controller=new AbortController();
-    const warm={destination:null,presentationReady:false,recordPromise:null,prepared:null,preparedValue:null,generation,controller};gvNextTripPrewarm=warm;
+    let resolveDestinationReady;const warm={destination:null,destinationReady:new Promise(resolve=>{resolveDestinationReady=resolve}),presentationPromise:null,presentationReady:false,recordPromise:null,prepared:null,preparedValue:null,generation,controller};gvNextTripPrewarm=warm;
     console.info('GV NEXT DESTINATION PREWARM START');
     warm.prepared=(async()=>{
         try{
             const selected=await navigationRuntime.nextDestination();
             if(generation!==gvNextTripPrewarmGeneration||gvNextTripPrewarm!==warm)throw new Error('PREWARM INVALIDATED AFTER DESTINATION SELECTION');
-            warm.destination=selected;
-            const presentation=await gvPresentationDestination(selected);
+            warm.destination=selected;resolveDestinationReady(selected);
+            warm.presentationPromise=gvPresentationDestination(selected);
+            const presentation=await warm.presentationPromise;
             if(generation!==gvNextTripPrewarmGeneration||gvNextTripPrewarm!==warm)throw new Error('PREWARM INVALIDATED BEFORE METADATA READY');
             warm.destination=presentation;warm.presentationReady=true;
             gvPreloadConstellationArtwork(presentation?.constellation);
@@ -3602,7 +3603,7 @@ document.addEventListener('visibilitychange',()=>{
     }
 });
 
-async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,preloadedPreparedPromise=null,preloadedAvmRecordPromise=null,switchToSphericalAtApex=false,prewarmedPresentationDestination=null,isCurrent=()=>true}={}){
+async function showDestination(destination,{firstTrip=false,preloadedPrepared=null,preloadedPreparedPromise=null,preloadedAvmRecordPromise=null,switchToSphericalAtApex=false,prewarmedPresentationDestination=null,prewarmedPresentationPromise=null,isCurrent=()=>true}={}){
     gvHdTravelRetired=false;
     const v=validateDestination(destination),sourceDestination=activeDestination;
     if(directHdStaged){const stale=directHdStaged;directHdStaged=null;try{aladin.removeImageLayer?.(stale.layerName)}catch(_){}if(stale.objectUrl!==directHdObjectUrl)gvReleaseHdObjectUrl(stale.objectUrl)}
@@ -3649,7 +3650,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         // Provider prewarming is deferred until after 100% arrival.
     };
     activeDestination=v.destination;
-    const presentationBase=prewarmedPresentationDestination||await gvPresentationDestination(v.destination);
+    const presentationBase=prewarmedPresentationDestination||(prewarmedPresentationPromise?await prewarmedPresentationPromise:await gvPresentationDestination(v.destination));
     if(!isCurrent())return v.destination;
     // Warm the selected constellation art while the AVM record and HD image are
     // being prepared, so the travel banner can reveal it from cache at takeoff.
@@ -3941,15 +3942,16 @@ async function navigateRandom(){
     updateNavigationAvailability();
     try{
         let nextWarm=gvNextTripPrewarm;gvNextTripPrewarm=null;
-        let destination,preloadedPrepared=null,preloadedPreparedPromise=null,preloadedAvmRecordPromise=null,prewarmedPresentationDestination=null;
+        let destination,preloadedPrepared=null,preloadedPreparedPromise=null,preloadedAvmRecordPromise=null,prewarmedPresentationDestination=null,prewarmedPresentationPromise=null;
         if(nextWarm){
             // ROLL 0085: consume the selected destination immediately. Never await HD prep here.
             preloadedPrepared=nextWarm.preparedValue||null;
             preloadedPreparedPromise=nextWarm.prepared||null;
             preloadedAvmRecordPromise=nextWarm.recordPromise||null;
-            destination=nextWarm.destination;
-            if(!destination){console.warn('GV NEXT DESTINATION PREWARM DESTINATION MISSING; SELECTING FRESH');destination=await navigationRuntime.nextDestination()}
-            else {prewarmedPresentationDestination=nextWarm.presentationReady?destination:null;console.info(preloadedPrepared?'GV NEXT DESTINATION PREWARM CACHE HIT':'GV NEXT DESTINATION PREWARM CACHE MISS',{name:destination?.name||destination?.designation||''})}
+            destination=nextWarm.destination||await nextWarm.destinationReady;
+            prewarmedPresentationDestination=nextWarm.presentationReady?destination:null;
+            prewarmedPresentationPromise=nextWarm.presentationPromise||null;
+            console.info(preloadedPrepared?'GV NEXT DESTINATION PREWARM CACHE HIT':'GV NEXT DESTINATION PREWARM CACHE MISS',{name:destination?.name||destination?.designation||''});
         }else destination=await navigationRuntime.nextDestination();
         if(routeIndex===0&&gvFirstDestinationPreload){
             gvFirstDestinationPreload.then(warm=>{if(warm?.destination===destination)console.info('GV FIRST DESTINATION PRELOAD READY FOR ACTIVE TRIP')}).catch(error=>console.error('GV FIRST DESTINATION PRELOAD UNAVAILABLE',error));
@@ -3961,7 +3963,7 @@ async function navigateRandom(){
         const firstTrip=routeIndex===0;
         const switchToSphericalAtApex=routeIndex===0;
         routeIndex++;
-        await showDestination(destination,{firstTrip,preloadedPrepared,preloadedPreparedPromise,preloadedAvmRecordPromise,switchToSphericalAtApex,prewarmedPresentationDestination,isCurrent:()=>randomAttempt===gvRandomNavigationGeneration});
+        await showDestination(destination,{firstTrip,preloadedPrepared,preloadedPreparedPromise,preloadedAvmRecordPromise,switchToSphericalAtApex,prewarmedPresentationDestination,prewarmedPresentationPromise,isCurrent:()=>randomAttempt===gvRandomNavigationGeneration});
     }finally{
         if(randomAttempt===gvRandomNavigationGeneration){
             gvStopRandomNavigationWatchdog();
