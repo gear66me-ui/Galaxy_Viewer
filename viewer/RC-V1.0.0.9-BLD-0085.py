@@ -3446,7 +3446,7 @@ function gvStartNextTripPrewarm(){
     if(gvSurveyMode||navigationInFlight||gvNavigationTravelActive||gvNextTripPrewarm)return;
     const generation=++gvNextTripPrewarmGeneration;
     const controller=new AbortController();
-    let resolveDestinationReady;const warm={destination:null,destinationReady:new Promise(resolve=>{resolveDestinationReady=resolve}),presentationPromise:null,presentationReady:false,recordPromise:null,prepared:null,preparedValue:null,generation,controller};gvNextTripPrewarm=warm;
+    let resolveDestinationReady,rejectDestinationReady;const warm={destination:null,destinationReady:new Promise((resolve,reject)=>{resolveDestinationReady=resolve;rejectDestinationReady=reject}),presentationPromise:null,presentationReady:false,recordPromise:null,prepared:null,preparedValue:null,generation,controller};gvNextTripPrewarm=warm;
     console.info('GV NEXT DESTINATION PREWARM START');
     warm.prepared=(async()=>{
         try{
@@ -3471,7 +3471,8 @@ function gvStartNextTripPrewarm(){
             warm.preparedValue=prepared;
             console.info('GV NEXT DESTINATION IMAGE READY',{name:presentation?.name||presentation?.designation||'',resources:gvHdResourceSnapshot()});
             return prepared;
-        }catch(error){
+        ]catch(error){
+            if(!warm.destination)rejectDestinationReady(error);
             if(gvNextTripPrewarm===warm)console.warn('GV NEXT DESTINATION PREWARM FAILED; SAFE FALLBACK ENABLED',String(error?.message||error));
             throw error;
         }
@@ -3948,9 +3949,15 @@ async function navigateRandom(){
             preloadedPrepared=nextWarm.preparedValue||null;
             preloadedPreparedPromise=nextWarm.prepared||null;
             preloadedAvmRecordPromise=nextWarm.recordPromise||null;
-            destination=nextWarm.destination||await nextWarm.destinationReady;
-            prewarmedPresentationDestination=nextWarm.presentationReady?destination:null;
-            prewarmedPresentationPromise=nextWarm.presentationPromise||null;
+            let destinationFromWarm=true;
+            try{destination=nextWarm.destination||await nextWarm.destinationReady}catch(error){
+                destinationFromWarm=false;
+                console.warn('GV ROLL 0085 DESTINATION PREWARM FAILED; SELECTING FRESH',String(error?.message||error));
+                destination=await navigationRuntime.nextDestination();
+                preloadedPrepared=null;preloadedPreparedPromise=null;preloadedAvmRecordPromise=null;
+            }
+            prewarmedPresentationDestination=destinationFromWarm&&nextWarm.presentationReady?destination:null;
+            prewarmedPresentationPromise=destinationFromWarm?nextWarm.presentationPromise:null;
             console.info(preloadedPrepared?'GV NEXT DESTINATION PREWARM CACHE HIT':'GV NEXT DESTINATION PREWARM CACHE MISS',{name:destination?.name||destination?.designation||''});
         }else destination=await navigationRuntime.nextDestination();
         if(routeIndex===0&&gvFirstDestinationPreload){
