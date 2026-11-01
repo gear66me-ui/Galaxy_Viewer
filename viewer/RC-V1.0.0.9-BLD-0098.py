@@ -1212,7 +1212,7 @@ if(window.GalaxyNavigator?.VERSION!=='013'||typeof window.GalaxyNavigator.mount!
 
 if(window.GalaxyViewerHeadsUpDisplay?.VERSION!=='0005'||typeof window.GalaxyViewerHeadsUpDisplay.mount!=='function')throw new Error('HEADS-UP DISPLAY 0004 EXPORT MISSING');
 if(typeof window.GalaxyRandomTravelPresentation?.mount!=='function')throw new Error('RANDOM TRAVEL PRESENTATION EXPORT MISSING');
-if(window.GalaxyDestinationPresentation?.VERSION!=='0061'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0061 EXPORT MISSING');
+if(window.GalaxyDestinationPresentation?.VERSION!=='0062'||typeof window.GalaxyDestinationPresentation.mount!=='function')throw new Error('DESTINATION PRESENTATION 0062 EXPORT MISSING');
 // Navigator is presentation: mount immediately. Route preparation must never block its appearance.
 const earlyNavigationHost=document.getElementById('gv-navigation-host');
 if(!earlyNavigationHost)throw new Error('REQUIRED HOST MISSING: navigation');
