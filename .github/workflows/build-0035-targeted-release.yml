@@ -66,6 +66,8 @@ jobs:
           assert "async function gvSyncEarthDistanceToCenter(allowDuringTravel=false)" in rc, "Earth distance center matcher must support live translation updates"
           assert "gvSyncEarthDistanceToCenter(true)" in rc, "Translation frames must refresh Earth distance from the live reticle center"
           assert "GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS=100" in rc, "Travel distance refresh must be throttled to 100 ms"
+          assert "gvApplyEarthPointerFovVisibility();" in rc, "Earth distance banner must respect the live 30-degree visibility threshold"
+          assert "const visible=gvEarthPointerActive&&!gvStartupMollweideScreen&&gvEarthPointerFovVisible();" in rc, "Earth pointer must be permitted during translation when its FOV threshold is met"
           assert "if(!allowDuringTravel&&gvEarthDistanceArrivalDestination" in rc, "Arrival hold must not block live travel distance updates"
           assert "!allowDuringTravel&&gvEarthDistanceArrivalDestination&&" in rc, "Live travel updates must not overwrite fixed arrival ruler calibration"
           assert "Do this before overlay readiness checks so the label never waits for arrival or artwork loading." in rc, "Travel label update must not depend on overlay readiness"
