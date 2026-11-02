@@ -4,8 +4,6 @@ on:
   push:
     branches:
       - gv-constellation-audit
-    paths:
-      - .github/workflows/gv-constellation-audit.yml
 
 permissions:
   contents: read
