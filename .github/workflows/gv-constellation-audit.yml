@@ -1,0 +1,100 @@
+name: AVM Constellation Distribution Audit
+
+on:
+  push:
+    branches:
+      - gv-constellation-audit
+    paths:
+      - .github/workflows/gv-constellation-audit.yml
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install astronomy dependency
+        run: pip install astropy
+      - name: Download and audit AVM runtime catalog
+        env:
+          CATALOG_URL: https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json
+        run: |
+          python - <<'PY'
+          import json, os, urllib.request, collections, re
+          from astropy.coordinates import SkyCoord
+          import astropy.units as u
+
+          req = urllib.request.Request(os.environ["CATALOG_URL"], headers={"User-Agent":"GalaxyViewer-Constellation-Audit"})
+          with urllib.request.urlopen(req, timeout=90) as response:
+              raw = response.read()
+          data = json.loads(raw)
+          print("DOWNLOADED_BYTES", len(raw))
+
+          def find_record_lists(obj, path="$"):
+              found=[]
+              if isinstance(obj, list) and obj and all(isinstance(x, dict) for x in obj):
+                  found.append((len(obj), path, obj))
+              elif isinstance(obj, dict):
+                  for k,v in obj.items():
+                      found.extend(find_record_lists(v, path+"."+str(k)))
+              elif isinstance(obj, list):
+                  for i,v in enumerate(obj):
+                      found.extend(find_record_lists(v, path+f"[{i}]"))
+              return found
+
+          candidates=find_record_lists(data)
+          if not candidates:
+              raise SystemExit("No list of object records found; root type="+type(data).__name__)
+          n,path,records=max(candidates, key=lambda x:x[0])
+          print("RECORD_ARRAY", path, "RECORDS", n)
+          print("SAMPLE_KEYS", json.dumps(list(records[0].keys()), ensure_ascii=False))
+
+          def norm(k): return re.sub(r'[^a-z0-9]', '', str(k).lower())
+          ra_names={"ra","radeg","radegrees","rightascension","rightascensiondeg","raicrs","raj2000","ra2000"}
+          dec_names={"dec","decdeg","decdegrees","declination","declinationdeg","decicrs","decj2000","dec2000"}
+          def lookup(d, names):
+              if not isinstance(d,dict): return None
+              for k,v in d.items():
+                  if norm(k) in names and isinstance(v,(int,float)): return float(v)
+              for v in d.values():
+                  if isinstance(v,dict):
+                      got=lookup(v,names)
+                      if got is not None: return got
+              return None
+
+          counts=collections.Counter()
+          skipped=0
+          examples=[]
+          for i,rec in enumerate(records):
+              ra=lookup(rec,ra_names); dec=lookup(rec,dec_names)
+              if ra is None or dec is None:
+                  skipped+=1
+                  if len(examples)<5: examples.append({"index":i,"keys":list(rec.keys())})
+                  continue
+              try:
+                  c=SkyCoord(ra=ra*u.deg, dec=dec*u.deg, frame="icrs")
+                  const=c.get_constellation()
+                  counts[const]+=1
+              except Exception as e:
+                  skipped+=1
+          print("OBSERVATIONS_WITH_COORDINATES", sum(counts.values()))
+          print("SKIPPED_NO_USABLE_COORDINATES", skipped)
+          print("SKIPPED_EXAMPLES", json.dumps(examples, ensure_ascii=False))
+          print("CONSTELLATION_COUNT", len(counts))
+          print("RANKING")
+          for name,count in sorted(counts.items(), key=lambda x:(-x[1],x[0])):
+              print(f"{name}\t{count}")
+          print("ALPHABETICAL_ALL_88")
+          # IAU official 88 constellation names; include zeroes.
+          names="""Andromeda Antlia Apus Aquarius Aquila Ara Aries Auriga Bootes Caelum Camelopardalis Cancer Canes Venatici Canis Major Canis Minor Capricornus Carina Cassiopeia Centaurus Cepheus Cetus Chamaeleon Circinus Columba Coma Berenices Corona Australis Corona Borealis Corvus Crater Crux Cygnus Delphinus Dorado Draco Equuleus Eridanus Fornax Gemini Grus Hercules Horologium Hydra Hydrus Indus Lacerta Leo Leo Minor Lepus Libra Lupus Lynx Lyra Mensa Microscopium Monoceros Musca Norma Octans Ophiuchus Orion Pavo Pegasus Perseus Phoenix Pictor Pisces Piscis Austrinus Puppis Pyxis Reticulum Sagitta Sagittarius Scorpius Sculptor Scutum Serpens Sextans Taurus Telescopium Triangulum Triangulum Australe Tucana Ursa Major Ursa Minor Vela Virgo Volans Vulpecula""".split()
+          print("NAME\tOBSERVATIONS")
+          for name in sorted(names):
+              print(f"{name}\t{counts.get(name,0)}")
+          print("TOTAL_CATALOG_RECORDS", n)
+          print("TOTAL_ASSIGNED", sum(counts.values()))
+          PY
