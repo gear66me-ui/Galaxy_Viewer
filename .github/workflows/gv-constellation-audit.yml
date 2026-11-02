@@ -1,4 +1,4 @@
-name: AVM Constellation Distribution Audit
+name: AVM Constellation Distribution Audit and Mollweide Map
 
 on:
   push:
@@ -16,22 +16,25 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install astronomy dependency
-        run: pip install astropy
-      - name: Download and audit AVM runtime catalog
+      - name: Install astronomy dependencies
+        run: pip install astropy matplotlib
+      - name: Download catalog, audit coordinates, and plot sky distribution
         env:
           CATALOG_URL: https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json
         run: |
           python - <<'PY'
           import json, os, urllib.request, collections, re
+          import matplotlib
+          matplotlib.use("Agg")
+          import matplotlib.pyplot as plt
+          import numpy as np
           from astropy.coordinates import SkyCoord
           import astropy.units as u
 
-          req = urllib.request.Request(os.environ["CATALOG_URL"], headers={"User-Agent":"GalaxyViewer-Constellation-Audit"})
+          req = urllib.request.Request(os.environ["CATALOG_URL"], headers={"User-Agent":"GalaxyViewer-Mollweide-Audit"})
           with urllib.request.urlopen(req, timeout=90) as response:
               raw = response.read()
           data = json.loads(raw)
-          print("DOWNLOADED_BYTES", len(raw))
 
           def find_record_lists(obj, path="$"):
               found=[]
@@ -47,10 +50,8 @@ jobs:
 
           candidates=find_record_lists(data)
           if not candidates:
-              raise SystemExit("No list of object records found; root type="+type(data).__name__)
+              raise SystemExit("No list of object records found")
           n,path,records=max(candidates, key=lambda x:x[0])
-          print("RECORD_ARRAY", path, "RECORDS", n)
-          print("SAMPLE_KEYS", json.dumps(list(records[0].keys()), ensure_ascii=False))
 
           def norm(k): return re.sub(r'[^a-z0-9]', '', str(k).lower())
           ra_names={"ra","radeg","radegrees","rightascension","rightascensiondeg","raicrs","raj2000","ra2000"}
@@ -65,34 +66,55 @@ jobs:
                       if got is not None: return got
               return None
 
-          counts=collections.Counter()
-          skipped=0
-          examples=[]
-          for i,rec in enumerate(records):
+          ras=[]; decs=[]; counts=collections.Counter()
+          for rec in records:
               ra=lookup(rec,ra_names); dec=lookup(rec,dec_names)
-              if ra is None or dec is None:
-                  skipped+=1
-                  if len(examples)<5: examples.append({"index":i,"keys":list(rec.keys())})
-                  continue
-              try:
-                  c=SkyCoord(ra=ra*u.deg, dec=dec*u.deg, frame="icrs")
-                  const=c.get_constellation()
-                  counts[const]+=1
-              except Exception as e:
-                  skipped+=1
-          print("OBSERVATIONS_WITH_COORDINATES", sum(counts.values()))
-          print("SKIPPED_NO_USABLE_COORDINATES", skipped)
-          print("SKIPPED_EXAMPLES", json.dumps(examples, ensure_ascii=False))
-          print("CONSTELLATION_COUNT", len(counts))
-          print("RANKING")
-          for name,count in sorted(counts.items(), key=lambda x:(-x[1],x[0])):
-              print(f"{name}\t{count}")
-          print("ALPHABETICAL_ALL_88")
-          # IAU official 88 constellation names; include zeroes.
-          names="""Andromeda Antlia Apus Aquarius Aquila Ara Aries Auriga Bootes Caelum Camelopardalis Cancer Canes Venatici Canis Major Canis Minor Capricornus Carina Cassiopeia Centaurus Cepheus Cetus Chamaeleon Circinus Columba Coma Berenices Corona Australis Corona Borealis Corvus Crater Crux Cygnus Delphinus Dorado Draco Equuleus Eridanus Fornax Gemini Grus Hercules Horologium Hydra Hydrus Indus Lacerta Leo Leo Minor Lepus Libra Lupus Lynx Lyra Mensa Microscopium Monoceros Musca Norma Octans Ophiuchus Orion Pavo Pegasus Perseus Phoenix Pictor Pisces Piscis Austrinus Puppis Pyxis Reticulum Sagitta Sagittarius Scorpius Sculptor Scutum Serpens Sextans Taurus Telescopium Triangulum Triangulum Australe Tucana Ursa Major Ursa Minor Vela Virgo Volans Vulpecula""".split()
-          print("NAME\tOBSERVATIONS")
-          for name in sorted(names):
-              print(f"{name}\t{counts.get(name,0)}")
-          print("TOTAL_CATALOG_RECORDS", n)
-          print("TOTAL_ASSIGNED", sum(counts.values()))
+              if ra is None or dec is None: continue
+              c=SkyCoord(ra=ra*u.deg, dec=dec*u.deg, frame="icrs")
+              ras.append(ra); decs.append(dec); counts[c.get_constellation()]+=1
+
+          if len(ras) != n:
+              raise SystemExit(f"Coordinate audit incomplete: {len(ras)} of {n}")
+          # Astronomical sky-map convention: RA increases toward the left.
+          lon=((180.0-np.asarray(ras)+180.0)%360.0)-180.0
+          lat=np.asarray(decs)
+          fig=plt.figure(figsize=(16,8.5), facecolor="white")
+          ax=fig.add_subplot(111, projection="mollweide")
+          ax.set_facecolor("white")
+          ax.grid(True, color="#c9c9c9", linewidth=0.65, alpha=0.8)
+          ax.scatter(np.radians(lon), np.radians(lat), s=12, marker="o",
+                     facecolors="#1464a5", edgecolors="#102f4a",
+                     linewidths=0.25, alpha=0.78, zorder=3)
+          ax.set_title(f"Galaxy Viewer — AVM Runtime Sky Distribution\n{n:,} observations · ICRS coordinates · Mollweide projection",
+                       fontsize=17, pad=22, color="#202020")
+          ax.set_xlabel("Right Ascension (hours; astronomical orientation)", labelpad=12)
+          ax.set_ylabel("Declination", labelpad=12)
+          ticks=np.radians(np.arange(-150,181,30))
+          labels=[f"{int(((180-t+180)%360)/15):02d}h" for t in np.arange(-150,181,30)]
+          ax.set_xticks(ticks); ax.set_xticklabels(labels)
+          ax.set_yticks(np.radians(np.arange(-75,76,15)))
+          ax.tick_params(colors="#333333", labelsize=9)
+          for spine in ax.spines.values(): spine.set_color("#555555")
+          fig.text(0.5,0.025,"Each dot represents one catalog observation. This is a positional map, not a density-corrected isotropy test.",
+                   ha="center", fontsize=10, color="#555555")
+          plt.subplots_adjust(top=0.86,bottom=0.12,left=0.06,right=0.94)
+          fig.savefig("avm-mollweide-distribution.png",dpi=180,facecolor="white",bbox_inches="tight")
+          fig.savefig("avm-mollweide-distribution.svg",facecolor="white",bbox_inches="tight")
+          with open("avm-sky-coordinates.csv","w") as f:
+              f.write("ra_deg,dec_deg\n")
+              for ra,dec in zip(ras,decs): f.write(f"{ra},{dec}\n")
+          print("CATALOG_RECORDS",n)
+          print("PLOTTED_OBSERVATIONS",len(ras))
+          print("CONSTELLATIONS_WITH_OBSERVATIONS",len(counts))
+          print("TOP_CONSTELLATIONS",sorted(counts.items(),key=lambda x:(-x[1],x[0]))[:10])
+          print("MAP_FILES_READY")
           PY
+      - name: Upload Mollweide map and coordinates
+        uses: actions/upload-artifact@v4
+        with:
+          name: avm-mollweide-sky-map
+          path: |
+            avm-mollweide-distribution.png
+            avm-mollweide-distribution.svg
+            avm-sky-coordinates.csv
+          retention-days: 14
