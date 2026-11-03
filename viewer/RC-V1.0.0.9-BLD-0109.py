@@ -382,7 +382,7 @@ async function installUniverseContext(){
       '<div class="gv-universe-leader" aria-hidden="true"></div>';
     document.getElementById('aladin-cosmic-command-test').appendChild(universe);
 }
-gvSpaceAgeReady.then(()=>installUniverseContext()).catch(error=>console.error('GV SPACE AGE FONT LOAD FAILURE',error));
+const gvUniverseContextReady=gvSpaceAgeReady.then(()=>installUniverseContext()).catch(error=>{console.error('GV SPACE AGE FONT LOAD FAILURE',error);throw error});
 
 // ============================================================================
 // SECTION 041 — COMPASS / CENTER RETICLE / NORTH ROTATION
@@ -966,7 +966,7 @@ function installHomeEarthPointer(){
       '</div>';
     document.getElementById('aladin-cosmic-command-test').appendChild(home);
 }
-gvSpaceAgeReady.then(()=>installHomeEarthPointer()).catch(error=>console.error('GV HOME EARTH POINTER FAILURE',error));
+const gvHomeEarthPointerReady=gvSpaceAgeReady.then(()=>installHomeEarthPointer()).catch(error=>{console.error('GV HOME EARTH POINTER FAILURE',error);throw error});
 
 
 
@@ -3677,7 +3677,7 @@ function gvPreloadConstellationArtwork(name){
     };
     return attempt(0);
 }
-const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error=>console.error('GV FIRST DESTINATION PRELOAD FAILED',error));
+const gvFirstDestinationPreloadKick=gvStartFirstDestinationPreload().catch(error=>{console.error('GV FIRST DESTINATION PRELOAD FAILED',error);throw error});
 
 // ROLL 0025 — release transient renderer resources when Android backgrounds the viewer.
 // This does not pretend to clear Android's private HTTP cache. It releases live resources
@@ -4262,6 +4262,8 @@ window.GalaxyViewerStartCosmicReveal=gvCosmicReveal.start;
 window.GalaxyViewerStartupReady=(async()=>{
     const required=[
         gvAllRequiredFontsReady,
+        gvUniverseContextReady,
+        gvHomeEarthPointerReady,
         window.GalaxyCoordinateOverlay?.ensureFonts?.(),
         window.GalaxyNavigator?.ready,
         window.GalaxyRandomTravelPresentation?.ready,
