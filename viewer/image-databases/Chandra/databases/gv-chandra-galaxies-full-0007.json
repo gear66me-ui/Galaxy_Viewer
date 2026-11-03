@@ -3343,7 +3343,7 @@
       "dec": 32.541388888900045,
       "raText": "12 42 08.0",
       "decText": "+32 32 29",
-      "distance": "14.123 million light-years",
+      "distance": "23.94 million light-years",
       "constellation": "Canes Venatici",
       "fieldOfView": 0.27547627896915267,
       "orientation": 350.9,
@@ -3367,8 +3367,8 @@
       "githubImageUrl": null,
       "releaseTag": null,
       "science": {
-        "distanceMly": 14.122571,
-        "distanceMethod": "NED_crossmatch_provisional_2026-10-12",
+        "distanceMly": 23.94,
+        "distanceMethod": "TRGB_7.34_Mpc_0.27_Mpc_PHANGS_2021",
         "sizeKly": [
           18.148,
           18.148
@@ -3380,15 +3380,16 @@
         "ageMaxGyr": null,
         "ageEstimated": true,
         "ageDisplay": "EST. 0.02 GYR",
-        "redshift": 0.00179,
-        "redshiftDisplay": "EST. z 0.00179",
-        "redshiftEstimated": true,
-        "redshiftMethod": "inverted_comoving_distance_flat_lcdm_H0_70_Om_0.3",
-        "distanceDisplay": "14.123 million light-years",
+        "redshift": 0.002007,
+        "redshiftDisplay": "z 0.002007",
+        "redshiftEstimated": false,
+        "redshiftMethod": "SIMBAD_2022ApJS_261_21Y_heliocentric_emission_redshift",
+        "distanceDisplay": "23.94 million light-years",
         "distanceEstimated": false,
         "sizeEstimated": true,
         "sizeDisplay": "EST. 18.1 × 18.1 KLY",
-        "distanceEvidence": "Provisional NED-based replacement from distance-fix-157-log-20261012_204406.csv; independently unverified"
+        "distanceEvidence": "TRGB distance 7.34 ± 0.27 Mpc (PHANGS distances, MNRAS 2021); converted using 1 Mpc = 3.26156 million light-years",
+        "redshiftEvidence": "SIMBAD: emission redshift 0.002007 ± 0.000010; heliocentric velocity 601 ± 3 km/s; 2022ApJS..261...21Y"
       },
       "constellationMethod": "Chandra fast facts or IAU catalog",
       "designation": "NGC 4631",
