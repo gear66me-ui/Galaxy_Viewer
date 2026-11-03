@@ -334,6 +334,27 @@ function gvEnsureSpaceAgeFont(){
     return gvSpaceAgeReady;
 }
 gvSpaceAgeReady=gvEnsureSpaceAgeFont();
+const GV_STANDARD_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
+const GV_COORDINATE_DIGITS_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/GV-Coordinate-Digits-0005.otf';
+async function gvLoadRequiredFont(family,url,size,sample){
+    let lastError=null;
+    for(let attempt=1;attempt<=3;attempt++){
+        try{
+            const face=new FontFace(family,`url("${url}")`,{style:'normal',weight:'400'});
+            const loaded=await face.load();
+            if(loaded.status!=='loaded')throw new Error(family+' FACE NOT LOADED');
+            document.fonts.add(loaded);
+            await document.fonts.load(`400 ${size}px "${family}"`,sample);
+            await document.fonts.ready;
+            if(!document.fonts.check(`400 ${size}px "${family}"`,sample))throw new Error(family+' FONT VERIFICATION FAILED');
+            return loaded;
+        }catch(error){lastError=error;if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*attempt))}
+    }
+    throw new Error(family+' FONT FAILED AFTER 3 ATTEMPTS: '+String(lastError?.message||lastError));
+}
+const gvStandardSpaceAgeReady=gvLoadRequiredFont('Space Age',GV_STANDARD_SPACE_AGE_URL,16,'CONSTELLATION HEADING');
+const gvCoordinateDigitsReady=gvLoadRequiredFont('GV Coordinate Digits',GV_COORDINATE_DIGITS_URL,20,'359.9999 -90.0000');
+const gvAllRequiredFontsReady=Promise.all([gvSpaceAgeReady,gvStandardSpaceAgeReady,gvCoordinateDigitsReady]);
 
 // Top observable-universe callout. Geometry is copied from Random Galaxy 0166.
 async function installUniverseContext(){
@@ -1010,6 +1031,9 @@ const gvCosmicReveal=(()=>{
 // cache-busting query strings. Start the complete module set in parallel so a
 // cold CDN fetch for one module cannot serialize the entire boot sequence.
 await gvModuleLoadPromise;
+// Do not mount any font-dependent viewer UI until both distinct Space Age faces
+// and the coordinate digit face have loaded and passed explicit verification.
+await gvAllRequiredFontsReady;
 if(window.GVProviderArtwork?.VERSION!=='0009')throw new Error('PROVIDER ARTWORK 0009 EXPORT MISSING');
 // Warm all 88 constellation icons off the critical startup path so the selected icon is already cached before Random Galaxy travel.
 window.GV_CONSTELLATION_PRELOAD_READY=Promise.resolve(window.GVProviderArtwork?.preloadConstellations?.(88)).then(result=>{console.info('GV CONSTELLATION PRELOAD',result||'fallback unavailable');return result}).catch(error=>{console.warn('GV CONSTELLATION PRELOAD FAILED',error);return {started:false,failed:88,error:String(error?.message||error)}});
@@ -4237,7 +4261,7 @@ window.GalaxyViewerStartCosmicReveal=gvCosmicReveal.start;
 // before the launcher is permitted to start the splash animation.
 window.GalaxyViewerStartupReady=(async()=>{
     const required=[
-        gvSpaceAgeReady,
+        gvAllRequiredFontsReady,
         window.GalaxyCoordinateOverlay?.ensureFonts?.(),
         window.GalaxyNavigator?.ready,
         window.GalaxyRandomTravelPresentation?.ready,
