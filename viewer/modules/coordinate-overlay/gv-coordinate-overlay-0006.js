@@ -29,19 +29,30 @@
   async function ensureFonts(){
     if(fontsPromise)return fontsPromise;
     fontsPromise=(async()=>{
-      const faces=[
-        new FontFace(FONT_NAMES.spaceAge,`url("${FONT_URLS.spaceAge}")`,{style:'normal',weight:'400'}),
-        new FontFace(FONT_NAMES.digits,`url("${FONT_URLS.digits}")`,{style:'normal',weight:'400'})
-      ];
-      const loaded=await Promise.all(faces.map(face=>face.load()));
-      loaded.forEach(face=>document.fonts.add(face));
-      await Promise.all([
-        document.fonts.load(`400 12.5px "${FONT_NAMES.spaceAge}"`,'ICRSD'),
-        document.fonts.load(`400 20px "${FONT_NAMES.digits}"`,'359.9999 -90.0000')
-      ]);
-      await document.fonts.ready;
-      return true;
-    })();
+      let lastError=null;
+      for(let attempt=1;attempt<=3;attempt++){
+        try{
+          const faces=[
+            new FontFace(FONT_NAMES.spaceAge,`url("${FONT_URLS.spaceAge}")`,{style:'normal',weight:'400'}),
+            new FontFace(FONT_NAMES.digits,`url("${FONT_URLS.digits}")`,{style:'normal',weight:'400'})
+          ];
+          const loaded=await Promise.all(faces.map(face=>face.load()));
+          if(loaded.some(face=>face.status!=='loaded'))throw new Error('COORDINATE FONT FACE NOT LOADED');
+          loaded.forEach(face=>document.fonts.add(face));
+          await Promise.all([
+            document.fonts.load(`400 12.5px "${FONT_NAMES.spaceAge}"`,'ICRSD'),
+            document.fonts.load(`400 20px "${FONT_NAMES.digits}"`,'359.9999 -90.0000')
+          ]);
+          await document.fonts.ready;
+          if(!document.fonts.check(`400 12.5px "${FONT_NAMES.spaceAge}"`,'ICRSD')||!document.fonts.check(`400 20px "${FONT_NAMES.digits}"`,'359.9999 -90.0000'))throw new Error('COORDINATE FONT VERIFICATION FAILED');
+          return true;
+        }catch(error){
+          lastError=error;
+          if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*attempt));
+        }
+      }
+      throw new Error('COORDINATE FONTS FAILED AFTER 3 ATTEMPTS: '+String(lastError?.message||lastError));
+    })().catch(error=>{fontsPromise=null;throw error});
     return fontsPromise;
   }
 
@@ -101,5 +112,6 @@
 
   GalaxyCoordinateOverlay.VERSION=VERSION;
   GalaxyCoordinateOverlay.GEOMETRY=GEOMETRY;
+  GalaxyCoordinateOverlay.ensureFonts=ensureFonts;
   global.GalaxyCoordinateOverlay=GalaxyCoordinateOverlay;
 })(window);

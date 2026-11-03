@@ -8,17 +8,39 @@
 'use strict';
 const VERSION='013';
 const FONT_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
+let navFontReady=null;
+function ensureNavigatorFont(){
+ if(navFontReady)return navFontReady;
+ navFontReady=(async()=>{
+  let lastError=null;
+  for(let attempt=1;attempt<=3;attempt++){
+   try{
+    const face=new FontFace('GV Space Age',`url("${FONT_URL}")`,{style:'normal',weight:'400'});
+    const loaded=await face.load();
+    if(loaded.status!=='loaded')throw new Error('NAVIGATOR GV-9A FONT NOT LOADED');
+    document.fonts.add(loaded);
+    await document.fonts.load('400 15.5px "GV Space Age"','RANDOM GALAXY');
+    await document.fonts.ready;
+    if(!document.fonts.check('400 15.5px "GV Space Age"','RANDOM GALAXY'))throw new Error('NAVIGATOR GV-9A FONT VERIFICATION FAILED');
+    return true;
+   }catch(error){lastError=error;if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*attempt))}
+  }
+  throw new Error('NAVIGATOR GV-9A FONT FAILED AFTER 3 ATTEMPTS: '+String(lastError?.message||lastError));
+ })().catch(error=>{navFontReady=null;throw error});
+ return navFontReady;
+}
+const GV_NAVIGATOR_FONT_READY=ensureNavigatorFont();
 
 function installStyle(){
  if(document.getElementById('gv-galaxy-navigator-009-style'))return;
  const style=document.createElement('style');
  style.id='gv-galaxy-navigator-009-style';
  style.textContent=`
-@font-face{font-family:"GV Space Age";src:url("${FONT_URL}") format("opentype");font-display:swap}
+@font-face{font-family:"GV Space Age";src:url("${FONT_URL}") format("opentype");font-display:block}
 .gv-galaxy-navigator{display:flex;align-items:center;justify-content:center;gap:7px;width:min(100%,430px);margin:0 auto}
 #gv-random-galaxy,.gv-galaxy-history{appearance:none;-webkit-appearance:none;position:relative;height:42px;margin:0;border:1px solid #43CFFF;border-radius:10px;background:linear-gradient(180deg,#174E86 0%,#082C59 13%,#041B3E 54%,#07366A 88%,#0D5A98 100%) padding-box;color:#F4FDFF;box-shadow:inset 0 2px 2px rgba(225,251,255,.82),inset 0 -3px 5px rgba(0,0,0,.52),inset 0 0 13px rgba(41,153,255,.34),0 0 2px rgba(221,248,255,.88),0 0 7px rgba(50,190,255,.58);cursor:pointer;touch-action:manipulation;outline:none;pointer-events:auto;transition:transform .08s ease,filter .12s ease,box-shadow .12s ease}
 #gv-random-galaxy::after,.gv-galaxy-history::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(180deg,rgba(255,255,255,.46) 0%,rgba(118,225,255,.08) 24%,transparent 42%);pointer-events:none}
-#gv-random-galaxy{position:relative;display:flex;flex:1 1 auto;min-width:0;align-items:center;justify-content:center;padding:0 12px;overflow:hidden;font:400 15.5px/1 "GV Space Age",sans-serif;letter-spacing:.38px;text-transform:uppercase;text-shadow:0 0 5px #fff,0 0 11px rgba(88,191,255,.85)}
+#gv-random-galaxy{position:relative;display:flex;flex:1 1 auto;min-width:0;align-items:center;justify-content:center;padding:0 12px;overflow:hidden;font:400 15.5px/1 "GV Space Age",sans-serif;visibility:hidden;letter-spacing:.38px;text-transform:uppercase;text-shadow:0 0 5px #fff,0 0 11px rgba(88,191,255,.85)}
 .gv-galaxy-history{display:flex;flex:0 0 42px;align-items:center;justify-content:center;width:42px;padding:0;color:transparent;overflow:hidden}
 .gv-galaxy-history::before{content:"";position:absolute;left:50%;top:50%;width:16px;height:16px;border:solid #F4FDFF;border-width:0 5px 5px 0;filter:drop-shadow(0 0 4px #8DDAFF) drop-shadow(0 0 8px #58BFFF);transform:translate(-62%,-50%) rotate(-45deg);box-sizing:border-box}
 .gv-galaxy-history-back::before{transform:translate(-38%,-50%) rotate(135deg)}
@@ -380,5 +402,5 @@ function mount(host,handlers={}){
   setEnabled({back:be=true,random:re=true,forward:fe=true}={}){back.disabled=!be;random.disabled=!re;forward.disabled=!fe}
  });
 }
-global.GalaxyNavigator=Object.freeze({VERSION,mount});
+global.GalaxyNavigator=Object.freeze({VERSION,ready:GV_NAVIGATOR_FONT_READY,mount});
 })(typeof window!=='undefined'?window:globalThis);

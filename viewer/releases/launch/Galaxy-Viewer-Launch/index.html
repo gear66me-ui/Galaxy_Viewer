@@ -5,7 +5,7 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 #identity{width:100%;display:flex;flex-direction:column;align-items:center;text-align:center}
 #halo{position:relative;width:min(78vw,420px);aspect-ratio:1;display:grid;place-items:center;background:transparent}
 #target{display:block;width:100%;height:100%;object-fit:contain;overflow:visible;filter:none}
-#ver,#bld{font:400 clamp(15px,4vw,24px) GV,sans-serif;letter-spacing:.08em;color:#f8fdff;text-shadow:0 0 3px #fff,0 0 9px #075cff,0 0 18px #075cff}
+#ver,#bld{visibility:hidden;font:400 clamp(15px,4vw,24px) GV,sans-serif;letter-spacing:.08em;color:#f8fdff;text-shadow:0 0 3px #fff,0 0 9px #075cff,0 0 18px #075cff}
 #ver{margin-top:18px}#bld{margin-top:20px}
 #splash{display:none;position:fixed;inset:0;width:100%;height:100%;border:0;background:#000;z-index:100001}
 #error{display:none;position:fixed;inset:0;padding:28px;white-space:pre-wrap;color:#9be5ff;background:#000;font:12px monospace;z-index:99002}
@@ -14,6 +14,23 @@ html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;color:
 <iframe id="splash"></iframe><div id="error"></div>
 <script>
 (async()=>{const BASE='../../../';
+const launcherFontReady=(async()=>{
+ let lastError=null;
+ for(let attempt=1;attempt<=3;attempt++){
+  try{
+   const face=new FontFace('GV', 'url("../../../artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf")',{style:'normal',weight:'400'});
+   const loaded=await face.load();
+   if(loaded.status!=='loaded')throw new Error('LAUNCHER GV-9A FONT FACE NOT LOADED');
+   document.fonts.add(loaded);
+   await document.fonts.load('400 20px GV','VERSION BUILD 0109');
+   await document.fonts.ready;
+   if(!document.fonts.check('400 20px GV','VERSION BUILD 0109'))throw new Error('LAUNCHER GV-9A FONT VERIFICATION FAILED');
+   ver.style.visibility='visible';bld.style.visibility='visible';
+   return true;
+  }catch(error){lastError=error;if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*attempt))}
+ }
+ throw new Error('LAUNCHER GV-9A FONT FAILED AFTER 3 ATTEMPTS: '+String(lastError?.message||lastError));
+})();
 const read=async u=>{
  let lastError=null;
  for(let attempt=0;attempt<4;attempt++){
@@ -47,6 +64,7 @@ addEventListener('unhandledrejection',event=>{
 });
 const paint2=()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
 try{
+ await launcherFontReady;
  const p=JSON.parse(await read(BASE+'gv-current-viewer.json?t='+Date.now()));
  ver.textContent='VERSION '+String(p.version||'').toUpperCase();bld.textContent='BUILD '+String(p.build||'').toUpperCase();
  const identityStarted=performance.now();
@@ -58,9 +76,10 @@ try{
  const splashReady=new Promise(resolve=>{
    // The splash is presentation only: it must never prevent a ready viewer from launching.
    const finish=ready=>{clearTimeout(timeout);removeEventListener('message',onMessage);resolve(ready)};
-   const timeout=setTimeout(()=>finish(false),10000);
+   const timeout=setTimeout(()=>finish(false),60000);
    const onMessage=ev=>{
      if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-ready')finish(true);
+     if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-error')finish(false);
    };
    addEventListener('message',onMessage)
  });
@@ -85,12 +104,13 @@ try{
    return {root:!!root,core:!!core,runtime:!!runtime,aladin:!!core?.aladin,phase:navState?.phase??null,active:navState?.active??null};
  };
  const viewerReady=(async()=>{
-   const deadline=Date.now()+90000;
+   const deadline=Date.now()+180000;
    while(Date.now()<deadline){
      const s=readiness();
      if(s.root&&s.core&&s.runtime&&s.aladin&&s.phase==='READY'&&s.active===100){
-       const preload=window.GalaxyViewerPreloadReady;
-       if(preload)await preload;
+       const startup=window.GalaxyViewerStartupReady;
+       if(!startup){await sleep(50);continue}
+       await startup;
        return
      }
      await sleep(100)
@@ -105,6 +125,7 @@ try{
  if(!splashPrepared){
    // A slow/broken splash (poster decode, font prep, or WebGL setup) is non-fatal.
    // Reveal the already-ready viewer rather than turning presentation into a boot failure.
+   window.GV_SPLASH_ACTIVE=false;
    splash.remove();
    if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
    await paint2();
@@ -125,15 +146,17 @@ try{
    };
    addEventListener('message',onMessage)
  });
+ window.GV_SPLASH_ACTIVE=true;
  splash.style.display='block';
  await paint2();
  splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
 
  await splashComplete;
+ window.GV_SPLASH_ACTIVE=false;
  if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
  await paint2();
  document.documentElement.dataset.gvSplashComplete='1';window.GalaxyViewerSetSplashComplete?.();splash.remove();curtain.remove();
  if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
-}catch(e){curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD — LAUNCH ROLL 0055\n\n'+String(e&&e.stack||e)}
+}catch(e){window.GV_SPLASH_ACTIVE=false;curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD — LAUNCH ROLL 0055\n\n'+String(e&&e.stack||e)}
 })();
 </script></body></html>
