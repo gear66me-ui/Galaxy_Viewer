@@ -309,11 +309,31 @@ const HOME=Object.freeze({
 });
 
 const GV_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
-const gvSpaceAgeFace=new FontFace('GV Space Age',`url("${GV_SPACE_AGE_URL}")`,{style:'normal',weight:'400'});
-const gvSpaceAgeReady=gvSpaceAgeFace.load().then(face=>{
-    document.fonts.add(face);
-    return face;
-});
+let gvSpaceAgeReady=null;
+function gvEnsureSpaceAgeFont(){
+    if(gvSpaceAgeReady)return gvSpaceAgeReady;
+    gvSpaceAgeReady=(async()=>{
+        let lastError=null;
+        for(let attempt=1;attempt<=3;attempt++){
+            try{
+                const face=new FontFace('GV Space Age',`url("${GV_SPACE_AGE_URL}")`,{style:'normal',weight:'400'});
+                const loaded=await face.load();
+                if(loaded.status!=='loaded')throw new Error('GV-9A FONT FACE NOT LOADED');
+                document.fonts.add(loaded);
+                await document.fonts.load('400 15px "GV Space Age"','GALAXY VIEWER');
+                await document.fonts.ready;
+                if(!document.fonts.check('400 15px "GV Space Age"','GALAXY VIEWER'))throw new Error('GV-9A FONT VERIFICATION FAILED');
+                return loaded;
+            }catch(error){
+                lastError=error;
+                if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*attempt));
+            }
+        }
+        throw new Error('GV-9A FONT FAILED AFTER 3 ATTEMPTS: '+String(lastError?.message||lastError));
+    })().catch(error=>{gvSpaceAgeReady=null;throw error});
+    return gvSpaceAgeReady;
+}
+gvSpaceAgeReady=gvEnsureSpaceAgeFont();
 
 // Top observable-universe callout. Geometry is copied from Random Galaxy 0166.
 async function installUniverseContext(){
@@ -992,7 +1012,7 @@ const gvCosmicReveal=(()=>{
 await gvModuleLoadPromise;
 if(window.GVProviderArtwork?.VERSION!=='0009')throw new Error('PROVIDER ARTWORK 0009 EXPORT MISSING');
 // Warm all 88 constellation icons off the critical startup path so the selected icon is already cached before Random Galaxy travel.
-Promise.resolve(window.GVProviderArtwork?.preloadConstellations?.(88)).then(result=>console.info('GV CONSTELLATION PRELOAD',result||'fallback unavailable')).catch(error=>console.warn('GV CONSTELLATION PRELOAD FAILED',error));
+window.GV_CONSTELLATION_PRELOAD_READY=Promise.resolve(window.GVProviderArtwork?.preloadConstellations?.(88)).then(result=>{console.info('GV CONSTELLATION PRELOAD',result||'fallback unavailable');return result}).catch(error=>{console.warn('GV CONSTELLATION PRELOAD FAILED',error);return {started:false,failed:88,error:String(error?.message||error)}});
 
 
 // ============================================================================
@@ -4212,6 +4232,27 @@ window.GalaxyViewerCore=Object.freeze({
 
 window.GalaxyViewerPrepareCosmicReveal=gvCosmicReveal.prepare;
 window.GalaxyViewerStartCosmicReveal=gvCosmicReveal.start;
+// Explicit finite startup barrier: all mandatory fonts, component initialization,
+// first-destination assets, constellation artwork and reveal preparation must settle
+// before the launcher is permitted to start the splash animation.
+window.GalaxyViewerStartupReady=(async()=>{
+    const required=[
+        gvSpaceAgeReady,
+        window.GalaxyCoordinateOverlay?.ensureFonts?.(),
+        window.GalaxyNavigator?.ready,
+        window.GalaxyRandomTravelPresentation?.ready,
+        coordinate?.ready,
+        gvSurveyThumbnailPackReady,
+        gvFirstDestinationPreloadKick,
+        window.GV_CONSTELLATION_PRELOAD_READY,
+        Promise.resolve().then(()=>gvCosmicReveal.prepare())
+    ].filter(Boolean);
+    const results=await Promise.allSettled(required);
+    const failures=results.filter(result=>result.status==='rejected');
+    if(failures.length)throw new Error('STARTUP RESOURCE BARRIER FAILED: '+failures.map(result=>String(result.reason?.message||result.reason)).join(' | '));
+    await document.fonts.ready;
+    return Object.freeze({ready:true,resources:results.length,navigation:navigationRuntime.snapshot(),firstDestination:true});
+})();
 console.info(`${VERSION} — TRIAL READY`,{
     routeLength:activeRoute.length,
     navigation:navigationRuntime.snapshot()
