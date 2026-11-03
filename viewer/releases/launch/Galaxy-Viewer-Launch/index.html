@@ -127,7 +127,6 @@ try{
    // A slow/broken splash (poster decode, font prep, or WebGL setup) is non-fatal.
    // Reveal the already-ready viewer rather than turning presentation into a boot failure.
    splash.remove();
-   if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
    await paint2();
    document.documentElement.dataset.gvSplashComplete='1';
    window.GalaxyViewerSetSplashComplete?.();
@@ -151,7 +150,6 @@ try{
  splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
 
  await splashComplete;
- if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
  await paint2();
  document.documentElement.dataset.gvSplashComplete='1';window.GalaxyViewerSetSplashComplete?.();splash.remove();curtain.remove();
  if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
