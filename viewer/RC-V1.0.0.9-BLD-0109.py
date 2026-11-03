@@ -330,7 +330,7 @@ function gvEnsureSpaceAgeFont(){
             }
         }
         throw new Error('GV-9A FONT FAILED AFTER 3 ATTEMPTS: '+String(lastError?.message||lastError));
-    })().catch(error=>{gvSpaceAgeReady=null;throw error});
+    })().catch(error=>{throw error});
     return gvSpaceAgeReady;
 }
 gvSpaceAgeReady=gvEnsureSpaceAgeFont();
@@ -440,7 +440,7 @@ const updateDirectionalReticle=()=>{
     else if(Number.isFinite(state.lastNorthBearing))setNorthMarker(state.lastNorthBearing);
 };
 
-const directionalReticleTimer=setInterval(updateDirectionalReticle,40);
+const directionalReticleTimer=setInterval(()=>{if(!window.GV_SPLASH_ACTIVE)updateDirectionalReticle()},40);
 updateDirectionalReticle();
 
 // ============================================================================
@@ -524,7 +524,7 @@ function gvUpdateEarthBearingPointer(){
     if(Number.isFinite(a))rotor.style.transform=`rotate(${a}deg)`;
 }
 gvInstallEarthBearingPointer();
-const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,40);
+const gvEarthBearingTimer=setInterval(()=>{if(!window.GV_SPLASH_ACTIVE)gvUpdateEarthBearingPointer()},40);
 function gvResyncEarthPointerFromAladin(){
     try{
         if(!document.getElementById('gv-earth-bearing-rotor'))gvInstallEarthBearingPointer();
@@ -753,7 +753,7 @@ async function gvShowEarthDistance(destination,alreadyResolvedRuntimeRecord=fals
 gvInstallEarthDistanceBanner();
 // BUILD 0036 STUTTER FIX: skip repeated ruler layout/scale work while the zoom slider is driving setFov.
 // The zoom release path schedules one final distance/scale sync.
-setInterval(()=>{if(document.visibilityState==='visible'&&!gvZoomInteractionActive&&!gvNavigationTravelActive)gvUpdateLivePhysicalScale()},120);
+setInterval(()=>{if(!window.GV_SPLASH_ACTIVE&&document.visibilityState==='visible'&&!gvZoomInteractionActive&&!gvNavigationTravelActive)gvUpdateLivePhysicalScale()},120);
 
 // BUILD 0130 — resolve the galaxy nearest Aladin's live center coordinate.
 // Distance comes from that galaxy's catalog record; the physical ruler then
@@ -907,7 +907,7 @@ try{aladin.on('positionChanged',()=>{if(gvZoomInteractionActive||gvNavigationTra
 try{aladin.on('zoomChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0005 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
 // Install once; retain a lower-frequency center fallback only while visible.
 gvInstallEarthDistanceInteractionListeners();
-setInterval(()=>{if(document.visibilityState==='visible'&&!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},50);
+setInterval(()=>{if(!window.GV_SPLASH_ACTIVE&&document.visibilityState==='visible'&&!gvZoomInteractionActive&&!gvNavigationTravelActive)gvSyncEarthDistanceToCenter()},50);
 
 // ============================================================================
 // SECTION 042 — HOME EARTH POINTER / WE ARE HERE
@@ -1307,7 +1307,7 @@ function gvSyncCoordinateFromAladin(){
 // Release validation now requires the active coordinate overlay 0008 pin.
 // Build identity is validated against the active release pointer 0036.
 // Coordinate readback is throttled and suspended while the zoom slider is driving FOV.
-setInterval(()=>{if(document.visibilityState!=='visible'||gvZoomInteractionActive||window.GV_NAV_BACKGROUND_SUSPENDED)return;gvSyncCoordinateFromAladin()},250);
+setInterval(()=>{if(window.GV_SPLASH_ACTIVE||document.visibilityState!=='visible'||gvZoomInteractionActive||window.GV_NAV_BACKGROUND_SUSPENDED)return;gvSyncCoordinateFromAladin()},250);
 
 
 // ============================================================================
@@ -2637,7 +2637,7 @@ function gvSyncFovReadout(){
     }catch(_){}
 }
 gvSyncFovReadout();
-setInterval(()=>{if(document.visibilityState==='visible')gvSyncFovReadout()},250);
+setInterval(()=>{if(!window.GV_SPLASH_ACTIVE&&document.visibilityState==='visible')gvSyncFovReadout()},250);
 
 let zoomCommand=0;
 let zoomFrame=0;
