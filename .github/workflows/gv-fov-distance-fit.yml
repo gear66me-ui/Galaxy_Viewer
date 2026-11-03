@@ -1,0 +1,254 @@
+name: AVM Runtime Catalog 0006 — FOV vs Distance Best Fit
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [gv-fov-distance-fit]
+    paths:
+      - ".github/workflows/gv-fov-distance-fit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout workflow branch
+        uses: actions/checkout@v4
+
+      - name: Install analysis dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install numpy pandas matplotlib scipy
+
+      - name: Download release AVM runtime catalog 0006
+        run: |
+          mkdir -p output
+          curl -fL --retry 4 --retry-delay 3 \
+            "https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/release/viewer/image-databases/master-database/avm-metadata/gv-avm-runtime-catalog-0006.json" \
+            -o output/gv-avm-runtime-catalog-0006.json
+          python - <<'PY'
+          import json, os
+          p = "output/gv-avm-runtime-catalog-0006.json"
+          with open(p, encoding="utf-8") as f: data=json.load(f)
+          records = data.get("records", []) if isinstance(data, dict) else data
+          print(f"Downloaded {os.path.getsize(p):,} bytes; records={len(records):,}")
+          if not records: raise SystemExit("Catalog has no records at $.records")
+          PY
+
+      - name: Calculate physical FOV and fit equations
+        run: |
+          cat > /tmp/analyze.py <<'PY'
+          import json, math, re, os
+          import numpy as np
+          import pandas as pd
+          import matplotlib
+          matplotlib.use("Agg")
+          import matplotlib.pyplot as plt
+          from scipy.stats import linregress, median_abs_deviation
+
+          SOURCE = "output/gv-avm-runtime-catalog-0006.json"
+          with open(SOURCE, encoding="utf-8") as f: root=json.load(f)
+          records = root.get("records", []) if isinstance(root, dict) else root
+
+          def norm(s): return re.sub(r"[^a-z0-9]", "", str(s).lower())
+          def walk(obj, prefix=""):
+              if isinstance(obj, dict):
+                  for k,v in obj.items():
+                      path = f"{prefix}.{k}" if prefix else str(k)
+                      yield path, str(k), v
+                      yield from walk(v, path)
+              elif isinstance(obj, list):
+                  for i,v in enumerate(obj[:5]):
+                      yield from walk(v, f"{prefix}[{i}]")
+
+          def numeric(v):
+              if isinstance(v, bool) or v is None: return None
+              if isinstance(v, (int,float)):
+                  return float(v) if math.isfinite(float(v)) else None
+              if isinstance(v, str):
+                  m=re.search(r"[-+]?(?:\\d+\\.?\\d*|\\.\\d+)(?:[eE][-+]?\\d+)?", v.replace(",", ""))
+                  if m:
+                      try: return float(m.group())
+                      except: return None
+              return None
+
+          def all_fields(rec):
+              return [(path,norm(key),val) for path,key,val in walk(rec)]
+
+          def pick_distance(fields):
+              # Explicit units first. Values are converted to light-years.
+              priorities = [
+                  ("distancemly",1e6), ("distancemillionlightyears",1e6),
+                  ("distancely",1.0), ("distancelightyears",1.0),
+                  ("distancekly",1e3), ("distancekilolightyears",1e3),
+                  ("distancegly",1e9), ("distancebillionlightyears",1e9),
+                  ("distancempc",3.261563777e6), ("distancekpc",3261.563777),
+                  ("distancepc",3.261563777), ("bestdistancemly",1e6),
+                  ("bestdistancely",1.0)
+              ]
+              for alias,mul in priorities:
+                  for path,k,v in fields:
+                      if k == alias:
+                          n=numeric(v)
+                          if n is not None and n>0: return n*mul,path
+              # Fallback: explicit distance key with unit metadata in sibling or nested object.
+              for path,k,v in fields:
+                  if k in ("distance","bestdistance") and not isinstance(v,(dict,list)):
+                      n=numeric(v)
+                      if n is None or n<=0: continue
+                      unit=""
+                      parent=path.rsplit(".",1)[0] if "." in path else ""
+                      for p2,k2,v2 in fields:
+                          if p2.startswith(parent) and k2 in ("distanceunit","unit"):
+                              unit=str(v2).lower()
+                      if "gyr" in unit or "billion" in unit: return n*1e9,path
+                      if "myr" in unit or "million" in unit or "mly" in unit: return n*1e6,path
+                      if unit in ("ly","lyr","lightyear","lightyears"): return n,path
+                      if unit=="kpc": return n*3261.563777,path
+                      if unit=="mpc": return n*3.261563777e6,path
+                      if unit=="pc": return n*3.261563777,path
+              return None,None
+
+          def pick_fov(fields, axis):
+              aliases = ([f"fovxdeg",f"fovx",f"fovwidthdeg",f"fieldofviewxdeg",f"widthfovdeg"]
+                         if axis=="x" else
+                         [f"fovydeg",f"fovy",f"fovheightdeg",f"fieldofviewydeg",f"heightfovdeg"])
+              for alias in aliases:
+                  for path,k,v in fields:
+                      if k==alias:
+                          n=numeric(v)
+                          if n is not None and n>0:
+                              unit="arcsec" if "arcsec" in k else "arcmin" if "arcmin" in k else "rad" if k.endswith("rad") else "deg"
+                              return n*(1/3600 if unit=="arcsec" else 1/60 if unit=="arcmin" else 180/math.pi if unit=="rad" else 1),path
+              # Generic single FOV value, or explicit FOV with units in the key.
+              for path,k,v in fields:
+                  if k in ("fovdeg","fieldofviewdeg","fov") or (axis=="x" and k in ("fovxarcsec","fovxarcmin","fovxrad")) or (axis=="y" and k in ("fovyarcsec","fovyarcmin","fovyrad")):
+                      n=numeric(v)
+                      if n is not None and n>0:
+                          mul=1/3600 if "arcsec" in k else 1/60 if "arcmin" in k else 180/math.pi if "rad" in k else 1
+                          return n*mul,path
+              # AVM Spatial.Scale may be arcsec/pixel, but cannot become FOV without image dimensions.
+              return None,None
+
+          rows=[]; key_counts={}
+          for i,rec in enumerate(records):
+              fields=all_fields(rec)
+              for path,k,v in fields:
+                  if any(t in k for t in ("fov","distance","scale","width","height")):
+                      key_counts[path]=key_counts.get(path,0)+1
+              d,dp=pick_distance(fields)
+              fx,fxp=pick_fov(fields,"x"); fy,fyp=pick_fov(fields,"y")
+              # Accept records only when the distance and at least one angular FOV are explicit.
+              if d and (fx or fy):
+                  ident=None
+                  for path,k,v in fields:
+                      if k in ("id","name","target","objectname","galaxyname") and isinstance(v,(str,int)):
+                          ident=str(v); break
+                  row={"record_index":i,"object":ident or f"record_{i}","distance_ly":d,
+                       "fov_x_deg":fx,"fov_y_deg":fy,"distance_source":dp,
+                       "fov_x_source":fxp,"fov_y_source":fyp}
+                  if fx: row["width_x_ly"]=2*d*math.tan(math.radians(fx)/2)
+                  if fy: row["width_y_ly"]=2*d*math.tan(math.radians(fy)/2)
+                  rows.append(row)
+
+          os.makedirs("output",exist_ok=True)
+          with open("output/schema-key-inventory.json","w") as f:
+              json.dump({"record_count":len(records),"field_paths_with_relevant_terms":key_counts,
+                         "sample_record_keys":list(records[0].keys()) if records and isinstance(records[0],dict) else []},f,indent=2)
+          df=pd.DataFrame(rows)
+          df.to_csv("output/fov-distance-records.csv",index=False)
+
+          # Fit physical width against distance*angular width (radians), testing
+          # whether the catalog metadata follows the geometric expectation W = D*theta.
+          report={"catalog":"gv-avm-runtime-catalog-0006.json","records_total":len(records),
+                  "records_with_explicit_distance_and_fov":len(df),
+                  "fit_method":"ordinary least squares plus robust median ratio; exact tangent geometry",
+                  "equations":{"exact":"W = 2 D tan(theta/2)",
+                               "small_angle":"W ≈ D theta_rad",
+                               "unit_conversion":"theta_rad = theta_deg * pi / 180"},
+                  "axis_fits":{},"warnings":[]}
+          for axis in ("x","y"):
+              wcol=f"width_{axis}_ly"; fcol=f"fov_{axis}_deg"
+              if wcol not in df or df[wcol].notna().sum()<3:
+                  report["axis_fits"][axis]={"status":"insufficient explicit FOV values"}
+                  continue
+              sub=df.dropna(subset=["distance_ly",fcol,wcol]).copy()
+              sub=sub[(sub.distance_ly>0)&(sub[fcol]>0)&(sub[fcol]<180)]
+              if len(sub)<3:
+                  report["axis_fits"][axis]={"status":"fewer than 3 valid rows"}
+                  continue
+              x=sub.distance_ly.to_numpy()*np.deg2rad(sub[fcol].to_numpy())
+              y=sub[wcol].to_numpy()
+              slope,intercept=np.polyfit(x,y,1)
+              pred=slope*x+intercept
+              ssres=np.sum((y-pred)**2); sstot=np.sum((y-y.mean())**2)
+              r2=1-ssres/sstot if sstot else None
+              ratios=y/x
+              med=float(np.median(ratios))
+              mad=float(median_abs_deviation(ratios,scale="normal"))
+              report["axis_fits"][axis]={
+                "n":int(len(sub)),"ols_equation":f"W_ly = {slope:.8g} * (D_ly * theta_{axis}_rad) + {intercept:.8g}",
+                "ols_slope":float(slope),"ols_intercept_ly":float(intercept),"r_squared":float(r2),
+                "median_geometry_ratio":med,"ratio_MAD":mad,
+                "expected_slope_for_small_angle":1.0,
+                "median_fractional_deviation_from_geometry":float(np.median(np.abs(y-x)/np.maximum(x,1e-30))),
+                "distance_range_ly":[float(sub.distance_ly.min()),float(sub.distance_ly.max())],
+                "fov_range_deg":[float(sub[fcol].min()),float(sub[fcol].max())]}
+              # Save per-axis diagnostic plot.
+              fig,ax=plt.subplots(figsize=(10,6))
+              ax.scatter(x,y,s=13,alpha=.55,label="Catalog records")
+              xx=np.linspace(x.min(),x.max(),200)
+              ax.plot(xx,xx,"k--",lw=1.5,label="Exact small-angle expectation (slope 1)")
+              ax.plot(xx,slope*xx+intercept,"r",lw=2,label=f"OLS fit: slope={slope:.4g}, R²={r2:.4f}")
+              ax.set_xlabel(f"Distance × angular FOV {axis.upper()} (light-years × radians)")
+              ax.set_ylabel(f"Calculated physical FOV width {axis.upper()} (light-years)")
+              ax.set_title(f"AVM 0006 — physical FOV validation ({axis.upper()})")
+              ax.grid(alpha=.25); ax.legend(); fig.tight_layout()
+              fig.savefig(f"output/fov-fit-{axis}.png",dpi=180); plt.close(fig)
+
+          # Detect suspicious rows using a conservative robust ratio envelope.
+          for axis in ("x","y"):
+              fcol=f"fov_{axis}_deg"; wcol=f"width_{axis}_ly"
+              if fcol in df and wcol in df:
+                  sub=df.dropna(subset=["distance_ly",fcol,wcol]).copy()
+                  if len(sub)>=5:
+                      ratio=sub[wcol].to_numpy()/(sub.distance_ly.to_numpy()*np.deg2rad(sub[fcol].to_numpy()))
+                      med=np.median(ratio); mad=median_abs_deviation(ratio,scale="normal")
+                      if mad>0:
+                          bad=sub[(np.abs(ratio-med)>6*mad)].copy()
+                          if len(bad):
+                              bad["geometry_ratio"]=ratio[np.abs(ratio-med)>6*mad]
+                              bad.to_csv(f"output/outliers-{axis}.csv",index=False)
+                              report["warnings"].append(f"{len(bad)} potential {axis.upper()}-axis outliers exceed 6 robust MAD.")
+
+          if len(df)==0:
+              report["warnings"].append("No rows matched the explicit distance/FOV aliases. Inspect schema-key-inventory.json; AVM Spatial.Scale requires image dimensions to derive FOV.")
+          report["field_path_inventory"] = sorted(key_counts.items(),key=lambda x:(-x[1],x[0]))[:250]
+          with open("output/fov-distance-fit-report.json","w") as f: json.dump(report,f,indent=2)
+          print(json.dumps(report,indent=2))
+          PY
+          python /tmp/analyze.py
+
+      - name: Package analysis artifacts
+        run: |
+          cd output
+          zip -9 ../avm-0006-fov-distance-fit.zip *
+          cd ..
+          ls -lh avm-0006-fov-distance-fit.zip output/*
+
+      - name: Upload analysis artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: avm-0006-fov-distance-fit
+          path: |
+            avm-0006-fov-distance-fit.zip
+            output/fov-distance-fit-report.json
+            output/fov-distance-records.csv
+            output/schema-key-inventory.json
+            output/fov-fit-*.png
+            output/outliers-*.csv
+          if-no-files-found: error
+          retention-days: 30
