@@ -76,7 +76,7 @@ try{
  const splashReady=new Promise(resolve=>{
    // The splash is presentation only: it must never prevent a ready viewer from launching.
    const finish=ready=>{clearTimeout(timeout);removeEventListener('message',onMessage);resolve(ready)};
-   const timeout=setTimeout(()=>finish(false),30000);
+   const timeout=setTimeout(()=>finish(false),60000);
    const onMessage=ev=>{
      if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-ready')finish(true);
    };
