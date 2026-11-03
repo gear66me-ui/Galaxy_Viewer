@@ -124,6 +124,7 @@ try{
  if(!splashPrepared){
    // A slow/broken splash (poster decode, font prep, or WebGL setup) is non-fatal.
    // Reveal the already-ready viewer rather than turning presentation into a boot failure.
+   window.GV_SPLASH_ACTIVE=false;
    splash.remove();
    if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
    await paint2();
@@ -144,15 +145,17 @@ try{
    };
    addEventListener('message',onMessage)
  });
+ window.GV_SPLASH_ACTIVE=true;
  splash.style.display='block';
  await paint2();
  splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
 
  await splashComplete;
+ window.GV_SPLASH_ACTIVE=false;
  if(typeof window.GalaxyViewerPrepareCosmicReveal==='function')window.GalaxyViewerPrepareCosmicReveal();
  await paint2();
  document.documentElement.dataset.gvSplashComplete='1';window.GalaxyViewerSetSplashComplete?.();splash.remove();curtain.remove();
  if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
-}catch(e){curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD — LAUNCH ROLL 0055\n\n'+String(e&&e.stack||e)}
+}catch(e){window.GV_SPLASH_ACTIVE=false;curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD — LAUNCH ROLL 0055\n\n'+String(e&&e.stack||e)}
 })();
 </script></body></html>
