@@ -125,5 +125,6 @@
 
   GalaxyCoordinateOverlay.VERSION=VERSION;
   GalaxyCoordinateOverlay.GEOMETRY=GEOMETRY;
+  GalaxyCoordinateOverlay.ensureFonts=ensureFonts;
   global.GalaxyCoordinateOverlay=GalaxyCoordinateOverlay;
 })(window);
