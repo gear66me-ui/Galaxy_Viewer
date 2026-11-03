@@ -113,9 +113,9 @@ jobs:
               return None,None
 
           def pick_fov(fields, axis):
-              aliases = ([f"fovxdeg",f"fovx",f"fovwidthdeg",f"fieldofviewxdeg",f"widthfovdeg"]
+              aliases = ([f"fovxdeg",f"fovx",f"fovwidthdeg",f"fovxdegrees",f"fieldofviewxdeg",f"widthfovdeg"]
                          if axis=="x" else
-                         [f"fovydeg",f"fovy",f"fovheightdeg",f"fieldofviewydeg",f"heightfovdeg"])
+                         [f"fovydeg",f"fovy",f"fovheightdeg",f"fovydegrees",f"fieldofviewydeg",f"heightfovdeg"])
               for alias in aliases:
                   for path,k,v in fields:
                       if k==alias:
@@ -125,7 +125,7 @@ jobs:
                               return n*(1/3600 if unit=="arcsec" else 1/60 if unit=="arcmin" else 180/math.pi if unit=="rad" else 1),path
               # Generic single FOV value, or explicit FOV with units in the key.
               for path,k,v in fields:
-                  if k in ("fovdeg","fieldofviewdeg","fov") or (axis=="x" and k in ("fovxarcsec","fovxarcmin","fovxrad")) or (axis=="y" and k in ("fovyarcsec","fovyarcmin","fovyrad")):
+                  if k in ("fovdeg","fovdegrees","fieldofviewdeg","fov") or (axis=="x" and k in ("fovxarcsec","fovxarcmin","fovxrad")) or (axis=="y" and k in ("fovyarcsec","fovyarcmin","fovyrad")):
                       n=numeric(v)
                       if n is not None and n>0:
                           mul=1/3600 if "arcsec" in k else 1/60 if "arcmin" in k else 180/math.pi if "rad" in k else 1
