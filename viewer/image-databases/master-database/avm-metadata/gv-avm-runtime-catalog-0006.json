@@ -57491,7 +57491,26 @@
       "science": {
         "redshift": 0.02448,
         "redshiftDerivedFromDistance": 0.024268,
-        "redshiftDerivation": "Derived from distanceMly=349 using flat Lambda-CDM comoving radial distance; H0=67.6 km/s/Mpc, OmegaM=0.315, OmegaLambda=0.685."
+        "redshiftDerivation": "Derived from distanceMly=349 using flat Lambda-CDM comoving radial distance; H0=67.6 km/s/Mpc, OmegaM=0.315, OmegaLambda=0.685.",
+        "ageGyr": 13.410577,
+        "ageDisplay": "EST. 13.41 GYR",
+        "ageMethod": "cosmic_age_at_emission_from_distance_derived_redshift_flat_LCDM_H0_67.6_Om_0.315_Ol_0.685",
+        "ageEstimated": true,
+        "ageEvidence": "Cosmic age at emission calculated from runtime redshift z=0.024268, derived from the adopted 349 Mly comoving distance using the catalog flat Lambda-CDM cosmology.",
+        "distanceAtEmissionMly": 340.731137,
+        "distanceAtEmissionDisplay": "340.73 Mly",
+        "distanceAtEmissionMethod": "angular_diameter_distance_from_comoving_radial_distance_Dc_over_1_plus_z",
+        "sizeKly": [
+          1302.203,
+          732.705
+        ],
+        "sizeDisplay": "EST. 1,302 × 733 KLY",
+        "sizeMethod": "image_footprint_fovx_fovy_at_emission_angular_diameter_distance",
+        "sizeEstimated": true,
+        "sizeEvidence": "Image footprint derived from the verified NOIRLab AVM FOVX/FOVY and angular-diameter distance at emission; full angular widths use 2*D_A*tan(FOV/2).",
+        "fovVerified": true,
+        "fovSource": "https://noirlab.edu/public/images/iotw2342c/",
+        "fovEvidence": "Runtime FOVX/FOVY match the source AVM WCS: 0.218972115923° × 0.123208310559° (13.1383 × 7.3925 arcmin)."
       },
       "redshift": 0.024268
     },
@@ -71095,5 +71114,5 @@
     },
     "sources": "SIMBAD object records and cited spectroscopy; NASA/ESA Hubble release metadata for image-target redshifts. NED cross-links identified via SIMBAD; direct NED distance pages were not machine-readable in this run."
   },
-  "changeNote": "Repaired the 16 failed entries from the top-20 AVM runtime distance audit. Recomputed distanceMly as flat Lambda-CDM comoving radial distance (H0=67.6, OmegaM=0.315, OmegaLambda=0.685) from the object-matched spectroscopic redshift; runtime redshift is consistent with distance at six decimals. For lensing systems, used the foreground lens/cluster redshift (HE0435-1223 z_l=0.4546, CLASS B1608+656 z_l=0.6304, RXJ1131-1231 z_l=0.295, RCS2 cluster z=0.564), not the background lensed source redshift. Mrk 1498 science redshift updated to SIMBAD 0.05582549 (2022ApJS..261....2K); previous Hubble/NASA 0.0547 retained as provenance. Some remaining records are flagged in science.distanceAuditReference as needing direct exact-object NED/SIMBAD cross-match; no unverified redshift substitution was made. NGC 4631 synchronized across Chandra, Hubble and NOIRLab runtime records using the accepted TRGB distance 7.34 ± 0.27 Mpc (23.94 Mly; PHANGS 2021) and SIMBAD heliocentric emission redshift z=0.002007 ± 0.000010 (2022ApJS..261...21Y). Image WCS/FOV, physical-size and emission-age fields were preserved. NGC 4631 follow-up completed: added cosmic age at emission, angular-diameter distance at emission, and per-image FOV physical span for the Chandra, Hubble, and NOIRLab runtime entries. Age uses the viewer flat Lambda-CDM relation (H0=67.6, OmegaM=0.315, OmegaLambda=0.685); emission distance uses D_A=D_C/(1+z); image spans use each record's independent FOVX/FOVY."
+  "changeNote": "Repaired the 16 failed entries from the top-20 AVM runtime distance audit. Recomputed distanceMly as flat Lambda-CDM comoving radial distance (H0=67.6, OmegaM=0.315, OmegaLambda=0.685) from the object-matched spectroscopic redshift; runtime redshift is consistent with distance at six decimals. For lensing systems, used the foreground lens/cluster redshift (HE0435-1223 z_l=0.4546, CLASS B1608+656 z_l=0.6304, RXJ1131-1231 z_l=0.295, RCS2 cluster z=0.564), not the background lensed source redshift. Mrk 1498 science redshift updated to SIMBAD 0.05582549 (2022ApJS..261....2K); previous Hubble/NASA 0.0547 retained as provenance. Some remaining records are flagged in science.distanceAuditReference as needing direct exact-object NED/SIMBAD cross-match; no unverified redshift substitution was made. NGC 4631 synchronized across Chandra, Hubble and NOIRLab runtime records using the accepted TRGB distance 7.34 ± 0.27 Mpc (23.94 Mly; PHANGS 2021) and SIMBAD heliocentric emission redshift z=0.002007 ± 0.000010 (2022ApJS..261...21Y). Image WCS/FOV, physical-size and emission-age fields were preserved. NGC 4631 follow-up completed: added cosmic age at emission, angular-diameter distance at emission, and per-image FOV physical span for the Chandra, Hubble, and NOIRLab runtime entries. Age uses the viewer flat Lambda-CDM relation (H0=67.6, OmegaM=0.315, OmegaLambda=0.685); emission distance uses D_A=D_C/(1+z); image spans use each record's independent FOVX/FOVY. NGC 6240 NOIRLab iotw2342c follow-up completed: added cosmic age at emission and angular-diameter distance at emission from z=0.024268; recalculated image-footprint size from the already-correct source AVM FOVX/FOVY. FOV itself was verified against the NOIRLab source and retained unchanged."
 }
