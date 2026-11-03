@@ -41,7 +41,7 @@ jobs:
           record = matches[0]
           old_distance = record.get("distanceMly")
           old_redshift = record.get("redshift")
-          record["distanceMly"] = 11700.0
+          record["distanceMly"] = 21913.7656
           # Chandra's published source value is z=3.25; use 3.2496 for catalog precision.
           record["redshift"] = 3.2496
 
@@ -51,7 +51,7 @@ jobs:
           assert len(verified) == 1
           assert float(verified[0]["distanceMly"]) == 11700.0
           assert abs(float(verified[0]["redshift"]) - 3.2496) < 1e-10
-          print(f"Red Potato Galaxy distanceMly: {old_distance} -> 11700.0 (11.7 BLY)")
+          print(f"Red Potato Galaxy distanceMly: {old_distance} -> 21913.7656 (21.914 BLY comoving radial distance)")
           print(f"Red Potato Galaxy redshift: {old_redshift} -> 3.2496 (Chandra published z=3.25)")
           subprocess.run(["git", "config", "user.name", "github-actions[bot]"], check=True)
           subprocess.run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"], check=True)
