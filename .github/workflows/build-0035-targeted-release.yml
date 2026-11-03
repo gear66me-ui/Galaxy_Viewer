@@ -1,5 +1,5 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0109
-# BUILD 0109: validate emission-distance display and preserve existing release checks.
+name: Validate and Deploy RC-V1.0.0.9 Build 0110
+# BUILD 0110: validate startup font/readiness barrier and preserve existing release checks.
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0109 linear AVM-anchored Earth distance and preserved release behavior
+      - name: Validate Build 0110 startup readiness, linear AVM-anchored Earth distance, and preserved release behavior
         shell: bash
         run: |
           set -euo pipefail
@@ -37,14 +37,14 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0109.py","build":"0109"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0109", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0109.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0110.py","build":"0110"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0110", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0110.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0109"' in rc
-          assert "const GV200001_BUILD='0109'" in rc
-          assert "const GV_RUNTIME='0109';" in rc, "BUILD 0097 marker missing"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0110"' in rc
+          assert "const GV200001_BUILD='0110'" in rc
+          assert "const GV_RUNTIME='0110';" in rc, "BUILD 0097 marker missing"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
           assert "function gvLinearEarthDistanceEstimate(ra,dec)" in rc, "Linear AVM-anchored estimate missing"
           assert "const progress=Math.max(0,Math.min(1,movedDegrees/totalDegrees))" in rc, "Linear estimate must update continuously from the AVM anchor toward HOME"
@@ -163,7 +163,7 @@ jobs:
           assert "return f?f.value+' '+f.label:''" in destination, "Compact scale formatter must have a complete ternary expression"
           assert "rounded>=1000&&unit<1e9" in destination, "Rounded unit boundaries must promote rather than display 1000 KLY/MLY"
           assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0109 must pin destination presentation 0063"
-          print("BUILD 0109 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
+          print("BUILD 0110 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
