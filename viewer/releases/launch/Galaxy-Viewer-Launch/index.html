@@ -80,6 +80,7 @@ try{
    const timeout=setTimeout(()=>finish(false),20000);
    const onMessage=ev=>{
      if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-ready')finish(true);
+     if(ev.source===splash.contentWindow&&ev.data&&ev.data.type==='galaxy-splash-error')finish(false);
    };
    addEventListener('message',onMessage)
  });
