@@ -2023,20 +2023,28 @@
       "cdMatrix": null,
       "projection": null,
       "coordinateFrame": null,
-      "distanceMly": 25,
+      "distanceMly": 23.94,
       "science": {
-        "distanceMly": 25,
-        "distanceDisplay": "25.00 million light-years",
-        "distanceMethod": "published_provider_page_distance_from_saved_audit_csv",
-        "distanceSource": "https://chandra.harvard.edu/photo/2001/1138/",
-        "distanceEvidence": "Distance Estimate 25 million light years",
+        "distanceMly": 23.94,
+        "distanceDisplay": "23.94 million light-years",
+        "distanceMethod": "TRGB_7.34_Mpc_0.27_Mpc_PHANGS_2021",
+        "distanceSource": "PHANGS distances, MNRAS 2021; TRGB",
+        "distanceEvidence": "TRGB distance 7.34 ± 0.27 Mpc; converted using 1 Mpc = 3.26156 million light-years.",
         "distanceVerified": true,
-        "redshift": 0.00172611,
-        "redshiftMethod": "flat_LCDM_from_published_distance_H0_67.6_Om_0.315",
-        "redshiftSource": "https://chandra.harvard.edu/photo/2001/1138/",
-        "redshiftEvidence": "Calculated from provider-published distance 25.000000 Mly assuming luminosity distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315)."
+        "redshift": 0.002007,
+        "redshiftMethod": "SIMBAD_2022ApJS_261_21Y_heliocentric_emission_redshift",
+        "redshiftSource": "SIMBAD; 2022ApJS..261...21Y",
+        "redshiftEvidence": "SIMBAD emission redshift 0.002007 ± 0.000010; heliocentric velocity 601 ± 3 km/s.",
+        "redshiftDisplay": "z = 0.002007",
+        "redshiftEstimated": false
       },
-      "redshift": 0.00172611
+      "redshift": 0.002007,
+      "redshiftDisplay": "z = 0.002007",
+      "redshiftEstimated": false,
+      "redshiftMethod": "SIMBAD_2022ApJS_261_21Y_heliocentric_emission_redshift",
+      "redshiftSource": "SIMBAD; 2022ApJS..261...21Y",
+      "distanceMethod": "TRGB_7.34_Mpc_0.27_Mpc_PHANGS_2021",
+      "distanceSource": "PHANGS distances, MNRAS 2021; TRGB"
     },
     {
       "providerKey": "chandra",
@@ -24774,27 +24782,9 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 221.335,
-      "science": {
-        "redshift": 0.015358,
-        "redshiftDisplay": "z = 0.015358",
-        "redshiftEstimated": false,
-        "redshiftMethod": "published_NED_SIMBAD_redshift",
-        "redshiftSource": "https://simbad.u-strasbg.fr/simbad/sim-id?Ident=NGC+169",
-        "redshiftEvidence": "SIMBAD reports emission-line redshift z=0.015358 ± 0.000013 for NGC 169 (reference 2022ApJS..261...21Y).",
-        "distanceMly": 221.335,
-        "distanceDisplay": "221.34 million light-years",
-        "distanceMethod": "flat_LCDM_comoving_distance_from_published_redshift_H0_67.6_Om_0.315",
-        "distanceSource": "Galaxy Viewer FLRW calculation from the SIMBAD NGC 169 spectroscopic redshift",
-        "distanceEvidence": "Comoving radial distance calculated from z=0.015358 using H0=67.6 km/s/Mpc, Omega_m=0.315, Omega_Lambda=0.685."
-      },
-      "redshift": 0.015358,
-      "redshiftDisplay": "z = 0.015358",
-      "redshiftEstimated": false,
-      "redshiftMethod": "published_NED_SIMBAD_redshift",
-      "redshiftSource": "SIMBAD NGC 169; 2022ApJS..261...21Y",
-      "distanceMethod": "flat_LCDM_comoving_distance_from_published_redshift_H0_67.6_Om_0.315",
-      "distanceSource": "Galaxy Viewer FLRW calculation from SIMBAD spectroscopic redshift"
+      "distanceMly": 1000,
+      "science": {},
+      "redshift": 0.070318
     },
     {
       "providerKey": "hubble",
@@ -26054,20 +26044,28 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 19,
+      "distanceMly": 23.94,
       "science": {
-        "distanceMly": 19,
-        "distanceDisplay": "19.00 million light-years",
-        "distanceMethod": "published_provider_page_distance_from_saved_audit_csv",
-        "distanceSource": "https://esahubble.org/images/potw1146a/",
-        "distanceEvidence": "Distance: 19 million light years",
+        "distanceMly": 23.94,
+        "distanceDisplay": "23.94 million light-years",
+        "distanceMethod": "TRGB_7.34_Mpc_0.27_Mpc_PHANGS_2021",
+        "distanceSource": "PHANGS distances, MNRAS 2021; TRGB",
+        "distanceEvidence": "TRGB distance 7.34 ± 0.27 Mpc; converted using 1 Mpc = 3.26156 million light-years.",
         "distanceVerified": true,
-        "redshift": 0.00131226,
-        "redshiftMethod": "flat_LCDM_from_published_distance_H0_67.6_Om_0.315",
-        "redshiftSource": "https://esahubble.org/images/potw1146a/",
-        "redshiftEvidence": "Calculated from provider-published distance 19.000000 Mly assuming luminosity distance in flat Lambda-CDM (H0=67.6, Omega_m=0.315)."
+        "redshift": 0.002007,
+        "redshiftMethod": "SIMBAD_2022ApJS_261_21Y_heliocentric_emission_redshift",
+        "redshiftSource": "SIMBAD; 2022ApJS..261...21Y",
+        "redshiftEvidence": "SIMBAD emission redshift 0.002007 ± 0.000010; heliocentric velocity 601 ± 3 km/s.",
+        "redshiftDisplay": "z = 0.002007",
+        "redshiftEstimated": false
       },
-      "redshift": 0.00131226
+      "redshift": 0.002007,
+      "redshiftDisplay": "z = 0.002007",
+      "redshiftEstimated": false,
+      "redshiftMethod": "SIMBAD_2022ApJS_261_21Y_heliocentric_emission_redshift",
+      "redshiftSource": "SIMBAD; 2022ApJS..261...21Y",
+      "distanceMethod": "TRGB_7.34_Mpc_0.27_Mpc_PHANGS_2021",
+      "distanceSource": "PHANGS distances, MNRAS 2021; TRGB"
     },
     {
       "providerKey": "hubble",
@@ -63262,9 +63260,28 @@
       "cdMatrix": null,
       "projection": "TAN",
       "coordinateFrame": "ICRS",
-      "distanceMly": 14.1226,
-      "science": {},
-      "redshift": 0.000977
+      "distanceMly": 23.94,
+      "science": {
+        "distanceMly": 23.94,
+        "distanceDisplay": "23.94 million light-years",
+        "distanceMethod": "TRGB_7.34_Mpc_0.27_Mpc_PHANGS_2021",
+        "distanceSource": "PHANGS distances, MNRAS 2021; TRGB",
+        "distanceEvidence": "TRGB distance 7.34 ± 0.27 Mpc; converted using 1 Mpc = 3.26156 million light-years.",
+        "distanceVerified": true,
+        "redshift": 0.002007,
+        "redshiftDisplay": "z = 0.002007",
+        "redshiftEstimated": false,
+        "redshiftMethod": "SIMBAD_2022ApJS_261_21Y_heliocentric_emission_redshift",
+        "redshiftSource": "SIMBAD; 2022ApJS..261...21Y",
+        "redshiftEvidence": "SIMBAD emission redshift 0.002007 ± 0.000010; heliocentric velocity 601 ± 3 km/s."
+      },
+      "redshift": 0.002007,
+      "redshiftDisplay": "z = 0.002007",
+      "redshiftEstimated": false,
+      "redshiftMethod": "SIMBAD_2022ApJS_261_21Y_heliocentric_emission_redshift",
+      "redshiftSource": "SIMBAD; 2022ApJS..261...21Y",
+      "distanceMethod": "TRGB_7.34_Mpc_0.27_Mpc_PHANGS_2021",
+      "distanceSource": "PHANGS distances, MNRAS 2021; TRGB"
     },
     {
       "providerKey": "noirlab",
@@ -71034,24 +71051,7 @@
       "OmegaLambda": 0.685,
       "distanceInterpretation": "comoving radial distance"
     },
-    "sources": "SIMBAD object records and cited spectroscopy; NASA/ESA Hubble release metadata for image-target redshifts. NED cross-links identified via SIMBAD; direct NED distance pages were not machine-readable in this run.",
-    "lastArp282Correction": {
-      "providerKey": "hubble",
-      "archiveId": "potw2206a",
-      "name": "Arp 282",
-      "previous": {
-        "distanceMly": 1000,
-        "redshift": 0.070318,
-        "science": {}
-      },
-      "adopted": {
-        "distanceMly": 221.335,
-        "redshift": 0.015358
-      },
-      "method": "Used the published NGC 169 emission-line redshift and recomputed comoving radial distance with the catalog flat Lambda-CDM cosmology (H0=67.6, Omega_m=0.315, Omega_Lambda=0.685).",
-      "source": "SIMBAD NGC 169; 2022ApJS..261...21Y",
-      "updatedAt": "2026-11-03"
-    }
+    "sources": "SIMBAD object records and cited spectroscopy; NASA/ESA Hubble release metadata for image-target redshifts. NED cross-links identified via SIMBAD; direct NED distance pages were not machine-readable in this run."
   },
-  "changeNote": "Repaired the 16 failed entries from the top-20 AVM runtime distance audit. Recomputed distanceMly as flat Lambda-CDM comoving radial distance (H0=67.6, OmegaM=0.315, OmegaLambda=0.685) from the object-matched spectroscopic redshift; runtime redshift is consistent with distance at six decimals. For lensing systems, used the foreground lens/cluster redshift (HE0435-1223 z_l=0.4546, CLASS B1608+656 z_l=0.6304, RXJ1131-1231 z_l=0.295, RCS2 cluster z=0.564), not the background lensed source redshift. Mrk 1498 science redshift updated to SIMBAD 0.05582549 (2022ApJS..261....2K); previous Hubble/NASA 0.0547 retained as provenance. Some remaining records are flagged in science.distanceAuditReference as needing direct exact-object NED/SIMBAD cross-match; no unverified redshift substitution was made. Targeted Arp 282 correction: replaced erroneous 1000.000 Mly / z=0.070318 with NGC 169 published emission redshift z=0.015358 and recomputed comoving radial distance 221.335 Mly using H0=67.6, Omega_m=0.315, Omega_Lambda=0.685. Preserved Hubble image/WCS/FOV metadata."
+  "changeNote": "Repaired the 16 failed entries from the top-20 AVM runtime distance audit. Recomputed distanceMly as flat Lambda-CDM comoving radial distance (H0=67.6, OmegaM=0.315, OmegaLambda=0.685) from the object-matched spectroscopic redshift; runtime redshift is consistent with distance at six decimals. For lensing systems, used the foreground lens/cluster redshift (HE0435-1223 z_l=0.4546, CLASS B1608+656 z_l=0.6304, RXJ1131-1231 z_l=0.295, RCS2 cluster z=0.564), not the background lensed source redshift. Mrk 1498 science redshift updated to SIMBAD 0.05582549 (2022ApJS..261....2K); previous Hubble/NASA 0.0547 retained as provenance. Some remaining records are flagged in science.distanceAuditReference as needing direct exact-object NED/SIMBAD cross-match; no unverified redshift substitution was made. NGC 4631 synchronized across Chandra, Hubble and NOIRLab runtime records using the accepted TRGB distance 7.34 ± 0.27 Mpc (23.94 Mly; PHANGS 2021) and SIMBAD heliocentric emission redshift z=0.002007 ± 0.000010 (2022ApJS..261...21Y). Image WCS/FOV, physical-size and emission-age fields were preserved."
 }
