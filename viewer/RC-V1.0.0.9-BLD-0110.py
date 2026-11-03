@@ -4233,6 +4233,7 @@ window.GalaxyViewerStartupReady=(async()=>{
   gvSpaceAgeReady,gvNavigatorSpaceAgeReady,gvTravelSpaceAgeReady,
   window.GalaxyCoordinateOverlay?.ensureFonts?.(),coordinate?.ready,
   gvSurveyThumbnailPackReady,gvFirstDestinationPreloadKick,
+  window.GV_CONSTELLATION_PRELOAD_READY,
   Promise.resolve().then(()=>gvCosmicReveal.prepare())
  ].filter(Boolean);
  const results=await Promise.allSettled(required);
