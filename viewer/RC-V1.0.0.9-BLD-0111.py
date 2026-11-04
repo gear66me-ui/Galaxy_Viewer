@@ -104,16 +104,15 @@ window.GV_BOOT_CONFIG=Object.freeze({
     hamburgerUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7d19f8cafe8a1428af1d47e9233b03105f9f627a/viewer/modules/hamburger-menu/gv-hamburger-menu-0013.js?v=GV200001-0083-PROJECTIONS-MOLLWEIDE-SPHERICAL',
     constellationOverlayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4f89b9057a7acf13767a5a5c8c030829b2a8b2c7/viewer/modules/constellation-overlay/gv-constellation-overlay-0023.js',
     constellationOverlayFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/4f89b9057a7acf13767a5a5c8c030829b2a8b2c7/viewer/modules/constellation-overlay/gv-constellation-overlay-0023.js',
-    coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d1727ed792761ee56b6e0b1ea8e470ebd2c04658/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js',
+    coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc36a2f156517f9a77865da0c1c13d49175/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7dcd8a191372e112b07bb20d0518a739a7c05865/viewer/modules/target-simbad/gv-target-simbad-0007.js',
     galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@ae9eb4d29f5b0d6190bc72da3bca70b04eea6d23/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/ae9eb4d29f5b0d6190bc72da3bca70b04eea6d23/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
-    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1c816067e9fe46a94015d31d5364197660e07a5d/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js',
-    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3ae9f10f2a5658e82d385c525b3c80a39028bcd4/viewer/modules/destination-presentation/gv-destination-presentation-0062.js',
-    fontsReadyUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@26f189745e71ba331a10a043f674231ec00dce5d/viewer/modules/font-readiness/gv-fonts-ready-0001.js'
+    travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@8ab7dbb04a42145dc972c600cb808bc73cec70bc/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js',
+    destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@8653e8fda02b6bd73a12aa93d5fd8e6a57792fce/viewer/modules/destination-presentation/gv-destination-presentation-0062.js'
 });
 
 
@@ -146,9 +145,6 @@ function loadScript(url){
 // ECO: GV200-001
 // ============================================================================
 const config=window.GV_BOOT_CONFIG;
-if(!config?.fontsReadyUrl)throw new Error('BOOT CONFIG MISSING: fontsReadyUrl');
-await loadScript(config.fontsReadyUrl);
-if(window.GVFontsReady?.VERSION!=='0001')throw new Error('GV FONT READINESS SERVICE 0001 EXPORT MISSING');
 
 // PROVIDER ARTWORK 0009 EMBEDDED FALLBACK: resilient constellation sources and preload cache.
 (()=>{'use strict';
@@ -201,7 +197,7 @@ globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVID
 for(const key of [
     'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
     'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
-    'galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl','providerArtworkUrl','travelPresentationUrl','destinationPresentationUrl','fontsReadyUrl'
+    'galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl','providerArtworkUrl','travelPresentationUrl','destinationPresentationUrl'
 ]){
     if(!config?.[key])throw new Error(`BOOT CONFIG MISSING: ${key}`);
 }
@@ -215,7 +211,6 @@ for(const key of [
  // for this same binding later in boot; leaving it undefined aborts the entire
  // viewer before the initial destination can be shown.
  const gvModuleLoadPromise=Promise.all([
-     loadScript(config.fontsReadyUrl),
      loadScript(config.hamburgerBaseUrl).catch(error=>{console.error('HAMBURGER MODULE LOAD FAILED',error)}),
      loadScript(config.constellationOverlayUrl)
        .catch(error=>{console.error('CONSTELLATION CDN LOAD FAILED; RETRYING RAW GITHUB',error);return loadScript(config.constellationOverlayFallbackUrl)})
@@ -313,11 +308,28 @@ const HOME=Object.freeze({
     rotation:0
 });
 
-const gvSpaceAgeReady=window.GVFontsReady.ensure('navigator');
-const gvNavigatorSpaceAgeReady=gvSpaceAgeReady;
-const gvTravelSpaceAgeReady=window.GVFontsReady.ensure('travel');
-const gvCoordinateSpaceAgeReady=window.GVFontsReady.ensure('coordinate');
-const gvDestinationSpaceAgeReady=window.GVFontsReady.ensure('destination');
+const GV_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
+const gvLoadFontWithRetry=async(family,url,size,sample)=>{
+ let lastError=null;
+ for(let attempt=1;attempt<=3;attempt++){
+  try{
+   const face=new FontFace(family,`url("${url}")`,{style:'normal',weight:'400'});
+   const loaded=await face.load();
+   if(loaded.status!=='loaded')throw new Error(family+' FONT FACE NOT LOADED');
+   document.fonts.add(loaded);
+   await document.fonts.load(`400 ${size}px "${family}"`,sample);
+   await document.fonts.ready;
+   if(!document.fonts.check(`400 ${size}px "${family}"`,sample))throw new Error(family+' FONT VERIFICATION FAILED');
+   return loaded;
+  }catch(error){lastError=error;if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*attempt))}
+ }
+ throw new Error(family+' FONT FAILED AFTER 3 ATTEMPTS: '+String(lastError?.message||lastError));
+};
+const gvSpaceAgeReady=gvLoadFontWithRetry('GV Space Age',GV_SPACE_AGE_URL,15,'GALAXY VIEWER');
+const GV_NAVIGATOR_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf';
+const GV_TRAVEL_SPACE_AGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@release/viewer/artwork/Fonts/Space%20Age%20Regular/Space%20Age%20Regular.otf';
+const gvNavigatorSpaceAgeReady=gvLoadFontWithRetry('GV Space Age',GV_NAVIGATOR_SPACE_AGE_URL,15,'RANDOM GALAXY');
+const gvTravelSpaceAgeReady=gvLoadFontWithRetry('Space Age',GV_TRAVEL_SPACE_AGE_URL,15,'GALAXY VIEWER');
 
 // Top observable-universe callout. Geometry is copied from Random Galaxy 0166.
 async function installUniverseContext(){
@@ -4219,7 +4231,7 @@ window.GalaxyViewerStartCosmicReveal=gvCosmicReveal.start;
 window.GalaxyViewerStartupReady=(async()=>{
  const required=[
   gvSpaceAgeReady,gvNavigatorSpaceAgeReady,gvTravelSpaceAgeReady,
-  gvCoordinateSpaceAgeReady,gvDestinationSpaceAgeReady,coordinate?.ready,
+  window.GalaxyCoordinateOverlay?.ensureFonts?.(),coordinate?.ready,
   gvSurveyThumbnailPackReady,gvFirstDestinationPreloadKick,
   window.GV_CONSTELLATION_PRELOAD_READY,
   Promise.resolve().then(()=>gvCosmicReveal.prepare())
