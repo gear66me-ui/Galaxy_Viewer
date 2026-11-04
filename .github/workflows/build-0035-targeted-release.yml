@@ -56,7 +56,7 @@ jobs:
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
           engine = (root / "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js").read_text()
-          assert "b15297508e8047a4891aef5db89d099d059264b7" in rc, "Build 0116 must pin the resilient Route Engine revision"
+          assert "3f720a71de542f17979161dc7ea2a09b2e66ff88" in rc, "Build 0116 must pin the resilient Route Engine revision"
           assert "const CATALOG_REQUEST_TIMEOUT_MS=20000;" in engine, "Catalog requests must tolerate 20-second CDN responses"
           assert "const CATALOG_REQUEST_ATTEMPTS=2;" in engine, "Catalog requests must retry transient failures"
           assert engine.count("const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));") == 1, "Route Engine must have exactly one wait helper declaration (avoid parse failure)"
