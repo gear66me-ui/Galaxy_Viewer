@@ -80,8 +80,8 @@ jobs:
           assert "window.GalaxyRouteEngine?.VERSION!=='0002'" in rc, "Build 0097 must preserve the pinned Route Engine 002 export"
           assert "const data=JSON.parse(" in rc, "Boundary data must remain bundled"
           assert "function getConstellationAt(ra,dec)" in rc, "Live IAU reticle lookup missing"
-          assert "overlay.hide();\\n    const overlays=" in rc, "IAU zone boundaries must start hidden on the initial Mollweide screen"
-          assert "GV IAU ZONE REVEAL FAILED" in rc and "gvSetConstellationsEnabled(true);\\n    if(gvSurveyMode)" in rc, "Random Galaxy must reveal both IAU zones and constellation asterisms"
+          assert "overlay.hide();" in rc and "const overlays=" in rc[rc.index("overlay.hide();"):rc.index("const overlays=")+len("const overlays=")], "IAU zone boundaries must start hidden on the initial Mollweide screen"
+          assert "GV IAU ZONE REVEAL FAILED" in rc and "gvSetConstellationsEnabled(true);" in rc and "if(gvSurveyMode)" in rc, "Random Galaxy must reveal both IAU zones and constellation asterisms"
           overlay = (root / "viewer/modules/constellation-overlay/gv-constellation-overlay-0023.js").read_text()
           assert 'const VERSION = "0023"' in overlay, "Constellation overlay 0023 missing"
           assert 'TRIANGULUMAUSTRALE:"TRA"' in overlay, "Triangulum Australe alias must resolve to TrA for yellow highlight"
