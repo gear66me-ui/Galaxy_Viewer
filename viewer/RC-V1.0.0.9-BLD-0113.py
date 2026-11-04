@@ -509,8 +509,8 @@ function gvUpdateEarthBearingPointer(){
     if(Number.isFinite(a))rotor.style.transform=`rotate(${a}deg)`;
 }
 gvInstallEarthBearingPointer();
-// BLD 0113: Earth pointer refresh is capped at 4 Hz; no 25 Hz coordinate/rotation polling.
-const gvEarthBearingTimer=setInterval(()=>{if(document.visibilityState==='visible')gvUpdateEarthBearingPointer()},250);
+// BLD 0113: Preserve the Earth pointer's normal update path; change sampling cadence only.
+const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,250);
 function gvResyncEarthPointerFromAladin(){
     try{
         if(!document.getElementById('gv-earth-bearing-rotor'))gvInstallEarthBearingPointer();
