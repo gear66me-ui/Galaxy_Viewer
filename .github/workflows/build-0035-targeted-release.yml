@@ -166,7 +166,7 @@ jobs:
 
           fonts = (root / "viewer/modules/font-readiness/gv-fonts-ready-0001.js").read_text()
           assert "GVFontsReady" in fonts and "coordinateDigits" in fonts and "GV Coordinate Digits 0003" in fonts, "Central font readiness service or coordinate digit face missing"
-          assert "GV-Coordinate-Digits-0005.otf" in fonts and "Space Age GV-9A.otf" in fonts, "Coordinate spacing font or GV-9A font asset mapping missing"
+          assert "GV-Coordinate-Digits-0005.otf" in fonts and "Space%20Age%20GV-9/Space%20Age%20GV-9A.otf" in fonts, "Coordinate spacing font or GV-9A font asset mapping missing"
           assert "fontsReadyUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@26f189745e71ba331a10a043f674231ec00dce5d/viewer/modules/font-readiness/gv-fonts-ready-0001.js'" in rc, "Launcher must pin the shared font readiness service"
           assert "GVFontsReady.ensure('coordinate')" in rc and "GVFontsReady.ensure('destination')" in rc and "GVFontsReady.ensure('travel')" in rc, "Startup readiness barrier must cover coordinate, destination and travel font groups"
           assert "GV COORDINATE SPACE AGE FONT VERIFIED" in (root / "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js").read_text(), "Coordinate font verification/retry path missing"
