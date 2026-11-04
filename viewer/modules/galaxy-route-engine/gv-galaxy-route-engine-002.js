@@ -99,11 +99,35 @@ function normalizeRaw(r,i,catalogKey,meta){
   catalogKey,catalogIndex:i
  })
 }
+const CATALOG_REQUEST_TIMEOUT_MS=20000;
+const CATALOG_REQUEST_ATTEMPTS=2;
+const CATALOG_RETRY_DELAY_MS=350;
+const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
+function catalogOriginFallback(url){
+ try{
+  const u=new URL(url);
+  const match=u.pathname.match(/^\\/gh\\/([^/]+\\/[^/@]+)@([^/]+)\\/(.+)$/);
+  return match?`https://raw.githubusercontent.com/${match[1]}/${match[2]}/${match[3]}`:null;
+ }catch(_){return null}
+}
 async function json(url){
- const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),12000);
- try{const r=await fetch(url,{cache:'no-cache',signal:controller.signal});if(!r.ok)throw Error(`HTTP ${r.status} ${url}`);return await r.json()}
- catch(error){if(error?.name==='AbortError')throw Error(`CATALOG TIMEOUT ${url}`);throw error}
- finally{clearTimeout(timer)}
+ const candidates=[...new Set([url,catalogOriginFallback(url)].filter(Boolean))];
+ const failures=[];
+ for(const candidate of candidates){
+  for(let attempt=1;attempt<=CATALOG_REQUEST_ATTEMPTS;attempt++){
+   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),CATALOG_REQUEST_TIMEOUT_MS);
+   try{
+    const r=await fetch(candidate,{cache:'no-cache',signal:controller.signal});
+    if(!r.ok)throw Error(`HTTP ${r.status} ${candidate}`);
+    return await r.json();
+   }catch(error){
+    const reason=error?.name==='AbortError'?`TIMEOUT after ${CATALOG_REQUEST_TIMEOUT_MS} ms`:String(error?.message||error);
+    failures.push(`${candidate} [attempt ${attempt}/${CATALOG_REQUEST_ATTEMPTS}]: ${reason}`);
+   }finally{clearTimeout(timer)}
+   if(attempt<CATALOG_REQUEST_ATTEMPTS)await wait(CATALOG_RETRY_DELAY_MS);
+  }
+ }
+ throw Error(`CATALOG LOAD FAILED ${url} :: ${failures.join(' | ')}`);
 }
 async function catalogs(){
  const m=await json(MASTER);if(!m?.catalogs)throw Error('MASTER POINTER MAP MISSING');
