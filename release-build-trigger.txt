@@ -11,3 +11,5 @@ Release repair: next-destination prewarm, Earth-distance generation guard, Andro
 Retry interaction repair after preserving Earth-distance gate: d449eea6d8e8ab3632d2071dd255b23d128a64ea
 Release Build 0011: align pointer, manifest and gate for next-destination prewarm and interaction repair.
 Retry Build 0011 after banner and build identity repair: 9f71762214a6cb537baeb499c5b2f1342d0e671a
+
+Build 0118: initial Mollweide hides IAU constellation zones and asterisms; first Random Galaxy enables both.
