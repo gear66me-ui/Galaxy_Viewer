@@ -13,3 +13,4 @@ Release Build 0011: align pointer, manifest and gate for next-destination prewar
 Retry Build 0011 after banner and build identity repair: 9f71762214a6cb537baeb499c5b2f1342d0e671a
 
 Build 0118: initial Mollweide hides IAU constellation zones and asterisms; first Random Galaxy enables both.
+Build 0118 validation assertion repair: compare source tokens without escaped newline literals.
