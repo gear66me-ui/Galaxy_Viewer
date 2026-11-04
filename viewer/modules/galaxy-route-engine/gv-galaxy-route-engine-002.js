@@ -104,9 +104,11 @@ const CATALOG_REQUEST_ATTEMPTS=2;
 const CATALOG_RETRY_DELAY_MS=350;
 function catalogOriginFallback(url){
  try{
-  const u=new URL(url);
-  const match=u.pathname.match(/^\\/gh\\/([^/]+\\/[^/@]+)@([^/]+)\\/(.+)$/);
-  return match?`https://raw.githubusercontent.com/${match[1]}/${match[2]}/${match[3]}`:null;
+  const parts=new URL(url).pathname.split('/');
+  if(parts[1]!=='gh'||parts.length<5)return null;
+  const owner=parts[2],repoVersion=parts[3],at=repoVersion.lastIndexOf('@'),file=parts.slice(4).join('/');
+  if(at<=0||!file)return null;
+  return `https://raw.githubusercontent.com/${owner}/${repoVersion.slice(0,at)}/${repoVersion.slice(at+1)}/${file}`;
  }catch(_){return null}
 }
 async function json(url){
