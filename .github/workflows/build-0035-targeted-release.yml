@@ -32,6 +32,19 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          ENGINE_PATH="viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js"
+          node --check "$ENGINE_PATH"
+          node - "$ENGINE_PATH" <<'NODE'
+          const fs = require('fs');
+          const vm = require('vm');
+          const source = fs.readFileSync(process.argv[2], 'utf8');
+          const context = { console, document: { getElementById: () => null }, performance, fetch, URL, AbortController, setTimeout, clearTimeout };
+          context.window = context;
+          vm.createContext(context);
+          vm.runInContext(source, context, { filename: 'gv-galaxy-route-engine-002.js' });
+          if (context.GalaxyRouteEngine?.VERSION !== '0002') throw new Error('Route Engine 002 export missing after execution');
+          console.log('ROUTE ENGINE 002 SYNTAX AND EXPORT VERIFIED');
+          NODE
           python3 - <<'PY'
           import json, pathlib, re
           root = pathlib.Path(".")
