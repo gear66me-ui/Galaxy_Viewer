@@ -102,7 +102,6 @@ function normalizeRaw(r,i,catalogKey,meta){
 const CATALOG_REQUEST_TIMEOUT_MS=20000;
 const CATALOG_REQUEST_ATTEMPTS=2;
 const CATALOG_RETRY_DELAY_MS=350;
-const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 function catalogOriginFallback(url){
  try{
   const u=new URL(url);
