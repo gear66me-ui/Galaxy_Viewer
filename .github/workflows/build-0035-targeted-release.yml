@@ -116,7 +116,7 @@ jobs:
           start_work = rc[rc.index("const startTravelWork=()=>"):rc.index("activeDestination=v.destination;")]
           assert "gvEarthPointerArrivalPresentationReady=false;" not in start_work, "Subsequent trips must preserve Earth pointer readiness after first arrival"
           assert "if(visible&&!gvNavigationTravelActive&&gvEarthDistanceLinearLabel)" in rc, "Distance banner must stay hidden during travel while pointer remains visible"
-          assert "function gvUpdateEarthBearingPointer(){\\n    if(window.GV_NAV_BACKGROUND_SUSPENDED&&!gvNavigationTravelActive)return;" in rc, "Earth pointer bearing must continue refreshing during travel despite background suspension"
+          assert "function gvUpdateEarthBearingPointer(){\n    if(window.GV_NAV_BACKGROUND_SUSPENDED&&!gvNavigationTravelActive)return;" in rc, "Earth pointer bearing must continue refreshing during travel despite background suspension"
           assert rc.count("gvEarthPointerArrivalPresentationReady=true;") == 2, "Both first-trip and subsequent arrival paths must enable Earth pointer after destination card render"
           assert "||!gvEarthPointerArrivalPresentationReady){gvHideEarthDistance();return;}" in rc, "Earth distance banner must reject pre-arrival display"
           assert "if(!allowDuringTravel&&gvEarthDistanceArrivalDestination" in rc, "Arrival hold must not block live travel distance updates"
