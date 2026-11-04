@@ -26,7 +26,7 @@ ALADIN_JS_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201
 # ============================================================================
 HAMBURGER_BASE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7d19f8cafe8a1428af1d47e9233b03105f9f627a/viewer/modules/hamburger-menu/gv-hamburger-menu-0013.js?v=GV200001-0083-PROJECTIONS-MOLLWEIDE-SPHERICAL"
 HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7d19f8cafe8a1428af1d47e9233b03105f9f627a/viewer/modules/hamburger-menu/gv-hamburger-menu-0013.js?v=GV200001-0083-PROJECTIONS-MOLLWEIDE-SPHERICAL"
-COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@e38bfcc36a2f156517f9a77865da0c1c13d49175/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js"
+COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d1727ed792761ee56b6e0b1ea8e470ebd2c04658/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7dcd8a191372e112b07bb20d0518a739a7c05865/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
 GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f5b26bd7a317a57a76a4b68adc05b50ec3f0567e/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=0003"
