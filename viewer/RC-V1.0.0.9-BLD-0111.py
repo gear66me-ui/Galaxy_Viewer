@@ -146,6 +146,9 @@ function loadScript(url){
 // ECO: GV200-001
 // ============================================================================
 const config=window.GV_BOOT_CONFIG;
+if(!config?.fontsReadyUrl)throw new Error('BOOT CONFIG MISSING: fontsReadyUrl');
+await loadScript(config.fontsReadyUrl);
+if(window.GVFontsReady?.VERSION!=='0001')throw new Error('GV FONT READINESS SERVICE 0001 EXPORT MISSING');
 
 // PROVIDER ARTWORK 0009 EMBEDDED FALLBACK: resilient constellation sources and preload cache.
 (()=>{'use strict';
