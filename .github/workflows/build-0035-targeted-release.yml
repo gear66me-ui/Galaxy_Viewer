@@ -1,5 +1,5 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0111
-# BUILD 0110: validate startup font/readiness barrier and preserve existing release checks.
+name: Validate and Deploy RC-V1.0.0.9 Build 0112
+# BUILD 0112: validate centralized Space Age font readiness and preserve existing release checks.
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0111 startup readiness, linear AVM-anchored Earth distance, and preserved release behavior
+      - name: Validate Build 0112 font readiness, linear AVM-anchored Earth distance, and preserved release behavior
         shell: bash
         run: |
           set -euo pipefail
@@ -37,14 +37,14 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0111.py","build":"0111"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0111", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0111.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0112.py","build":"0112"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0112", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0112.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0111"' in rc
-          assert "const GV200001_BUILD='0111'" in rc
-          assert "const GV_RUNTIME='0111';" in rc, "BUILD 0097 marker missing"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0112"' in rc
+          assert "const GV200001_BUILD='0112'" in rc
+          assert "const GV_RUNTIME='0112';" in rc, "BUILD 0097 marker missing"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
           assert "function gvLinearEarthDistanceEstimate(ra,dec)" in rc, "Linear AVM-anchored estimate missing"
           assert "const progress=Math.max(0,Math.min(1,movedDegrees/totalDegrees))" in rc, "Linear estimate must update continuously from the AVM anchor toward HOME"
@@ -121,7 +121,7 @@ jobs:
           assert "closedRingCount<80" in rc and "geometry.type==='Polygon'" in rc
           assert "aladin.addOverlay(overlay)" in rc and "overlay.show()" in rc
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Expected 11 immutable dependency pins in BLD 0109; found {len(pins)}"
+          assert len(pins) == 12, f"Expected 12 immutable dependency pins in BLD 0112; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "function gvUpdateLivePhysicalScale()" in rc
@@ -154,7 +154,7 @@ jobs:
           assert "const VERSION='006'" in travel
           assert "letterCount>12" in travel, "Constellation names above 12 letters must use the centered two-line layout"
           assert "gv-course-two-line .gv-travel-course-prefix" in travel and "gv-course-two-line .gv-travel-course-name" in travel, "Both trip-planner lines must be centered"
-          assert "travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@8ab7dbb04a42145dc972c600cb808bc73cec70bc/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js'" in rc, "Build 0097 must pin the new trip-planner presentation"
+          assert "travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1c816067e9fe46a94015d31d5364197660e07a5d/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js'" in rc, "Build 0097 must pin the new trip-planner presentation"
           destination = (root / "viewer/modules/destination-presentation/gv-destination-presentation-0062.js").read_text()
           assert "const VERSION='0063';" in destination, "Destination presentation 0063 missing"
           assert "presentMly*1_000_000/(1+z)" in destination, "Emission distance must use distance divided by (1 + redshift)"
@@ -163,13 +163,23 @@ jobs:
           assert "return f?f.value+' '+f.label:''" in destination, "Compact scale formatter must have a complete ternary expression"
           assert "rounded>=1000&&unit<1e9" in destination, "Rounded unit boundaries must promote rather than display 1000 KLY/MLY"
           assert "destination-presentation-0062.js" in rc and "VERSION" in destination and "VERSION!=='0063'" in rc, "Build 0109 must pin destination presentation 0063"
+
+          fonts = (root / "viewer/modules/font-readiness/gv-fonts-ready-0001.js").read_text()
+          assert "GVFontsReady" in fonts and "coordinateDigits" in fonts and "GV Coordinate Digits 0003" in fonts, "Central font readiness service or coordinate digit face missing"
+          assert "GV-Coordinate-Digits-0005.otf" in fonts and "Space Age GV-9A.otf" in fonts, "Coordinate spacing font or GV-9A font asset mapping missing"
+          assert "fontsReadyUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@26f189745e71ba331a10a043f674231ec00dce5d/viewer/modules/font-readiness/gv-fonts-ready-0001.js'" in rc, "Launcher must pin the shared font readiness service"
+          assert "GVFontsReady.ensure('coordinate')" in rc and "GVFontsReady.ensure('destination')" in rc and "GVFontsReady.ensure('travel')" in rc, "Startup readiness barrier must cover coordinate, destination and travel font groups"
+          assert "GV COORDINATE SPACE AGE FONT VERIFIED" in (root / "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js").read_text(), "Coordinate font verification/retry path missing"
+          assert "gvShowCard" in destination and "font-display:block" in destination, "Destination card must remain hidden until its font is ready"
+          assert "font-display:block" in travel and "GVFontsReady.ensure('travel')" in travel, "Travel HUD must wait for verified Space Age font"
+
           splash = (root / "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html").read_text()
           assert "type:'galaxy-splash-ready'" in splash, "Splash success path must signal readiness"
           success_path = splash[splash.index("async function boot()"):splash.index("function posterLoadFailed")]
           assert "type:'galaxy-splash-error'" not in success_path.split("}catch(e)")[0], "Splash success path must not signal an error"
           assert "message:String(e?.message||e)" not in success_path.split("}catch(e)")[0], "Splash success path must not reference the catch-only error variable"
           assert "type:'galaxy-splash-ready'" in success_path.split("}catch(e)")[0], "Splash success path readiness handshake missing"
-          print("BUILD 0111 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
+          print("BUILD 0112 RELEASE VALIDATION PASSED: live Earth distance touch-pan refresh, emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
