@@ -27,16 +27,18 @@
     return max<min?0:(max-min+1)/S;
   }
   async function ensureFonts(){
+    if(global.GVFontsReady?.VERSION==='0001')return global.GVFontsReady.ensure('coordinate');
     if(fontsPromise)return fontsPromise;
     fontsPromise=(async()=>{
       let lastError=null;
-      for(let attempt=1;attempt<=3;attempt++){
+      for(let attempt=1;attempt<=4;attempt++){
         try{
           const faces=[
             new FontFace(FONT_NAMES.spaceAge,`url("${FONT_URLS.spaceAge}")`,{style:'normal',weight:'400'}),
             new FontFace(FONT_NAMES.digits,`url("${FONT_URLS.digits}")`,{style:'normal',weight:'400'})
           ];
           const loaded=await Promise.all(faces.map(face=>face.load()));
+          if(loaded.some(face=>face.status!=='loaded'))throw new Error('COORDINATE FONT FACE NOT LOADED');
           loaded.forEach(face=>document.fonts.add(face));
           await Promise.all([
             document.fonts.load(`400 12.5px "${FONT_NAMES.spaceAge}"`,'ICRSD'),
@@ -46,11 +48,10 @@
           if(!document.fonts.check(`400 12.5px "${FONT_NAMES.spaceAge}"`,'ICRSD')||
              !document.fonts.check(`400 20px "${FONT_NAMES.digits}"`,'359.9999 -90.0000'))throw new Error('COORDINATE FONT VERIFICATION FAILED');
           return true;
-        }catch(error){lastError=error;if(attempt<3)await new Promise(resolve=>setTimeout(resolve,350*attempt))}
+        }catch(error){lastError=error;if(attempt<4)await new Promise(resolve=>setTimeout(resolve,250*attempt))}
       }
-      fontsPromise=null;
-      throw new Error('COORDINATE FONTS FAILED AFTER 3 ATTEMPTS: '+String(lastError?.message||lastError));
-    })();
+      throw new Error('COORDINATE FONTS FAILED AFTER 4 ATTEMPTS: '+String(lastError?.message||lastError));
+    })().catch(error=>{fontsPromise=null;throw error});
     return fontsPromise;
   }
 
@@ -101,14 +102,23 @@
       });
       try{this.metrics=measure('Arial')}catch(error){console.warn('COORDINATE SYSTEM-FONT MEASUREMENT FAILED; USING FIXED METRICS',error);this.metrics={digit:11,decimal:5,minus:7}}
       this.#render();
-      // Upgrade to the Space Age digit font asynchronously; do not block first paint.
-      ensureFonts().then(loaded=>{
-        if(this.destroyed)return;
-        if(loaded){
-          try{this.metrics=measure(FONT_NAMES.digits)}catch(error){console.warn('COORDINATE CUSTOM-FONT MEASUREMENT FAILED; KEEPING SYSTEM METRICS',error)}
-        }
-        this.#render();
-      }).catch(error=>console.warn('COORDINATE FONT UPGRADE FAILED; SYSTEM FONT REMAINS VISIBLE',error));
+      // Upgrade to the registered Space Age faces. A transient CDN failure must
+      // never become a permanently cached fallback for this overlay instance.
+      const upgradeCustomFonts=()=>{
+        ensureFonts().then(()=>{
+          if(this.destroyed)return;
+          try{this.metrics=measure(FONT_NAMES.digits)}catch(error){console.error('COORDINATE CUSTOM-FONT MEASUREMENT FAILED',error);return}
+          this.#render();
+          this.root.dataset.gvFontStatus='ready';
+          console.info('GV COORDINATE SPACE AGE FONT VERIFIED',global.GVFontsReady?.diagnostics?.()||{version:VERSION});
+        }).catch(error=>{
+          if(this.destroyed)return;
+          this.root.dataset.gvFontStatus='retrying';
+          console.error('COORDINATE SPACE AGE FONT LOAD FAILED; RETRYING',error);
+          setTimeout(()=>{if(!this.destroyed)upgradeCustomFonts()},2500);
+        });
+      };
+      upgradeCustomFonts();
       return this;
     }
     #cell(parent,char,left,width){const s=document.createElement('span');s.className='gvco-cell';s.textContent=char;s.style.left=`${left}px`;s.style.width=`${width}px`;parent.appendChild(s)}
