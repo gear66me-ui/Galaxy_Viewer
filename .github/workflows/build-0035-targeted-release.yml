@@ -42,6 +42,12 @@ jobs:
           assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0116.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
+          engine = (root / "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js").read_text()
+          assert "67dca19ac70e54add86447c20d528bffe0bb5849" in rc, "Build 0116 must pin the resilient Route Engine revision"
+          assert "const CATALOG_REQUEST_TIMEOUT_MS=20000;" in engine, "Catalog requests must tolerate 20-second CDN responses"
+          assert "const CATALOG_REQUEST_ATTEMPTS=2;" in engine, "Catalog requests must retry transient failures"
+          assert "function catalogOriginFallback(url)" in engine and "raw.githubusercontent.com" in engine, "Catalog loader must fall back to the same pinned GitHub origin"
+          assert "const ROOT='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4b4d7e740aa172c510fd06ae59d75a8590e8ef43/'" in engine, "Catalog data revision must remain unchanged"
           assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0116"' in rc
           assert "const GV200001_BUILD='0116'" in rc
           assert "const GV_RUNTIME='0116';" in rc, "BUILD 0097 marker missing"
