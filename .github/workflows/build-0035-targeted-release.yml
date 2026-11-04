@@ -171,7 +171,7 @@ jobs:
           assert "GVFontsReady.ensure('coordinate')" in rc and "GVFontsReady.ensure('destination')" in rc and "GVFontsReady.ensure('travel')" in rc, "Startup readiness barrier must cover coordinate, destination and travel font groups"
           assert "GV COORDINATE SPACE AGE FONT VERIFIED" in (root / "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js").read_text(), "Coordinate font verification/retry path missing"
           assert "gvShowCard" in destination and "font-display:block" in destination, "Destination card must remain hidden until its font is ready"
-          assert "font-display:block" in travel and "GVFontsReady.ensure('travel')" in travel, "Travel HUD must wait for verified Space Age font"
+          assert 'font-display:block' in travel and "globalThis.GVFontsReady?.ensure?.('travel')" in travel, "Travel HUD must wait for verified Space Age font"
 
           splash = (root / "viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/index.html").read_text()
           assert "type:'galaxy-splash-ready'" in splash, "Splash success path must signal readiness"
