@@ -29,7 +29,7 @@ HAMBURGER_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7d19f8caf
 COORDINATE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d1727ed792761ee56b6e0b1ea8e470ebd2c04658/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js"
 TARGET_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7dcd8a191372e112b07bb20d0518a739a7c05865/viewer/modules/target-simbad/gv-target-simbad-0007.js"
 DIAGNOSTICS_URL = ""
-GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@b15297508e8047a4891aef5db89d099d059264b7/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV-ROUTE-002-EXPORT-RETRY-4"
+GALAXY_ROUTE_ENGINE_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3f720a71de542f17979161dc7ea2a09b2e66ff88/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV-ROUTE-002-EXPORT-RETRY-4"
 GALAXY_NAVIGATOR_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@34d6f9b9417438afd56317bc838b93eb655c7d15/viewer/modules/galaxy-navigator/gv-galaxy-navigator-014.js"
 HEADS_UP_DISPLAY_URL = "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js"
 
@@ -106,8 +106,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     constellationOverlayFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/4f89b9057a7acf13767a5a5c8c030829b2a8b2c7/viewer/modules/constellation-overlay/gv-constellation-overlay-0023.js',
     coordinateUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d1727ed792761ee56b6e0b1ea8e470ebd2c04658/viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js',
     targetUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@7dcd8a191372e112b07bb20d0518a739a7c05865/viewer/modules/target-simbad/gv-target-simbad-0007.js',
-    galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@b15297508e8047a4891aef5db89d099d059264b7/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV-ROUTE-002-EXPORT-RETRY-4',
-     galaxyRouteEngineFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/b15297508e8047a4891aef5db89d099d059264b7/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
+    galaxyRouteEngineUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3f720a71de542f17979161dc7ea2a09b2e66ff88/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js?v=GV-ROUTE-002-EXPORT-RETRY-4',
+     galaxyRouteEngineFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/3f720a71de542f17979161dc7ea2a09b2e66ff88/viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js',
     galaxyNavigatorUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/galaxy-navigator/gv-galaxy-navigator-013.js',
     headsUpDisplayUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@acd66e473d4d3021b5f7915bb12898d863a489b8/viewer/modules/hud/gv-heads-up-display-0005.js',
     providerArtworkUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@ae9eb4d29f5b0d6190bc72da3bca70b04eea6d23/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
