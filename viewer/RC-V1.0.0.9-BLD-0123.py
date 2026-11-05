@@ -3714,7 +3714,7 @@ function gvRefreshTravelConstellationArtwork(){
     if(name&&constellationHolder&&constellationImage&&artwork?.constellationSources&&artwork?.loadImage){
         constellationHolder.style.display='none';
         constellationImage.removeAttribute('src');
-        artwork.loadImage(constellationImage,artwork.constellationSources(name),()=>{constellationHolder.style.display='flex'},()=>{constellationHolder.style.display='none'});
+        constellationImage.dataset.gvArtworkRetryActive='1';artwork.loadImage(constellationImage,artwork.constellationSources(name),()=>{constellationImage.dataset.gvArtworkRetryActive='0';constellationHolder.style.display='flex'},()=>{constellationImage.dataset.gvArtworkRetryActive='0';constellationHolder.style.display='none'});
         try{gvPreloadConstellationArtwork(name)}catch(_){}
         console.info('GV FOREGROUND CONSTELLATION ART REFRESH REQUESTED',{name});
     }
@@ -3727,6 +3727,38 @@ function gvRefreshTravelConstellationArtwork(){
         artwork.loadImage(providerImage,artwork.iconSources(provider),()=>{providerHolder.style.display='flex'},()=>{providerHolder.style.display='none'});
     }
 }
+// Persistent one-second watchdog: recover the travel constellation icon after transient
+// network failures, Android WebView resource eviction, or a failed foreground refresh.
+function gvRetryMissingTravelConstellationArtwork(){
+    if(document.visibilityState!=='visible')return;
+    const hud=document.getElementById('gv-travel-hud');
+    if(!hud?.classList.contains('gv-visible'))return;
+    const holder=hud.querySelector('#gv-travel-constellation');
+    const image=holder?.querySelector('img');
+    const name=String(activeDestination?.constellation||'').trim();
+    const artwork=window.GVProviderArtwork;
+    if(!name||!holder||!image||!artwork?.constellationSources||!artwork?.loadImage)return;
+    if(image.complete&&image.naturalWidth>0){
+        image.dataset.gvArtworkRetryActive='0';
+        holder.style.display='flex';
+        return;
+    }
+    if(image.dataset.gvArtworkRetryActive==='1')return;
+    const src=image.getAttribute('src');
+    if(src&&!image.complete)return;
+    image.dataset.gvArtworkRetryActive='1';
+    console.warn('GV CONSTELLATION ICON WATCHDOG RETRY',{name,src:src||null});
+    artwork.loadImage(image,artwork.constellationSources(name),()=>{
+        image.dataset.gvArtworkRetryActive='0';
+        holder.style.display='flex';
+        console.info('GV CONSTELLATION ICON WATCHDOG RECOVERED',{name});
+    },()=>{
+        image.dataset.gvArtworkRetryActive='0';
+        holder.style.display='none';
+        console.warn('GV CONSTELLATION ICON WATCHDOG RETRY EXHAUSTED',{name});
+    });
+}
+const gvConstellationArtworkWatchdog=setInterval(gvRetryMissingTravelConstellationArtwork,1000);
 document.addEventListener('visibilitychange',()=>{
     if(document.visibilityState==='hidden'){
         gvReleaseTransientResourcesForBackground('hidden');
