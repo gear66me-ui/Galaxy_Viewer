@@ -1,5 +1,5 @@
-name: Validate and Deploy RC-V1.0.0.9 Build 0121
-# BUILD 0121: validate performance recovery timers while preserving centralized Space Age font readiness and preserve existing release checks.
+name: Validate and Deploy RC-V1.0.0.9 Build 0122
+# BUILD 0122: validate performance recovery timers while preserving centralized Space Age font readiness and preserve existing release checks.
 
 on:
   push:
@@ -28,7 +28,7 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Validate Build 0121 Earth pointer travel persistence, font readiness, linear AVM-anchored Earth distance, and preserved release behavior
+      - name: Validate Build 0122 Earth pointer travel persistence, font readiness, linear AVM-anchored Earth distance, and preserved release behavior
         shell: bash
         run: |
           set -euo pipefail
@@ -50,22 +50,22 @@ jobs:
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
-          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0121.py","build":"0121"}, pointer
-          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0121", manifest
-          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0121.py"], manifest
+          assert pointer == {"version":"RC-V1.0.0.9","viewer":"RC-V1.0.0.9-BLD-0122.py","build":"0122"}, pointer
+          assert manifest.get("release") == "RC-V1.0.0.9" and manifest.get("build") == "0122", manifest
+          assert manifest.get("runtime") == ["viewer/RC-V1.0.0.9-BLD-0122.py"], manifest
           assert manifest.get("sourceBranch") == "release", manifest
           rc = (root / "viewer" / pointer["viewer"]).read_text()
           engine = (root / "viewer/modules/galaxy-route-engine/gv-galaxy-route-engine-002.js").read_text()
-          assert "3f720a71de542f17979161dc7ea2a09b2e66ff88" in rc, "Build 0121 must pin the resilient Route Engine revision"
+          assert "3f720a71de542f17979161dc7ea2a09b2e66ff88" in rc, "Build 0122 must pin the resilient Route Engine revision"
           assert "const CATALOG_REQUEST_TIMEOUT_MS=20000;" in engine, "Catalog requests must tolerate 20-second CDN responses"
           assert "const CATALOG_REQUEST_ATTEMPTS=2;" in engine, "Catalog requests must retry transient failures"
           assert engine.count("const wait=ms=>new Promise(resolve=>setTimeout(resolve,ms));") == 1, "Route Engine must have exactly one wait helper declaration (avoid parse failure)"
           assert "function catalogOriginFallback(url)" in engine and "raw.githubusercontent.com" in engine, "Catalog loader must fall back to the same pinned GitHub origin"
           assert "const ROOT='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@4b4d7e740aa172c510fd06ae59d75a8590e8ef43/'" in engine, "Catalog data revision must remain unchanged"
-          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0121"' in rc
-          assert "const GV200001_BUILD='0121'" in rc
-          assert "const GV_RUNTIME='0121';" in rc, "BUILD 0097 marker missing"
-          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,100);" in rc, "Build 0121 Earth pointer sampling must be 100 ms"
+          assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and 'BUILD_NUMBER = "0122"' in rc
+          assert "const GV200001_BUILD='0122'" in rc
+          assert "const GV_RUNTIME='0122';" in rc, "BUILD 0097 marker missing"
+          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,25);" in rc, "Build 0122 Earth pointer sampling must be 25 ms"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
           assert "function gvLinearEarthDistanceEstimate(ra,dec)" in rc, "Linear AVM-anchored estimate missing"
           assert "const progress=Math.max(0,Math.min(1,movedDegrees/totalDegrees))" in rc, "Linear estimate must update continuously from the AVM anchor toward HOME"
@@ -104,10 +104,10 @@ jobs:
           assert rc.count("gvEarthPointerActive=true;") == 2, "Build 0112 pointer activation path must remain intact"
           assert "gv-earth-pointer-yellow-final-1080-crisp.png" in rc, "Earth pointer artwork URL missing"
           assert "function gvUpdateEarthBearingPointer(){\n    if(window.GV_NAV_BACKGROUND_SUSPENDED&&!gvNavigationTravelActive)return;" in rc, "Pointer refresh must remain suspended off-travel but active during travel"
-          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,100);" in rc, "Earth pointer must refresh every 100 ms"
+          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,25);" in rc, "Earth pointer must refresh every 25 ms"
           assert rc.count("gvEarthPointerArrivalPresentationReady=true;") == 2, "Both arrival paths must enable the Earth pointer"
           assert rc.count("gvEarthPointerArrivalPresentationReady=true;") == 2, "Both arrival paths must release the 0112 arrival visibility gate"
-          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,100);" in rc, "Earth pointer refresh timer missing"
+          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,25);" in rc, "Earth pointer refresh timer missing (25 ms)"
           assert "gvSyncEarthDistanceToCenter()},250)" in rc, "Visible sky center must have a 50 ms fallback refresh"
           assert "GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS=100" in rc, "Travel distance refresh must be throttled to 100 ms"
           assert "Earth distance requires distanceMly, not redshift" in rc, "Missing redshift must not freeze live Earth distance"
@@ -165,7 +165,7 @@ jobs:
           assert "if(!gvOverlayManualOverride)" in rc and "gvSetSkyOverlaysEnabled(true);" in rc, "First Random Galaxy may auto-enable overlays only when not manually overridden"
           assert "if(!hamburger.root.__gvConstellationsEnabled)" in rc, "Travel constellation glow must respect manual OFF state"
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 12, f"Expected 12 immutable dependency pins in BLD 0121; found {len(pins)}"
+          assert len(pins) == 12, f"Expected 12 immutable dependency pins in BLD 0122; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "function gvUpdateLivePhysicalScale()" in rc
@@ -223,7 +223,7 @@ jobs:
           assert "type:'galaxy-splash-error'" not in success_path.split("}catch(e)")[0], "Splash success path must not signal an error"
           assert "message:String(e?.message||e)" not in success_path.split("}catch(e)")[0], "Splash success path must not reference the catch-only error variable"
           assert "type:'galaxy-splash-ready'" in success_path.split("}catch(e)")[0], "Splash success path readiness handshake missing"
-          print("BUILD 0121 RELEASE VALIDATION PASSED: Earth pointer remains visible and updates during travel; distance banner stays hidden, with touch-pan refresh and emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
+          print("BUILD 0122 RELEASE VALIDATION PASSED: Earth pointer remains visible and updates during travel; distance banner stays hidden, with touch-pan refresh and emission distance cards, preserved IAU and AVM behavior, and immutable dependency pins.")
           PY
 
       - name: Configure GitHub Pages
