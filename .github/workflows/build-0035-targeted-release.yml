@@ -104,7 +104,7 @@ jobs:
           assert rc.count("gvEarthPointerActive=true;") == 2, "Build 0112 pointer activation path must remain intact"
           assert "gv-earth-pointer-yellow-final-1080-crisp.png" in rc, "Earth pointer artwork URL missing"
           assert "function gvUpdateEarthBearingPointer(){\n    if(window.GV_NAV_BACKGROUND_SUSPENDED&&!gvNavigationTravelActive)return;" in rc, "Pointer refresh must remain suspended off-travel but active during travel"
-          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,200);" in rc, "Earth pointer must refresh every 200 ms"
+          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,100);" in rc, "Earth pointer must refresh every 100 ms"
           assert rc.count("gvEarthPointerArrivalPresentationReady=true;") == 2, "Both arrival paths must enable the Earth pointer"
           assert rc.count("gvEarthPointerArrivalPresentationReady=true;") == 2, "Both arrival paths must release the 0112 arrival visibility gate"
           assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,200);" in rc, "Earth pointer refresh timer missing"
