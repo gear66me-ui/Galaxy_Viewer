@@ -107,7 +107,7 @@ jobs:
           assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,100);" in rc, "Earth pointer must refresh every 100 ms"
           assert rc.count("gvEarthPointerArrivalPresentationReady=true;") == 2, "Both arrival paths must enable the Earth pointer"
           assert rc.count("gvEarthPointerArrivalPresentationReady=true;") == 2, "Both arrival paths must release the 0112 arrival visibility gate"
-          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,200);" in rc, "Earth pointer refresh timer missing"
+          assert "const gvEarthBearingTimer=setInterval(gvUpdateEarthBearingPointer,100);" in rc, "Earth pointer refresh timer missing"
           assert "gvSyncEarthDistanceToCenter()},250)" in rc, "Visible sky center must have a 50 ms fallback refresh"
           assert "GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS=100" in rc, "Travel distance refresh must be throttled to 100 ms"
           assert "Earth distance requires distanceMly, not redshift" in rc, "Missing redshift must not freeze live Earth distance"
