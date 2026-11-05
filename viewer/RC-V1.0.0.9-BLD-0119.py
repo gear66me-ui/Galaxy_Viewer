@@ -89,8 +89,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.9';
-const GV200001_BUILD='0118'
-const GV_RUNTIME='0118';
+const GV200001_BUILD='0119'
+const GV_RUNTIME='0119';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.9-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
@@ -3195,9 +3195,9 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
     const initialCenter=prepared?.imageCenter;let ra1=Number(initialCenter?.[0]),dec1=Number(initialCenter?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
     if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV 130H DESTINATION STATE INVALID');
     gvNavigationTravelActive=true;
-    // Stop new HiPS tile fetches synchronously before any await or animation frame.
-    window.GV_NAV_BACKGROUND_SUSPENDED=true;
-    window.GV_NAV_HIPS_FETCH_SUSPENDED=true;
+    // BUILD 0119: leave application work and fetch handling active; route only the base HiPS survey to the dead URL.
+    window.GV_NAV_BACKGROUND_SUSPENDED=false;
+    window.GV_NAV_HIPS_FETCH_SUSPENDED=false;
     gvSetTravelHiPSSource(true);
     gvSetTravelConstellationGlow(constellationName,ra1,dec1,true);
     gvHideEarthDistance();
@@ -3216,11 +3216,11 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         const translateSeconds=3.0,zoomSeconds=6.0,durationSeconds=translateSeconds+zoomSeconds;
         const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
         const translateStarted=performance.now();let lastSample=-1,tMinusEightStarted=false;
-        window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=true;
+        window.GV_NAV_BACKGROUND_SUSPENDED=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{if(!isCurrent())throw new Error('GV RANDOM NAVIGATION SUPERSEDED');
                 const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed/10),t=Math.min(1,(now-translateStarted)/(durationSeconds*1000)),tMinusEightThreshold=Math.max(0,1-8/durationSeconds);
-                window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<(1-9/durationSeconds);
+                window.GV_NAV_BACKGROUND_SUSPENDED=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;
                 if(!tMinusEightStarted&&t>=tMinusEightThreshold){tMinusEightStarted=true;try{console.info('GV T-MINUS-EIGHT WORK WINDOW OPEN',{remainingSeconds:8,firstHomeTrip:true});gvSetTravelHiPSSource(false);onTMinusEight?.()}catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}}
                 if(sample!==lastSample){
                     const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
@@ -3258,7 +3258,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/10);
             // BUILD 0028: only FOV changes during 0–30% and 70–100%.
             // Suspend application polling in both phases; the FOV readout stays live.
-            window.GV_NAV_BACKGROUND_SUSPENDED=true; // Preserve the verified zero-stutter rule: app polling stays paused through arrival.
+            window.GV_NAV_BACKGROUND_SUSPENDED=false; // Build 0119 keeps app polling active; the base survey is routed to the dead URL.
             window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<(1-9/durationSeconds));
             if(!tMinusEightStarted&&t>=tMinusEightThreshold){tMinusEightStarted=true;try{console.info('GV T-MINUS-EIGHT WORK WINDOW OPEN',{remainingSeconds:8,firstHomeTrip:false});gvSetTravelHiPSSource(false);onTMinusEight?.()}catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}}
 
