@@ -3259,7 +3259,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             // BUILD 0028: only FOV changes during 0–30% and 70–100%.
             // Suspend application polling in both phases; the FOV readout stays live.
             window.GV_NAV_BACKGROUND_SUSPENDED=false; // Build 0119 keeps app polling active; the base survey is routed to the dead URL.
-            window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<(1-9/durationSeconds));
+            window.GV_NAV_HIPS_FETCH_SUSPENDED=false; // BLD 0119: no tile-fetch gate; dead base HiPS URL handles travel traffic.
             if(!tMinusEightStarted&&t>=tMinusEightThreshold){tMinusEightStarted=true;try{console.info('GV T-MINUS-EIGHT WORK WINDOW OPEN',{remainingSeconds:8,firstHomeTrip:false});gvSetTravelHiPSSource(false);onTMinusEight?.()}catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}}
 
             if(t>=zoomOutCompleteThreshold&&!zoomOutCompleted){
