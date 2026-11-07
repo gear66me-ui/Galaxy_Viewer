@@ -21,3 +21,5 @@ Build 0125 correction: zoom-out 7.1s, translation 6.8s unchanged, zoom-in 7.1s; 
 Restore original Build 0125 choreography: 21s total; original 5.1s–11.9s translation/rotation arc retained; original 10.5s FOV midpoint retained; no 55-degree hold; first-home choreography unchanged.
 RESTORE BUILD 0124: active pointer and release manifest target RC-V1.0.0.9-BLD-0124.py. Remove superseded active-lineage Build 0125 runtime. Preserve Build 0124 source byte-for-byte; do not modify it.
 Build 0125: 0124 flight choreography function unchanged; 21s total; +2s to 0-30% and 70-100% physical windows, 30-70% translation/rotation still 6.8s. Time-remap original 17s animation without pauses.
+
+Build 0125 clean deployment run: start a fresh workflow run after duplicate github-pages artifacts were created by retrying the prior deployment job; runtime unchanged.
