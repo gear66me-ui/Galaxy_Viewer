@@ -17,3 +17,4 @@ Build 0118 validation assertion repair: compare source tokens without escaped ne
 Build 0118 validation correction: recognize optional-chained overlay show() on first Random Galaxy.
 
 Build 0125: controlled travel timing test; zoom-out +2s, zoom-in +2s, translation duration unchanged.
+Build 0125 correction: zoom-out 7.1s, translation 6.8s unchanged, zoom-in 7.1s; FOV held at 55-degree apex throughout translation.
