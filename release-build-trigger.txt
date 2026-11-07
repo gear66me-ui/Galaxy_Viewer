@@ -15,3 +15,5 @@ Retry Build 0011 after banner and build identity repair: 9f71762214a6cb537baeb49
 Build 0118: initial Mollweide hides IAU constellation zones and asterisms; first Random Galaxy enables both.
 Build 0118 validation assertion repair: compare source tokens without escaped newline literals.
 Build 0118 validation correction: recognize optional-chained overlay show() on first Random Galaxy.
+
+Build 0125: controlled travel timing test; zoom-out +2s, zoom-in +2s, translation duration unchanged.
