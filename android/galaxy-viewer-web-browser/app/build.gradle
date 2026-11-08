@@ -8,8 +8,8 @@ android {
         applicationId 'com.gear66me.galaxyviewer.webbrowser'
         minSdk 29
         targetSdk 35
-        versionCode 63
-        versionName '0063'
+        versionCode 64
+        versionName '0064'
     }
 }
 
@@ -17,3 +17,15 @@ android {
 dependencies {
     implementation 'androidx.webkit:webkit:1.17.1'
 }
+
+// Copy release artwork into the APK so static UI images are available offline.
+tasks.register("bundleGalaxyViewerArtwork", Sync) {
+    from(rootProject.file("../../viewer/artwork/runtime/survey-thumbnails")) { into "survey-thumbnails" }
+    from(rootProject.file("../../viewer/artwork/Constellations")) { into "artwork/Constellations" }
+    ["Hubble","JWST","Chandra","ESO","NoirLabs","Spitzer","Euclid","Herschel","GALEX","NuSTAR","NRAO"].each { provider ->
+        from(rootProject.file("../../viewer/artwork/" + provider)) { into "artwork/" + provider }
+    }
+    from(rootProject.file("../../viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png")) { into "artwork/runtime/navigation" }
+    into layout.projectDirectory.dir("src/main/assets")
+}
+tasks.named("preBuild").configure { dependsOn("bundleGalaxyViewerArtwork") }

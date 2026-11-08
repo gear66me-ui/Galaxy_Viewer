@@ -1811,7 +1811,7 @@ if(gvSearchPanel){
 // In GVNative mode, thumbnail candidates are rewritten to the WebViewAssetLoader appassets
 // origin and therefore resolve directly from assets/survey-thumbnails/* inside the APK.
 // Browser mode continues to use the immutable jsDelivr pack URLs.
-const GV_SURVEY_THUMBNAIL_BRIDGE_URL='https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json';
+const GV_SURVEY_THUMBNAIL_BRIDGE_URL=window.GVNative?'https://appassets.androidplatform.net/assets/gv-survey-thumbnail-bridge-0001.json':'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json';
 let gvSurveyThumbnailPack=null;
 let gvSurveyThumbnailWarmPromise=null;
 let gvSurveyThumbnailWarmState={phase:'BRIDGE',loaded:0,failed:0,total:0,bytes:0,packCommit:''};

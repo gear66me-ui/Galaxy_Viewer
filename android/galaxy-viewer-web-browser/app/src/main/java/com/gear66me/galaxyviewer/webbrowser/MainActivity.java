@@ -84,6 +84,21 @@ public final class MainActivity extends Activity {
     else { launchGalaxyViewer(); if(launchUrl!=null){ openProvider(launchUrl,launchProviderIcon(getIntent())); } }
   }
 
+  // Resolve static observatory artwork from APK assets instead of the network.
+  private WebResourceResponse interceptLocalArtwork(Uri uri){
+    if(uri==null)return null;
+    String path=uri.getPath();
+    if(path!=null){
+      int marker=path.lastIndexOf("/viewer/artwork/");
+      if(marker>=0){
+        String local="https://appassets.androidplatform.net/assets/"+path.substring(marker+1);
+        WebResourceResponse bundled=assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(local));
+        if(bundled!=null)return bundled;
+      }
+    }
+    return assetLoader==null?null:assetLoader.shouldInterceptRequest(uri);
+  }
+
   private WebView viewer(){
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setDatabaseEnabled(true); s.setUseWideViewPort(true); s.setLoadWithOverviewMode(false); s.setSupportZoom(true);
@@ -92,8 +107,8 @@ public final class MainActivity extends Activity {
     s.setUserAgentString(s.getUserAgentString()+" GalaxyViewerWebBrowser/0059");
     v.setBackgroundColor(Color.BLACK); v.setWebChromeClient(new WebChromeClient());
     v.setWebViewClient(new WebViewClient(){
-      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
-      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return interceptLocalArtwork(request.getUrl()); }
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return interceptLocalArtwork(Uri.parse(url)); }
       @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){
         Uri u=request.getUrl();
         if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){
@@ -110,8 +125,8 @@ public final class MainActivity extends Activity {
     WebView v=new WebView(this); WebSettings s=v.getSettings(); s.setJavaScriptEnabled(true); s.setDomStorageEnabled(true);
     s.setCacheMode(WebSettings.LOAD_NO_CACHE); v.clearCache(true); v.setBackgroundColor(Color.BLACK);
     v.addJavascriptInterface(new Bridge(),"GV"); v.setWebViewClient(new WebViewClient(){
-      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
-      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return interceptLocalArtwork(request.getUrl()); }
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return interceptLocalArtwork(Uri.parse(url)); }
       @Override public void onPageFinished(WebView view,String url){
         if(view==top){
           view.evaluateJavascript("(function(){var s=document.createElement('style');s.textContent=\"@font-face{font-family:'GVLOCAL';src:url('https://appassets.androidplatform.net/assets/SpaceAge-GV-9A.otf') format('opentype');font-display:block}.title{font-family:'GVLOCAL','GV',sans-serif!important;color:#EAFBFF!important;text-shadow:0 0 3px rgba(180,240,255,.98),0 0 9px rgba(67,207,255,.92),0 0 16px rgba(41,132,255,.58)!important}\";document.head.appendChild(s)})()",null);
@@ -188,8 +203,8 @@ public final class MainActivity extends Activity {
         if(browserMode&&browserLayer!=null)browserLayer.setVisibility(View.VISIBLE); immersive();
       }
     }); v.setWebViewClient(new WebViewClient(){
-      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(request.getUrl()); }
-      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(url)); }
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,WebResourceRequest request){ return interceptLocalArtwork(request.getUrl()); }
+      @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return interceptLocalArtwork(Uri.parse(url)); }
       @Override public boolean shouldOverrideUrlLoading(WebView view,WebResourceRequest request){ Uri u=request.getUrl(); if(u!=null&&"galaxyviewerbrowser".equalsIgnoreCase(u.getScheme())){ String target=u.getQueryParameter("url"); if(target!=null&&target.startsWith("https://")){ openProvider(target,u.getQueryParameter("icon")); return true; } } return false; }
       @Override public void onPageStarted(WebView view,String url,android.graphics.Bitmap favicon){
         if(!browserMode&&url!=null&&url.equals(prewarmedUrl))publishProviderProgress(0,false,url);

@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer Android APK 0063
+name: Build Galaxy Viewer Android APK 0064
 
 on:
   push:
@@ -51,8 +51,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq "versionCode 63" android/galaxy-viewer-web-browser/app/build.gradle
-          grep -Fq "versionName '0063'" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionCode 64" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionName '0064'" android/galaxy-viewer-web-browser/app/build.gradle
           grep -Fq 'android:appCategory="game"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
           grep -Fq 'android:name="android.game_mode_config"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
           grep -Fq 'android:supportsPerformanceGameMode="true"' android/galaxy-viewer-web-browser/app/src/main/res/xml/game_mode_config.xml
@@ -64,6 +64,29 @@ jobs:
           ! grep -Fq 'launchSourceUrl(getIntent())' <(sed -n '/private void fetchPointer()/,/private boolean launchPrewarm/p' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java)
           echo "APK 0061 identity, explicit URL priority, and provider no-cache checks passed."
 
+      - name: Bundle thumbnail lookup index for offline Android UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          ASSETS=android/galaxy-viewer-web-browser/app/src/main/assets
+          mkdir -p "$ASSETS"
+          curl --fail --location --silent --show-error \
+            https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/artwork/runtime/gv-survey-thumbnail-bridge-0001.json \
+            -o "$ASSETS/gv-survey-thumbnail-bridge-0001.json"
+          test -s "$ASSETS/gv-survey-thumbnail-bridge-0001.json"
+
+      - name: Verify bundled offline artwork inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          A=android/galaxy-viewer-web-browser/app/src/main/assets
+          test "$(find "$A/survey-thumbnails" -type f -iname "*.webp" | wc -l)" -gt 1800
+          test "$(find "$A/artwork/Constellations" -type f -iname "*.SVG" | wc -l)" -eq 88
+          for f in Hubble/Hubble.jpg JWST/JWST.jpeg Chandra/Chandra.jpg ESO/ESO.jpg NoirLabs/NOIRLab.jpg Spitzer/Spitzer.jpg; do test -s "$A/artwork/$f"; done
+          test -s "$A/artwork/runtime/navigation/gv-survey-satellite-icon.png"
+          test -s "$A/gv-survey-thumbnail-bridge-0001.json"
+          echo "Bundled offline UI artwork verified."
+
       - name: Build installable debug APK
         working-directory: android/galaxy-viewer-web-browser
         run: gradle --no-daemon --stacktrace :app:assembleDebug
@@ -74,13 +97,16 @@ jobs:
           set -euo pipefail
           APK=android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
+          unzip -Z1 "$APK" | grep -q "assets/gv-survey-thumbnail-bridge-0001.json"
+          test "$(unzip -Z1 "$APK" | grep -c "^assets/survey-thumbnails/.*\.webp$")" -gt 1800
+          test "$(unzip -Z1 "$APK" | grep -c "^assets/artwork/Constellations/.*\.SVG$")" -eq 88
           sha256sum "$APK"
           ls -lh "$APK"
 
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Android-APK-0063
+          name: Galaxy-Viewer-Android-APK-0064
           path: android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
