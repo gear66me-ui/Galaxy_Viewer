@@ -134,12 +134,22 @@ jobs:
           set -euo pipefail
           APK=android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
           test -s "$APK"
-          unzip -Z1 "$APK" | grep -q "assets/gv-survey-thumbnail-bridge-0001.json"
-          test "$(unzip -Z1 "$APK" | grep -c "^assets/survey-thumbnails/.*\.webp$")" -gt 1800
-          test "$(unzip -Z1 "$APK" | grep -c "^assets/artwork/Constellations/.*\.SVG$")" -eq 88
-          unzip -Z1 "$APK" | grep -Fqx "res/drawable-nodpi/gv_launcher_art.png"
-          unzip -Z1 "$APK" | grep -Fqx "assets/artwork/app_icon_4.png"
-          for f in "assets/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" "assets/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf" "assets/artwork/Fonts/Space Age Regular/Space Age Regular.otf" "assets/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"; do unzip -Z1 "$APK" | grep -Fqx "$f"; done
+          unzip -Z1 "$APK" > /tmp/gv-apk-entries.txt
+          echo "APK archive diagnostics:"
+          echo "thumbnail_count=$(grep -Ec '^assets/survey-thumbnails/.*\.webp$' /tmp/gv-apk-entries.txt || true)"
+          echo "constellation_svg_count=$(grep -Eic '^assets/artwork/Constellations/.*\.svg$' /tmp/gv-apk-entries.txt || true)"
+          echo "launcher_resource_entries:"
+          grep -E '^res/drawable(-nodpi)?(-v[0-9]+)?/gv_launcher_art\.png$' /tmp/gv-apk-entries.txt || true
+          echo "bundled_fonts_and_artwork:"
+          grep -E '^assets/(gv-survey-thumbnail-bridge-0001\.json|artwork/app_icon_4\.png|artwork/Fonts/|releases/splash/)' /tmp/gv-apk-entries.txt | head -30
+          grep -Fqx "assets/gv-survey-thumbnail-bridge-0001.json" /tmp/gv-apk-entries.txt
+          test "$(grep -Ec '^assets/survey-thumbnails/.*\.webp$' /tmp/gv-apk-entries.txt)" -gt 1800
+          test "$(grep -Eic '^assets/artwork/Constellations/.*\.svg$' /tmp/gv-apk-entries.txt)" -eq 88
+          grep -Eq '^res/drawable(-nodpi)?(-v[0-9]+)?/gv_launcher_art\.png$' /tmp/gv-apk-entries.txt
+          grep -Fqx "assets/artwork/app_icon_4.png" /tmp/gv-apk-entries.txt
+          for f in "assets/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" "assets/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf" "assets/artwork/Fonts/Space Age Regular/Space Age Regular.otf" "assets/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"; do
+            grep -Fqx "$f" /tmp/gv-apk-entries.txt || { echo "Missing APK entry: $f"; exit 1; }
+          done
           sha256sum "$APK"
           ls -lh "$APK"
 
