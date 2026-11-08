@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer Android APK 0068
+name: Build Galaxy Viewer Android APK 0069
 
 on:
   push:
@@ -51,8 +51,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq "versionCode 68" android/galaxy-viewer-web-browser/app/build.gradle
-          grep -Fq "versionName 'APK 0068'" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionCode 69" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionName 'APK 0069'" android/galaxy-viewer-web-browser/app/build.gradle
           grep -Fq '"build": "0136"' viewer/gv-current-viewer.json
           grep -Fq 'BUILD_NUMBER = "0136"' viewer/RC-V1.0.0.9-BLD-0136.py
           grep -Fq 'android:appCategory="game"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
@@ -64,7 +64,7 @@ jobs:
           grep -Fq 'web.clearCache(true)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'ROLL 0061: provider identity belongs to openProvider(requestedUrl, icon).' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           ! grep -Fq 'launchSourceUrl(getIntent())' <(sed -n '/private void fetchPointer()/,/private boolean launchPrewarm/p' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java)
-          echo "Galaxy Viewer APK 0068 identity, explicit URL priority, and provider no-cache checks passed."
+          echo "Galaxy Viewer APK 0069 identity, explicit URL priority, and provider no-cache checks passed."
 
       - name: Bundle thumbnail lookup index for offline Android UI
         shell: bash
@@ -167,7 +167,7 @@ jobs:
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Android-APK-0068
+          name: Galaxy-Viewer-Android-APK-0069
           path: android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
