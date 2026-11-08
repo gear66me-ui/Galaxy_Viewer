@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer Android APK 0066
+name: Build Galaxy Viewer Android APK 0067
 
 on:
   push:
@@ -51,8 +51,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq "versionCode 66" android/galaxy-viewer-web-browser/app/build.gradle
-          grep -Fq "versionName 'APK 0066'" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionCode 67" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionName 'APK 0067'" android/galaxy-viewer-web-browser/app/build.gradle
           grep -Fq 'android:appCategory="game"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
           grep -Fq 'android:name="android.game_mode_config"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
           grep -Fq 'android:supportsPerformanceGameMode="true"' android/galaxy-viewer-web-browser/app/src/main/res/xml/game_mode_config.xml
@@ -62,7 +62,7 @@ jobs:
           grep -Fq 'web.clearCache(true)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'ROLL 0061: provider identity belongs to openProvider(requestedUrl, icon).' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           ! grep -Fq 'launchSourceUrl(getIntent())' <(sed -n '/private void fetchPointer()/,/private boolean launchPrewarm/p' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java)
-          echo "Galaxy Viewer APK 0066 identity, explicit URL priority, and provider no-cache checks passed."
+          echo "Galaxy Viewer APK 0067 identity, explicit URL priority, and provider no-cache checks passed."
 
       - name: Bundle thumbnail lookup index for offline Android UI
         shell: bash
@@ -83,6 +83,9 @@ jobs:
           mkdir -p "$A/artwork" "$A"
           cp -a viewer/artwork/runtime/survey-thumbnails "$A/"
           cp -a viewer/artwork/Constellations "$A/artwork/"
+          cp -a viewer/artwork/compass "$A/artwork/"
+          mkdir -p "$A/artwork/startup"
+          cp viewer/artwork/startup/galaxy-viewer-startup.png "$A/artwork/startup/"
           cp -a viewer/artwork/Fonts "$A/artwork/"
           mkdir -p "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL/"
@@ -103,6 +106,9 @@ jobs:
           test "$(find "$A/artwork/Constellations" -type f -iname "*.SVG" | wc -l)" -eq 88
           for f in Hubble/Hubble.jpg JWST/JWST.jpeg Chandra/Chandra.jpg ESO/ESO.jpg NoirLabs/NOIRLab.jpg Spitzer/Spitzer.jpg; do test -s "$A/artwork/$f"; done
           test -s "$A/artwork/runtime/navigation/gv-survey-satellite-icon.png"
+          test -s "$A/artwork/compass/compass.png"
+          test -s "$A/artwork/compass/gv-earth-pointer-yellow-final-1080-crisp.png"
+          test -s "$A/artwork/startup/galaxy-viewer-startup.png"
           test -s "$A/artwork/app_icon_4.png"
           for f in Chandra/Chandra.jpg ESO/ESO.jpg Euclid/Euclid.jpg GALEX/GALEX.jpg Herschel/Herschel.jpg Hubble/Hubble.jpg JWST/JWST.jpeg NRAO/NRAO.jpg NoirLabs/NOIRLab.jpg NuSTAR/NuSTAR.jpg Spitzer/Spitzer.jpg; do test -s "$A/artwork/$f"; done
           test -s "$A/gv-survey-thumbnail-bridge-0001.json"
@@ -110,7 +116,7 @@ jobs:
           test -s "$A/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf"
           test -s "$A/artwork/Fonts/Space Age Regular/Space Age Regular.otf"
           test -s "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"
-          echo "Bundled thumbnails, 88 constellations, 11 provider icons, launcher artwork, and all four font files verified."
+          echo "Bundled thumbnails, 88 constellations, 11 provider icons, launcher, startup, reticle, Earth pointer artwork, and all four font files verified."
 
       - name: Install the exact Galaxy Viewer launcher artwork
         shell: bash
@@ -147,6 +153,9 @@ jobs:
           test "$(grep -Eic '^assets/artwork/Constellations/.*\.svg$' /tmp/gv-apk-entries.txt)" -eq 88
           grep -Eq '^res/drawable(-nodpi)?(-v[0-9]+)?/gv_launcher_art\.png$' /tmp/gv-apk-entries.txt
           grep -Fqx "assets/artwork/app_icon_4.png" /tmp/gv-apk-entries.txt
+          grep -Fqx "assets/artwork/compass/compass.png" /tmp/gv-apk-entries.txt
+          grep -Fqx "assets/artwork/compass/gv-earth-pointer-yellow-final-1080-crisp.png" /tmp/gv-apk-entries.txt
+          grep -Fqx "assets/artwork/startup/galaxy-viewer-startup.png" /tmp/gv-apk-entries.txt
           for f in "assets/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" "assets/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf" "assets/artwork/Fonts/Space Age Regular/Space Age Regular.otf" "assets/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"; do
             grep -Fqx "$f" /tmp/gv-apk-entries.txt || { echo "Missing APK entry: $f"; exit 1; }
           done
@@ -156,7 +165,7 @@ jobs:
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Android-APK-0066
+          name: Galaxy-Viewer-Android-APK-0067
           path: android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
