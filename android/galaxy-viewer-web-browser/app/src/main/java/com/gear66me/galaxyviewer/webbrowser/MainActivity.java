@@ -136,7 +136,7 @@ public final class MainActivity extends Activity {
       @Override public WebResourceResponse shouldInterceptRequest(WebView view,String url){ return interceptLocalArtwork(Uri.parse(url)); }
       @Override public void onPageFinished(WebView view,String url){
         if(view==top){
-          view.evaluateJavascript("(function(){var s=document.createElement('style');s.textContent=\"@font-face{font-family:'GVLOCAL';src:url('https://appassets.androidplatform.net/assets/SpaceAge-GV-9A.otf') format('opentype');font-display:block}.title{font-family:'GVLOCAL','GV',sans-serif!important;color:#EAFBFF!important;text-shadow:0 0 3px rgba(180,240,255,.98),0 0 9px rgba(67,207,255,.92),0 0 16px rgba(41,132,255,.58)!important}\";document.head.appendChild(s)})()",null);
+          view.evaluateJavascript("(function(){var s=document.createElement('style');s.textContent=\"@font-face{font-family:'GVLOCAL';src:url('https://appassets.androidplatform.net/assets/artwork/Fonts/Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf') format('opentype');font-display:block}.title{font-family:'GVLOCAL','GV',sans-serif!important;color:#EAFBFF!important;text-shadow:0 0 3px rgba(180,240,255,.98),0 0 9px rgba(67,207,255,.92),0 0 16px rgba(41,132,255,.58)!important}\";document.head.appendChild(s)})()",null);
           fitTopShell();
         }
       }
