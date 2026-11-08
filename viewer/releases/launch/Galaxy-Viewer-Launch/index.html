@@ -119,13 +119,13 @@ try{
    throw Error('VIEWER APP READINESS TIMEOUT '+JSON.stringify(readiness()))
  })();
 
- // Do not launch the splash until the viewer and its first destination are
- // actually ready. The animation is the final handoff, not the loading mask.
- await viewerReady;
+ // The splash is the visible loading sequence. Start it as soon as its own
+ // poster, font and WebGL scene are prepared; do not hold it behind the full
+ // viewer startup barrier (catalogs, first-destination preload, and surveys).
  const splashPrepared=await splashReady;
  if(!splashPrepared){
-   // A slow/broken splash (poster decode, font prep, or WebGL setup) is non-fatal.
-   // Reveal the already-ready viewer rather than turning presentation into a boot failure.
+   // A failed splash is non-fatal. Wait for the viewer, then reveal it cleanly.
+   await viewerReady;
    splash.remove();
    await paint2();
    document.documentElement.dataset.gvSplashComplete='1';
@@ -149,7 +149,10 @@ try{
  await paint2();
  splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
 
+ // Let the animation run while Galaxy Viewer finishes its startup work.
+ // The viewer is revealed only after both sequences have completed.
  await splashComplete;
+ await viewerReady;
  await paint2();
  document.documentElement.dataset.gvSplashComplete='1';window.GalaxyViewerSetSplashComplete?.();splash.remove();curtain.remove();
  if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
