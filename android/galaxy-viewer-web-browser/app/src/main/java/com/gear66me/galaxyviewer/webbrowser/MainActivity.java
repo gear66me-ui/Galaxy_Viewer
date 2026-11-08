@@ -48,13 +48,15 @@ public final class MainActivity extends Activity {
   private View fullscreenView=null; private WebChromeClient.CustomViewCallback fullscreenCallback=null;
   private String providerIcon="", sourceUrl="", providerHomeUrl="", prewarmedUrl="", prewarmReadyUrl="", pageReadyUrl="", loadingProviderUrl="";
   private CancellationSignal prerenderSignal=null;
+  private int originalUiThreadPriority=android.os.Process.THREAD_PRIORITY_DEFAULT;
 
   @Override public void onCreate(Bundle b){
-    super.onCreate(b); immersive();
+    super.onCreate(b); originalUiThreadPriority=android.os.Process.getThreadPriority(android.os.Process.myTid()); immersive();
     assetLoader=new WebViewAssetLoader.Builder().addPathHandler("/assets/",new WebViewAssetLoader.AssetsPathHandler(this)).build();
 
     FrameLayout root=new FrameLayout(this); rootFrame=root; root.setBackgroundColor(Color.BLACK);
     viewerWeb=viewer();
+    viewerWeb.setRendererPriorityPolicy(WebView.RENDERER_PRIORITY_IMPORTANT,true);
     viewerWeb.addJavascriptInterface(new ViewerBridge(),"GVNative");
     root.addView(viewerWeb,new FrameLayout.LayoutParams(-1,-1));
 
@@ -360,6 +362,7 @@ public final class MainActivity extends Activity {
     top.loadUrl(js);
   }
   public final class ViewerBridge{
+    @JavascriptInterface public void setPerformanceMode(boolean enabled){runOnUiThread(()->{try{android.os.Process.setThreadPriority(android.os.Process.myTid(),enabled?android.os.Process.THREAD_PRIORITY_DISPLAY:originalUiThreadPriority);android.util.Log.i("GalaxyViewerPerformance","MAX mode="+enabled+" renderer=IMPORTANT largeHeap=requested");}catch(Exception e){android.util.Log.w("GalaxyViewerPerformance","Priority adjustment unavailable",e);}});}
     @JavascriptInterface public void prewarm(String url){runOnUiThread(()->prewarmProvider(url));}
     @JavascriptInterface public void releaseProviderPortal(String origin){
       runOnUiThread(()->releaseProviderPortalOnMainThread(origin));
