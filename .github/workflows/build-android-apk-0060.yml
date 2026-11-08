@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer Android APK 0062
+name: Build Galaxy Viewer Android APK 0063
 
 on:
   push:
@@ -49,8 +49,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq "versionCode 62" android/galaxy-viewer-web-browser/app/build.gradle
-          grep -Fq "versionName '0062'" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionCode 63" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionName '0063'" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq 'android:appCategory="game"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
+          grep -Fq 'android:name="android.game_mode_config"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
+          grep -Fq 'android:supportsPerformanceGameMode="true"' android/galaxy-viewer-web-browser/app/src/main/res/xml/game_mode_config.xml
+          grep -Fq 'gm.getGameMode()' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 's.setCacheMode(WebSettings.LOAD_NO_CACHE)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'ps.setCacheMode(WebSettings.LOAD_NO_CACHE)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'web.clearCache(true)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
@@ -74,7 +78,7 @@ jobs:
       - name: Upload installable APK
         uses: actions/upload-artifact@v4
         with:
-          name: Galaxy-Viewer-Android-APK-0062
+          name: Galaxy-Viewer-Android-APK-0063
           path: android/galaxy-viewer-web-browser/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 30
