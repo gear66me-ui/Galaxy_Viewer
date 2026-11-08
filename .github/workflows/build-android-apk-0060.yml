@@ -91,6 +91,7 @@ jobs:
           cp -a viewer/artwork/Fonts "$A/artwork/"
           mkdir -p "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL"
           cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL/"
+          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL/"
           for provider in Hubble JWST Chandra ESO NoirLabs Spitzer Euclid Herschel GALEX NuSTAR NRAO; do
             if [ -d "viewer/artwork/$provider" ]; then
               cp -a "viewer/artwork/$provider" "$A/artwork/"
@@ -118,6 +119,7 @@ jobs:
           test -s "$A/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf"
           test -s "$A/artwork/Fonts/Space Age Regular/Space Age Regular.otf"
           test -s "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"
+          test -s "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png"
           echo "Bundled thumbnails, 88 constellations, 11 provider icons, launcher, startup, reticle, Earth pointer artwork, and all four font files verified."
 
       - name: Install the exact Galaxy Viewer launcher artwork
@@ -158,7 +160,7 @@ jobs:
           grep -Fqx "assets/artwork/compass/compass.png" /tmp/gv-apk-entries.txt
           grep -Fqx "assets/artwork/compass/gv-earth-pointer-yellow-final-1080-crisp.png" /tmp/gv-apk-entries.txt
           grep -Fqx "assets/artwork/startup/galaxy-viewer-startup.png" /tmp/gv-apk-entries.txt
-          for f in "assets/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" "assets/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf" "assets/artwork/Fonts/Space Age Regular/Space Age Regular.otf" "assets/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"; do
+          for f in "assets/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" "assets/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf" "assets/artwork/Fonts/Space Age Regular/Space Age Regular.otf" "assets/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf" "assets/releases/splash/Galaxy-Viewer-Singularity-FINAL/Galaxy-Splash.png"; do
             grep -Fqx "$f" /tmp/gv-apk-entries.txt || { echo "Missing APK entry: $f"; exit 1; }
           done
           sha256sum "$APK"
