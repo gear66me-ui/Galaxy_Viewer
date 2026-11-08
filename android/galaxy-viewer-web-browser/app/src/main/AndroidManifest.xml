@@ -8,7 +8,7 @@
         android:hardwareAccelerated="true"
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
-        android:label="Galaxy Viewer APK 0067"
+        android:label="Galaxy Viewer APK 0068"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false">\n        <meta-data android:name="android.game_mode_config" android:resource="@xml/game_mode_config"/>
         <activity
