@@ -76,9 +76,20 @@ jobs:
           test -s "$ASSETS/gv-survey-thumbnail-bridge-0001.json"
 
       - name: Stage offline artwork before validation
-        working-directory: android/galaxy-viewer-web-browser
-        run: gradle --no-daemon :app:bundleGalaxyViewerArtwork
-
+        shell: bash
+        run: |
+          set -euo pipefail
+          A=android/galaxy-viewer-web-browser/app/src/main/assets
+          mkdir -p "$A/artwork" "$A"
+          cp -a viewer/artwork/runtime/survey-thumbnails "$A/"
+          cp -a viewer/artwork/Constellations "$A/artwork/"
+          for provider in Hubble JWST Chandra ESO NoirLabs Spitzer Euclid Herschel GALEX NuSTAR NRAO; do
+            if [ -d "viewer/artwork/$provider" ]; then
+              cp -a "viewer/artwork/$provider" "$A/artwork/"
+            fi
+          done
+          mkdir -p "$A/artwork/runtime/navigation"
+          cp viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png "$A/artwork/runtime/navigation/"
       - name: Verify bundled offline artwork inputs
         shell: bash
         run: |
