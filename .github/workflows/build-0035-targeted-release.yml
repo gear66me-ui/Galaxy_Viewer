@@ -174,7 +174,7 @@ jobs:
           assert "if(!gvOverlayManualOverride)" in rc and "gvSetSkyOverlaysEnabled(true);" in rc, "First Random Galaxy may auto-enable overlays only when not manually overridden"
           assert "if(!hamburger.root.__gvConstellationsEnabled)" in rc, "Travel constellation glow must respect manual OFF state"
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          assert len(pins) == 11, f"Expected 11 unique immutable dependency revisions; found {len(pins)}"
+          assert len(pins) == 12, f"Expected 12 unique immutable dependency revisions; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "function gvUpdateLivePhysicalScale()" in rc
@@ -222,6 +222,7 @@ jobs:
           assert "Space%20Age%20Regular%20GV-9/GV-Coordinate-Digits-0005.otf" in fonts and "Space%20Age%20Regular%20GV-9/Space%20Age%20GV-9A.otf" in fonts, "Coordinate spacing font or GV-9A font asset mapping missing"
           font_pins = re.findall(r"fontsReadyUrl:'https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})/viewer/modules/font-readiness/gv-fonts-ready-0001\.js'", rc)
           assert len(font_pins) == 1, "Launcher must pin exactly one immutable font readiness service"
+          assert font_pins[0] == "f8dd73fcf3c97102decf7c30e7dbb52db40cb71e", "Font readiness service must be pinned to the commit that actually contains the service"
           assert "fallbackUrl" in fonts and "Promise.allSettled" in fonts, "Font service must retain alternate-origin and nonfatal degraded startup recovery"
           assert "GVFontsReady.ensure('coordinate')" in rc and "GVFontsReady.ensure('destination')" in rc and "GVFontsReady.ensure('travel')" in rc, "Startup readiness barrier must cover coordinate, destination and travel font groups"
           assert "GV COORDINATE SPACE AGE FONT VERIFIED" in (root / "viewer/modules/coordinate-overlay/gv-coordinate-overlay-0008.js").read_text(), "Coordinate font verification/retry path missing"
