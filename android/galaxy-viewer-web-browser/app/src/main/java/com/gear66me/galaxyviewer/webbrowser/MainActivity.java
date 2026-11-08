@@ -95,6 +95,13 @@ public final class MainActivity extends Activity {
         WebResourceResponse bundled=assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(local));
         if(bundled!=null)return bundled;
       }
+      int splashMarker=path.lastIndexOf("/viewer/releases/splash/");
+      if(splashMarker>=0){
+        String prefix="/viewer/releases/splash/";
+        String local="https://appassets.androidplatform.net/assets/releases/splash/"+path.substring(splashMarker+prefix.length());
+        WebResourceResponse bundled=assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(local));
+        if(bundled!=null)return bundled;
+      }
     }
     return assetLoader==null?null:assetLoader.shouldInterceptRequest(uri);
   }
