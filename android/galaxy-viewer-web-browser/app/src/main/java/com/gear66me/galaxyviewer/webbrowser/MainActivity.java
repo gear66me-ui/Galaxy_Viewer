@@ -91,7 +91,7 @@ public final class MainActivity extends Activity {
     if(path!=null){
       int marker=path.lastIndexOf("/viewer/artwork/");
       if(marker>=0){
-        String local="https://appassets.androidplatform.net/assets/"+path.substring(marker+1);
+        String local="https://appassets.androidplatform.net/assets/"+path.substring(marker+8);
         WebResourceResponse bundled=assetLoader==null?null:assetLoader.shouldInterceptRequest(Uri.parse(local));
         if(bundled!=null)return bundled;
       }
