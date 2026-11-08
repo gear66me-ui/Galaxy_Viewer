@@ -51,7 +51,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq "versionCode 65" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionCode 66" android/galaxy-viewer-web-browser/app/build.gradle
           grep -Fq "versionName '0066'" android/galaxy-viewer-web-browser/app/build.gradle
           grep -Fq 'android:appCategory="game"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
           grep -Fq 'android:name="android.game_mode_config"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
