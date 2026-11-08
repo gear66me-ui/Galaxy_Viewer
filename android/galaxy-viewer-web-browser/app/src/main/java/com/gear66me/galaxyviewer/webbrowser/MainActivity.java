@@ -402,6 +402,14 @@ public final class MainActivity extends Activity {
     for(WebView v:others)if(v!=null){try{v.stopLoading();}catch(Exception ignored){} try{ViewGroup parent=(ViewGroup)v.getParent();if(parent!=null)parent.removeView(v);}catch(Exception ignored){} try{v.removeAllViews();}catch(Exception ignored){} try{v.destroy();}catch(Exception ignored){}}
     top=null;bottom=null;viewerWeb=null;super.onDestroy();
   }
+  @Override protected void onResume(){
+    super.onResume();
+    if(android.os.Build.VERSION.SDK_INT>=24)getWindow().setSustainedPerformanceMode(true);
+  }
+  @Override protected void onPause(){
+    if(android.os.Build.VERSION.SDK_INT>=24)getWindow().setSustainedPerformanceMode(false);
+    super.onPause();
+  }
   @Override public void onWindowFocusChanged(boolean h){super.onWindowFocusChanged(h);if(h)immersive();}
   @Override public void onBackPressed(){if(browserMode){escapeToFreshViewer();}else{launchGalaxyViewer();}}
   private int dp(int n){return Math.round(n*getResources().getDisplayMetrics().density);}
