@@ -17,16 +17,3 @@ android {
 dependencies {
     implementation 'androidx.webkit:webkit:1.17.1'
 }
-
-// Copy release artwork into the APK so static UI images are available offline.
-def galaxyViewerRepoRoot = projectDir.toPath().resolve("../../../").normalize().toFile()
-tasks.register("bundleGalaxyViewerArtwork", Sync) {
-    from(new File(galaxyViewerRepoRoot, "viewer/artwork/runtime/survey-thumbnails")) { into "survey-thumbnails" }
-    from(new File(galaxyViewerRepoRoot, "viewer/artwork/Constellations")) { into "artwork/Constellations" }
-    ["Hubble","JWST","Chandra","ESO","NoirLabs","Spitzer","Euclid","Herschel","GALEX","NuSTAR","NRAO"].each { provider ->
-        from(new File(galaxyViewerRepoRoot, "viewer/artwork/" + provider)) { into "artwork/" + provider }
-    }
-    from(new File(galaxyViewerRepoRoot, "viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png")) { into "artwork/runtime/navigation" }
-    into layout.projectDirectory.dir("src/main/assets")
-}
-tasks.named("preBuild").configure { dependsOn("bundleGalaxyViewerArtwork") }
