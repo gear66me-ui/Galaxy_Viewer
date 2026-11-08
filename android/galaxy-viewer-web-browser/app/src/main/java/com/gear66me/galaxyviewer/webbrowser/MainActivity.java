@@ -6,6 +6,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.Outline;
 import android.view.ViewOutlineProvider;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.os.Message;
 import android.os.CancellationSignal;
 import android.content.Intent;
@@ -49,6 +50,8 @@ public final class MainActivity extends Activity {
   private String providerIcon="", sourceUrl="", providerHomeUrl="", prewarmedUrl="", prewarmReadyUrl="", pageReadyUrl="", loadingProviderUrl="";
   private CancellationSignal prerenderSignal=null;
   private int originalUiThreadPriority=android.os.Process.THREAD_PRIORITY_DEFAULT;
+  private PowerManager thermalPowerManager;
+  private PowerManager.OnThermalStatusChangedListener thermalStatusListener;
 
   @Override public void onCreate(Bundle b){
     super.onCreate(b); originalUiThreadPriority=android.os.Process.getThreadPriority(android.os.Process.myTid()); immersive();
@@ -78,6 +81,7 @@ public final class MainActivity extends Activity {
     navigationCover=new View(this); navigationCover.setBackgroundColor(Color.BLACK); navigationCover.setVisibility(View.GONE);
     root.addView(navigationCover,new FrameLayout.LayoutParams(-1,-1));
     setContentView(root);
+    registerThermalMonitoring();
 
     String launchUrl=launchSourceUrl(getIntent());
     if(launchUrl!=null&&launchPrewarm(getIntent())){ prewarmProvider(launchUrl); moveTaskToBack(true); }
@@ -420,10 +424,49 @@ public final class MainActivity extends Activity {
   }
   private void immersive(){getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN|View.SYSTEM_UI_FLAG_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY|View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN|View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION|View.SYSTEM_UI_FLAG_LAYOUT_STABLE);}
   @Override protected void onDestroy(){
+    if(thermalPowerManager!=null&&thermalStatusListener!=null){try{thermalPowerManager.removeThermalStatusListener(thermalStatusListener);}catch(Exception ignored){}thermalStatusListener=null;}
     browserMode=false; disposeProviderWebView();
     WebView[] others={top,bottom,viewerWeb};
     for(WebView v:others)if(v!=null){try{v.stopLoading();}catch(Exception ignored){} try{ViewGroup parent=(ViewGroup)v.getParent();if(parent!=null)parent.removeView(v);}catch(Exception ignored){} try{v.removeAllViews();}catch(Exception ignored){} try{v.destroy();}catch(Exception ignored){}}
     top=null;bottom=null;viewerWeb=null;super.onDestroy();
+  }
+  // Request the fastest refresh rate exposed by the active display. Android retains final control.
+  private void requestMaximumRefreshRate(){
+    try{
+      android.view.Display display=getWindowManager().getDefaultDisplay();
+      if(display==null)return;
+      float maxRefresh=0f;
+      for(android.view.Display.Mode mode:display.getSupportedModes())maxRefresh=Math.max(maxRefresh,mode.getRefreshRate());
+      if(maxRefresh>0f){
+        android.view.WindowManager.LayoutParams attrs=getWindow().getAttributes();
+        attrs.preferredRefreshRate=maxRefresh;
+        getWindow().setAttributes(attrs);
+        android.util.Log.i("GalaxyViewerPerformance","Display refresh preference="+maxRefresh+"Hz actual="+display.getRefreshRate()+"Hz");
+      }
+    }catch(Exception e){android.util.Log.w("GalaxyViewerPerformance","Maximum refresh preference unavailable",e);}
+  }
+  // Event-driven thermal telemetry; no polling and no changes to navigation behavior.
+  private void registerThermalMonitoring(){
+    if(android.os.Build.VERSION.SDK_INT<29)return;
+    try{
+      thermalPowerManager=(PowerManager)getSystemService(POWER_SERVICE);
+      if(thermalPowerManager==null)return;
+      thermalStatusListener=status->android.util.Log.w("GalaxyViewerPerformance","THERMAL STATUS="+thermalStatusName(status));
+      thermalPowerManager.addThermalStatusListener(getMainExecutor(),thermalStatusListener);
+      android.util.Log.i("GalaxyViewerPerformance","Thermal monitoring active; initial="+thermalStatusName(thermalPowerManager.getCurrentThermalStatus()));
+    }catch(Exception e){android.util.Log.w("GalaxyViewerPerformance","Thermal monitoring unavailable",e);}
+  }
+  private String thermalStatusName(int status){
+    switch(status){
+      case PowerManager.THERMAL_STATUS_NONE:return "NONE";
+      case PowerManager.THERMAL_STATUS_LIGHT:return "LIGHT";
+      case PowerManager.THERMAL_STATUS_MODERATE:return "MODERATE";
+      case PowerManager.THERMAL_STATUS_SEVERE:return "SEVERE";
+      case PowerManager.THERMAL_STATUS_CRITICAL:return "CRITICAL";
+      case PowerManager.THERMAL_STATUS_EMERGENCY:return "EMERGENCY";
+      case PowerManager.THERMAL_STATUS_SHUTDOWN:return "SHUTDOWN";
+      default:return "UNKNOWN("+status+")";
+    }
   }
   private void logGameMode(){
     if(android.os.Build.VERSION.SDK_INT>=31){
@@ -438,6 +481,7 @@ public final class MainActivity extends Activity {
   }
   @Override protected void onResume(){
     super.onResume();
+    requestMaximumRefreshRate();
     logGameMode();
     if(android.os.Build.VERSION.SDK_INT>=24)getWindow().setSustainedPerformanceMode(true);
   }
