@@ -75,6 +75,10 @@ jobs:
             -o "$ASSETS/gv-survey-thumbnail-bridge-0001.json"
           test -s "$ASSETS/gv-survey-thumbnail-bridge-0001.json"
 
+      - name: Stage offline artwork before validation
+        working-directory: android/galaxy-viewer-web-browser
+        run: gradle --no-daemon :app:bundleGalaxyViewerArtwork
+
       - name: Verify bundled offline artwork inputs
         shell: bash
         run: |
