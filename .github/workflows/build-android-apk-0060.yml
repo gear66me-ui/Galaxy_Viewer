@@ -52,7 +52,7 @@ jobs:
         run: |
           set -euo pipefail
           grep -Fq "versionCode 66" android/galaxy-viewer-web-browser/app/build.gradle
-          grep -Fq "versionName '0066'" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionName 'APK 0066'" android/galaxy-viewer-web-browser/app/build.gradle
           grep -Fq 'android:appCategory="game"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
           grep -Fq 'android:name="android.game_mode_config"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
           grep -Fq 'android:supportsPerformanceGameMode="true"' android/galaxy-viewer-web-browser/app/src/main/res/xml/game_mode_config.xml
@@ -62,7 +62,7 @@ jobs:
           grep -Fq 'web.clearCache(true)' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           grep -Fq 'ROLL 0061: provider identity belongs to openProvider(requestedUrl, icon).' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java
           ! grep -Fq 'launchSourceUrl(getIntent())' <(sed -n '/private void fetchPointer()/,/private boolean launchPrewarm/p' android/galaxy-viewer-web-browser/app/src/main/java/com/gear66me/galaxyviewer/webbrowser/MainActivity.java)
-          echo "APK 0061 identity, explicit URL priority, and provider no-cache checks passed."
+          echo "Galaxy Viewer APK 0066 identity, explicit URL priority, and provider no-cache checks passed."
 
       - name: Bundle thumbnail lookup index for offline Android UI
         shell: bash
@@ -93,6 +93,7 @@ jobs:
           done
           mkdir -p "$A/artwork/runtime/navigation"
           cp viewer/artwork/runtime/navigation/gv-survey-satellite-icon.png "$A/artwork/runtime/navigation/"
+          cp viewer/artwork/app_icon_4.png "$A/artwork/app_icon_4.png"
       - name: Verify bundled offline artwork inputs
         shell: bash
         run: |
