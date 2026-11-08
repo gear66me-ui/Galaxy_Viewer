@@ -403,8 +403,20 @@ public final class MainActivity extends Activity {
     for(WebView v:others)if(v!=null){try{v.stopLoading();}catch(Exception ignored){} try{ViewGroup parent=(ViewGroup)v.getParent();if(parent!=null)parent.removeView(v);}catch(Exception ignored){} try{v.removeAllViews();}catch(Exception ignored){} try{v.destroy();}catch(Exception ignored){}}
     top=null;bottom=null;viewerWeb=null;super.onDestroy();
   }
+  private void logGameMode(){
+    if(android.os.Build.VERSION.SDK_INT>=31){
+      try{
+        android.app.GameManager gm=(android.app.GameManager)getSystemService(android.content.Context.GAME_SERVICE);
+        if(gm==null){android.util.Log.i("GalaxyViewerPerformance","GameManager unavailable on this device");return;}
+        int mode=gm.getGameMode();
+        String label=mode==android.app.GameManager.GAME_MODE_PERFORMANCE?"PERFORMANCE":mode==android.app.GameManager.GAME_MODE_BATTERY?"BATTERY":mode==android.app.GameManager.GAME_MODE_STANDARD?"STANDARD":mode==android.app.GameManager.GAME_MODE_UNSUPPORTED?"UNSUPPORTED":"CUSTOM";
+        android.util.Log.i("GalaxyViewerPerformance","Android Game Mode="+label+" (queried on resume)");
+      }catch(Exception e){android.util.Log.w("GalaxyViewerPerformance","Game Mode query unavailable",e);}
+    }
+  }
   @Override protected void onResume(){
     super.onResume();
+    logGameMode();
     if(android.os.Build.VERSION.SDK_INT>=24)getWindow().setSustainedPerformanceMode(true);
   }
   @Override protected void onPause(){
