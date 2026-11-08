@@ -9,7 +9,7 @@ android {
         minSdk 29
         targetSdk 35
         versionCode 66
-        versionName '0066'
+        versionName 'APK 0066'
     }
 }
 
