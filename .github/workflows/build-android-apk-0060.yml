@@ -1,4 +1,4 @@
-name: Build Galaxy Viewer Android APK 0064
+name: Build Galaxy Viewer Android APK 0065
 
 on:
   push:
@@ -51,8 +51,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          grep -Fq "versionCode 64" android/galaxy-viewer-web-browser/app/build.gradle
-          grep -Fq "versionName '0064'" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionCode 65" android/galaxy-viewer-web-browser/app/build.gradle
+          grep -Fq "versionName '0065'" android/galaxy-viewer-web-browser/app/build.gradle
           grep -Fq 'android:appCategory="game"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
           grep -Fq 'android:name="android.game_mode_config"' android/galaxy-viewer-web-browser/app/src/main/AndroidManifest.xml
           grep -Fq 'android:supportsPerformanceGameMode="true"' android/galaxy-viewer-web-browser/app/src/main/res/xml/game_mode_config.xml
@@ -83,6 +83,9 @@ jobs:
           mkdir -p "$A/artwork" "$A"
           cp -a viewer/artwork/runtime/survey-thumbnails "$A/"
           cp -a viewer/artwork/Constellations "$A/artwork/"
+          cp -a viewer/artwork/Fonts "$A/artwork/"
+          mkdir -p "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL"
+          cp viewer/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL/"
           for provider in Hubble JWST Chandra ESO NoirLabs Spitzer Euclid Herschel GALEX NuSTAR NRAO; do
             if [ -d "viewer/artwork/$provider" ]; then
               cp -a "viewer/artwork/$provider" "$A/artwork/"
@@ -100,7 +103,11 @@ jobs:
           for f in Hubble/Hubble.jpg JWST/JWST.jpeg Chandra/Chandra.jpg ESO/ESO.jpg NoirLabs/NOIRLab.jpg Spitzer/Spitzer.jpg; do test -s "$A/artwork/$f"; done
           test -s "$A/artwork/runtime/navigation/gv-survey-satellite-icon.png"
           test -s "$A/gv-survey-thumbnail-bridge-0001.json"
-          echo "Bundled offline UI artwork verified."
+          test -s "$A/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf"
+          test -s "$A/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf"
+          test -s "$A/artwork/Fonts/Space Age Regular/Space Age Regular.otf"
+          test -s "$A/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"
+          echo "Bundled offline UI artwork and all four font files verified."
 
       - name: Build installable debug APK
         working-directory: android/galaxy-viewer-web-browser
@@ -115,6 +122,7 @@ jobs:
           unzip -Z1 "$APK" | grep -q "assets/gv-survey-thumbnail-bridge-0001.json"
           test "$(unzip -Z1 "$APK" | grep -c "^assets/survey-thumbnails/.*\.webp$")" -gt 1800
           test "$(unzip -Z1 "$APK" | grep -c "^assets/artwork/Constellations/.*\.SVG$")" -eq 88
+          for f in "assets/artwork/Fonts/Space Age Regular GV-9/Space Age GV-9A.otf" "assets/artwork/Fonts/Space Age Regular GV-9/GV-Coordinate-Digits-0005.otf" "assets/artwork/Fonts/Space Age Regular/Space Age Regular.otf" "assets/releases/splash/Galaxy-Viewer-Singularity-FINAL/Space-Age.otf"; do unzip -Z1 "$APK" | grep -Fqx "$f"; done
           sha256sum "$APK"
           ls -lh "$APK"
 
