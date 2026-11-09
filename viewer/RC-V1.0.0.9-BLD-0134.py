@@ -114,8 +114,8 @@ window.GV_BOOT_CONFIG=Object.freeze({
     providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/ae9eb4d29f5b0d6190bc72da3bca70b04eea6d23/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1c816067e9fe46a94015d31d5364197660e07a5d/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3ae9f10f2a5658e82d385c525b3c80a39028bcd4/viewer/modules/destination-presentation/gv-destination-presentation-0062.js',
-    fontsReadyUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/font-readiness/gv-fonts-ready-0001.js',
-    fontsReadyFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/modules/font-readiness/gv-fonts-ready-0001.js'
+    fontsReadyUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f8dd73fcf3c97102decf7c30e7dbb52db40cb71e/viewer/modules/font-readiness/gv-fonts-ready-0001.js',
+    fontsReadyFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/f8dd73fcf3c97102decf7c30e7dbb52db40cb71e/viewer/modules/font-readiness/gv-fonts-ready-0001.js'
 });
 
 
