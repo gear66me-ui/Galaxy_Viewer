@@ -174,8 +174,7 @@ jobs:
           assert "if(!gvOverlayManualOverride)" in rc and "gvSetSkyOverlaysEnabled(true);" in rc, "First Random Galaxy may auto-enable overlays only when not manually overridden"
           assert "if(!hamburger.root.__gvConstellationsEnabled)" in rc, "Travel constellation glow must respect manual OFF state"
           pins = set(re.findall(r"https://cdn\.jsdelivr\.net/gh/gear66me-ui/Galaxy_Viewer@([0-9a-f]{40})", rc))
-          expected_pin_count = 11 if build == "0134" else 12
-          assert len(pins) == expected_pin_count, f"Expected {expected_pin_count} unique immutable dependency revisions for build {build}; found {len(pins)}"
+          assert len(pins) == 12, f"Expected 12 unique immutable dependency revisions; found {len(pins)}"
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc
           assert "https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@d85d91201ea52aa6524a62394fc81b450b15ac23/aladin-source-clone/src/css/aladin.css" in rc
           assert "function gvUpdateLivePhysicalScale()" in rc
