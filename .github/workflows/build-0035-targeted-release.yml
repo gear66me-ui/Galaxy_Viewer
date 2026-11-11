@@ -82,6 +82,15 @@ jobs:
               assert "else if(t>=.695){" in rc, "Zoom-in phase must begin at 69.5 percent"
               print("BUILD 0142 RELEASE VALIDATION PASSED: 40-degree FOV apex, 20-second standard trip, 4s+7s first trip, and all runtime identity markers verified.")
               sys.exit(0)
+          if build == "0143":
+              assert manifest.get("sourceCommit") == "0eaf9569984a3d3aeb4ef4f55acede5c8e997838", "Build 0143 source fingerprint mismatch"
+              assert "const translateSeconds=5.0,zoomSeconds=10.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "First trip must be 5s translation plus 10s zoom-in"
+              assert "const durationSeconds=26,duration=durationSeconds*1000" in rc, "Standard trip must total 26 seconds"
+              assert "zoomInThreshold=.6884615384615385,zoomOutCompleteThreshold=.31153846153846154" in rc, "Standard phases must be 8.1s / 9.8s / 8.1s"
+              assert "maxFov:40" in rc and "aladin.setFov(40)" in rc, "Build 0143 must preserve the 40-degree FOV apex"
+              assert "const translateStart=.31153846153846154,translationComplete=.6884615384615385;" in rc, "Flight interpolation boundaries must match the 26-second phase timing"
+              print("BUILD 0143 RELEASE VALIDATION PASSED: 40-degree FOV preserved; standard phases 8.1s/9.8s/8.1s; first trip 5s+10s; only timing parameters changed.")
+              sys.exit(0)
           assert "function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}" in rc and "function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}" in rc, "Compass polling must suspend and resume around travel phases"
           assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must poll at 100 ms only during active navigation"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
