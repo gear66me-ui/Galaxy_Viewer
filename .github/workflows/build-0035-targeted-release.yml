@@ -1,5 +1,5 @@
 name: Validate and Deploy RC-V1.0.0.9 (pointer-driven release)
-# Build 0152: validate and deploy the restored release pointer; runtime source remains unchanged.
+# Build 0154: validate native three-command flight choreography on release.
 
 on:
   push:
@@ -142,6 +142,19 @@ jobs:
               assert "await splashComplete;\n window.GV_SPLASH_ACTIVE=false;" in launcher, "Viewer activity must resume after splash completion"
               assert "}catch(e){window.GV_SPLASH_ACTIVE=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;" in launcher, "Viewer activity must resume on splash failure"
               print("BUILD 0151 RELEASE VALIDATION PASSED: 0144 navigation behavior preserved; 200 Hz travel sampling retained; complete startup barrier precedes splash; all nine periodic viewer tasks and HiPS fetching suspend during splash and resume on completion/error.")
+              sys.exit(0)
+
+          if build == "0154":
+              assert manifest.get("sourceCommit") == "4671f79adc7b94438e39d9c76c1ee7bf76ed0ac0", "Build 0154 must identify the exact 0152 release baseline"
+              assert "const totalFlightMs=19000,zoomDurationSeconds=9.5" in rc, "Standard flight must remain 19 seconds with 9.5-second zoom commands"
+              assert "translationStartMs=totalFlightMs*.32272727272727275,translationEndMs=totalFlightMs*.6772727272727272" in rc, "Translation must retain the exact 6.132s–12.868s window"
+              assert "aladin.zoomToFoV(40,zoomDurationSeconds" in rc, "Native zoom-out command missing"
+              assert "aladin.animateToRaDec(ra1,dec1,translationDurationSeconds" in rc, "Native translation command missing"
+              assert "aladin.zoomToFoV(finalFov,zoomDurationSeconds" in rc, "Native zoom-in command missing"
+              assert "const durationSeconds=19,duration=durationSeconds*1000" not in rc and "if(t<1&&sample!==lastSample)" not in rc, "Old standard continuous camera feedback loop must be absent"
+              assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "First-home-trip choreography must remain unchanged"
+              assert "window.GV_NAV_BACKGROUND_SUSPENDED=true" in rc and "window.GV_NAV_HIPS_FETCH_SUSPENDED=true" in rc, "Travel performance suspensions must remain"
+              print("BUILD 0154 RELEASE VALIDATION PASSED: three native staggered camera commands, exact 19s/6.132s/12.868s choreography, no standard camera feedback loop, and first-home trip preserved.")
               sys.exit(0)
 
           if build == "0152":
