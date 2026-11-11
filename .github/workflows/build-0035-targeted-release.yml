@@ -144,6 +144,31 @@ jobs:
               print("BUILD 0151 RELEASE VALIDATION PASSED: 0144 navigation behavior preserved; 200 Hz travel sampling retained; complete startup barrier precedes splash; all nine periodic viewer tasks and HiPS fetching suspend during splash and resume on completion/error.")
               sys.exit(0)
 
+          if build == "0156":
+              assert manifest.get("sourceCommit") == "8c7e9d138524315b547ea21defbb20bd23e5eb54", "Build 0156 source fingerprint mismatch"
+              assert "const totalFlightMs=23000;" in rc, "Build 0156 must use the exact 23-second flight"
+              assert "await runZoom(30,6,'COMMAND 1 COMPLETE — FOV 30°')" in rc, "Command 1 must zoom to 30 degrees in 6 seconds"
+              assert "runZoom(40,3,'COMMAND 2 COMPLETE — FOV 40°')" in rc and "runRotation(3)" in rc, "Command 2 must zoom to 40 degrees and rotate in 3 seconds"
+              assert "gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,.75)" in rc and "waypoint[0],waypoint[1],5" in rc, "Command 3 must translate for 5 seconds to the 75% great-circle waypoint"
+              assert "runZoom(30,3,'COMMAND 4 COMPLETE — FOV 30°')" in rc and "runTranslation(ra1,dec1,3" in rc, "Command 4 must zoom to 30 degrees and complete RA/Dec translation in 3 seconds"
+              assert "runZoom(finalFov,6,'COMMAND 5 COMPLETE — DESTINATION FOV')" in rc, "Command 5 must zoom to destination FOV in 6 seconds"
+              assert "const durationSeconds=19,duration=durationSeconds*1000" not in rc and "if(t<1&&sample!==lastSample)" not in rc, "Old standard continuous camera feedback loop must remain absent"
+              assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "First-home-trip choreography must remain unchanged"
+              assert "window.GV_NAV_BACKGROUND_SUSPENDED=true" in rc and "window.GV_NAV_HIPS_FETCH_SUSPENDED=true" in rc, "Travel performance suspensions must remain"
+              assert "totalFlightMs-9000" in rc and "totalFlightMs-8000" in rc, "HiPS resume and T-minus-eight windows must be based on the 23-second trip"
+              assert "@c5f8ee24eaa683620f28499d82af76d93b07b03d/viewer/vendor/aladin-lite/3.8.2/aladin.js" in rc, "0156 must load the tested eased Aladin vendor build"
+              vendor = (root / "viewer/vendor/aladin-lite/3.8.2/aladin.js").read_text()
+              assert "p*p*p*(p*(p*6-15)+10)" in vendor and "Math.log(a)+(Math.log(b)-Math.log(a))*e" in vendor, "Eased Aladin native animation implementation missing"
+              compile(rc, expected_viewer, "exec")
+              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              assert match, "Embedded viewer JavaScript block could not be extracted"
+              pathlib.Path("/tmp/gv-build-0156-runtime.js").write_text(match.group(1))
+              import subprocess
+              subprocess.run(["node", "--check", "/tmp/gv-build-0156-runtime.js"], check=True)
+              subprocess.run(["node", "--check", "viewer/vendor/aladin-lite/3.8.2/aladin.js"], check=True)
+              print("BUILD 0156 RELEASE VALIDATION PASSED: Python/runtime/vendor syntax; five sequential navigation commands; 23-second total; 75% great-circle waypoint; concurrent zoom/rotation and zoom/final translation; no standard camera feedback loop; first-home trip preserved.")
+              sys.exit(0)
+
           if build == "0155":
               assert manifest.get("sourceCommit") == "c5f8ee24eaa683620f28499d82af76d93b07b03d", "Build 0155 must identify the eased Aladin vendor revision"
               assert "const totalFlightMs=19000,zoomDurationSeconds=9.5" in rc, "0155 must preserve the 19-second standard trip"
