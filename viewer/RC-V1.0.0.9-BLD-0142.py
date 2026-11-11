@@ -3296,11 +3296,11 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:40,startRotation,targetRotation});
                 if(t<zoomOutCompleteThreshold){
-                    // Phase 1 (0–30%): FOV is the only changing view property.
+                    // Phase 1 (0–30.5%): FOV is the only changing view property.
                     aladin.setFov(state.fov);
                     lastSample=sample;
-                }else if(t>=.70){
-                    // Phase 3 (70–100%): settle the bird's-eye view once, then
+                }else if(t>=.695){
+                    // Phase 3 (69.5–100%): settle the bird's-eye view once, then
                     // issue FOV commands only until arrival.
                     if(!birdseyeSettled){
                         gvSetEarthPointerPosition(ra1,dec1,true);
@@ -3313,7 +3313,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     aladin.setFov(state.fov);
                     lastSample=sample;
                 }else{
-                    // Phase 2 (30–70%): normal travel motion and app updates resume.
+                    // Phase 2 (30.5–69.5%): normal travel motion and app updates resume.
                     if(t<=zoomInThreshold&&state.fov>=GV_HD_RETIRE_FOV&&!gvHdTravelRetired){gvHdTravelRetired=true;applyDirectHdOpacity();console.info('GV HD RETIRED — 50° FOV THRESHOLD',{fov:Number(state.fov.toFixed(2))});}
                     aladin.setFov(state.fov);
                     if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);gvUpdateTravelConstellationAt(pos[0],pos[1]);if(now-gvEarthDistanceLastTravelSyncAt>=GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS){gvEarthDistanceLastTravelSyncAt=now;gvSyncEarthDistanceToCenter(true)}}
