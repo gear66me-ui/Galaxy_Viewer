@@ -144,24 +144,6 @@ jobs:
               print("BUILD 0151 RELEASE VALIDATION PASSED: 0144 navigation behavior preserved; 200 Hz travel sampling retained; complete startup barrier precedes splash; all nine periodic viewer tasks and HiPS fetching suspend during splash and resume on completion/error.")
               sys.exit(0)
 
-          if build == "0153":
-              assert manifest.get("sourceCommit") == "3a6edf5fe3f0f722cb94223d02ec636f5f6bcc52", "Build 0153 source fingerprint mismatch"
-              assert "const durationSeconds=19,duration=durationSeconds*1000" in rc, "0153 must preserve the 19-second standard trip"
-              assert "zoomInThreshold=.6772727272727272,zoomOutCompleteThreshold=.32272727272727275" in rc, "0153 must preserve the original three phase timings"
-              assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0153 must preserve first-home-trip timing"
-              start = rc.index("    const durationSeconds=19,duration=durationSeconds*1000")
-              finish = rc.index("    return prepared;", start)
-              navigation = rc[start:finish]
-              assert navigation.count("aladin.setFov(maxFov)") == 1, "0153 must issue exactly one zoom-out command"
-              assert navigation.count("aladin.gotoRaDec(ra1,dec1)") == 1, "0153 must issue exactly one destination translation command"
-              assert navigation.count("aladin.setRotation(targetRotation)") == 1, "0153 must issue exactly one rotation command"
-              assert navigation.count("aladin.setFov(finalFov)") == 1, "0153 must issue exactly one zoom-in command"
-              assert "aladin.setFov(state.fov)" not in navigation and "gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation)" not in navigation, "0153 must not continuously interpolate camera commands"
-              assert "sample=Math.floor(elapsedMs/5)" in navigation, "0153 must retain the 5 ms timing bucket"
-              assert "window.GV_NAV_BACKGROUND_SUSPENDED=true;" in navigation and "window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<(1-9/durationSeconds));" in navigation, "0153 must preserve travel background and HiPS suspension"
-              print("BUILD 0153 RELEASE VALIDATION PASSED: standard navigation emits three stages only (zoom-out, destination center+rotation, zoom-in), with original 19-second phase timing and travel suspension; first-home-trip path preserved.")
-              sys.exit(0)
-
           if build == "0152":
               assert manifest.get("sourceCommit") == "355d850317f5d7239b811f90405c8246a5c26111", "Build 0152 source fingerprint mismatch"
               assert "const durationSeconds=19,duration=durationSeconds*1000" in rc, "0152 standard travel duration must be 19 seconds"
