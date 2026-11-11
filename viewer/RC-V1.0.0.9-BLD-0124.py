@@ -3116,14 +3116,14 @@ function gvFlightGreatCirclePosition(ra1,dec1,ra2,dec2,progress){
 }
 function gvFlightLogLerp(a,b,u){const x=Math.max(Number(a),1e-12),y=Math.max(Number(b),1e-12),t=gvFlightClamp01(u);return Math.exp(Math.log(x)+(Math.log(y)-Math.log(x))*t)}
 function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotation,targetRotation}){
-    const duration=firstHomeTrip?7.5:17,t=gvFlightClamp01((Math.max(0,Number(sec)||0))/duration);
+    const duration=firstHomeTrip?7.5:23,t=gvFlightClamp01((Math.max(0,Number(sec)||0))/duration);
     if(firstHomeTrip){
         const translateStart=.30,translationComplete=.70;
         let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
         let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
         return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
     }
-    const translateStart=.30,translationComplete=.70;
+    const translateStart=7.1/23,translationComplete=15.9/23;
     let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
@@ -3271,11 +3271,11 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
-    const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50,zoomOutCompleteThreshold=.30,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
+    const phase1CompleteSeconds=7.1,phase2CompleteSeconds=15.9,durationSeconds=23,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50,zoomOutCompleteThreshold=phase1CompleteSeconds/durationSeconds,phase2CompleteThreshold=phase2CompleteSeconds/durationSeconds,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{if(!isCurrent())throw new Error('GV RANDOM NAVIGATION SUPERSEDED');
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/10);
-            // BUILD 0028: only FOV changes during 0–30% and 70–100%.
+            // BUILD 0028: only FOV changes during phases 1 (0–7.1s) and 3 (15.9–23s).
             // Suspend application polling in both phases; the FOV readout stays live.
             window.GV_NAV_BACKGROUND_SUSPENDED=true; // Preserve the verified zero-stutter rule: app polling stays paused through arrival.
             window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<(1-9/durationSeconds));
@@ -3296,11 +3296,11 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:55,startRotation,targetRotation});
                 if(t<zoomOutCompleteThreshold){
-                    // Phase 1 (0–30%): FOV is the only changing view property.
+                    // Phase 1 (0–7.1s): FOV is the only changing view property.
                     aladin.setFov(state.fov);
                     lastSample=sample;
-                }else if(t>=.70){
-                    // Phase 3 (70–100%): settle the bird's-eye view once, then
+                }else if(t>=phase2CompleteThreshold){
+                    // Phase 3 (15.9–23s): settle the bird's-eye view once, then
                     // issue FOV commands only until arrival.
                     if(!birdseyeSettled){
                         gvSetEarthPointerPosition(ra1,dec1,true);
@@ -3313,7 +3313,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     aladin.setFov(state.fov);
                     lastSample=sample;
                 }else{
-                    // Phase 2 (30–70%): normal travel motion and app updates resume.
+                    // Phase 2 (7.1–15.9s): normal travel motion and app updates resume.
                     if(t<=zoomInThreshold&&state.fov>=GV_HD_RETIRE_FOV&&!gvHdTravelRetired){gvHdTravelRetired=true;applyDirectHdOpacity();console.info('GV HD RETIRED — 50° FOV THRESHOLD',{fov:Number(state.fov.toFixed(2))});}
                     aladin.setFov(state.fov);
                     if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);gvUpdateTravelConstellationAt(pos[0],pos[1]);if(now-gvEarthDistanceLastTravelSyncAt>=GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS){gvEarthDistanceLastTravelSyncAt=now;gvSyncEarthDistanceToCenter(true)}}
