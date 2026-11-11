@@ -3348,7 +3348,20 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             if(typeof aladin.zoomToFoV!=='function')throw new Error('ALADIN NATIVE zoomToFoV API UNAVAILABLE');
             aladin.zoomToFoV(40,zoomDurationSeconds,()=>{
                 if(!flightIsCurrent()){abort(new Error('GV RANDOM NAVIGATION SUPERSEDED'));return}
-                zoomOutDone=true;console.info('GV COMMAND 1 COMPLETE — ZOOM OUT');finish();
+                zoomOutDone=true;console.info('GV COMMAND 1 COMPLETE — ZOOM OUT');
+                // Launch command 3 only after Aladin confirms command 1 has fully settled.
+                try{
+                    if(switchToSphericalAtApex){
+                        aladin.setFov(40);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 40° APEX');
+                    }
+                    try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
+                    if(directHdOverlay)try{applyDirectHdOpacity()}catch(_){}
+                    aladin.zoomToFoV(finalFov,zoomDurationSeconds,()=>{
+                        if(!flightIsCurrent()){abort(new Error('GV RANDOM NAVIGATION SUPERSEDED'));return}
+                        zoomInDone=true;console.info('GV COMMAND 3 COMPLETE — ZOOM IN');finish();
+                    });
+                }catch(error){abort(error)}
+                finish();
             });
         }catch(error){abort(error);return}
         // COMMAND 2 — native great-circle translation plus its synchronized rotation.
@@ -3363,19 +3376,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             });
             rotationStarted();
         },translationStartMs);
-        // COMMAND 3 — native zoom-in begins at the 9.5-second apex while translation is active.
-        schedule(()=>{
-            if(switchToSphericalAtApex){
-                try{aladin.setFov(40);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 40° APEX')}catch(error){console.error('GV SPHERICAL APEX SWITCH FAILED',error)}
-            }
-            try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
-            if(directHdOverlay)try{applyDirectHdOpacity()}catch(_){}
-            if(typeof aladin.zoomToFoV!=='function')throw new Error('ALADIN NATIVE zoomToFoV API UNAVAILABLE');
-            aladin.zoomToFoV(finalFov,zoomDurationSeconds,()=>{
-                if(!flightIsCurrent()){abort(new Error('GV RANDOM NAVIGATION SUPERSEDED'));return}
-                zoomInDone=true;console.info('GV COMMAND 3 COMPLETE — ZOOM IN');finish();
-            });
-        },zoomDurationMs);
+        // COMMAND 3 launches from COMMAND 1's completion callback at the 9.5-second apex.
         schedule(()=>{
             try{onTMinusEight?.()}catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}
         },tMinusEightMs);
