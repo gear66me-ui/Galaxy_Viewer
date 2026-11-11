@@ -146,15 +146,21 @@ try{
    };
    addEventListener('message',onMessage)
  });
+ window.GV_SPLASH_ACTIVE=true;
+ window.GV_NAV_BACKGROUND_SUSPENDED=true;
+ window.GV_NAV_HIPS_FETCH_SUSPENDED=true;
  splash.style.display='block';
  await paint2();
  splash.contentWindow.postMessage({type:'galaxy-splash-start'},'*');
 
  // Startup work is already complete; keep the viewer idle behind the splash.
  await splashComplete;
+ window.GV_SPLASH_ACTIVE=false;
+ window.GV_NAV_BACKGROUND_SUSPENDED=false;
+ window.GV_NAV_HIPS_FETCH_SUSPENDED=false;
  await paint2();
  document.documentElement.dataset.gvSplashComplete='1';window.GalaxyViewerSetSplashComplete?.();splash.remove();curtain.remove();
  if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
-}catch(e){curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD — LAUNCH ROLL 0055\n\n'+String(e&&e.stack||e)}
+}catch(e){window.GV_SPLASH_ACTIVE=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;curtain?.remove();splash?.remove();error.style.display='block';error.textContent='GALAXY VIEWER FAILED TO LOAD — LAUNCH ROLL 0055\n\n'+String(e&&e.stack||e)}
 })();
 </script></body></html>
