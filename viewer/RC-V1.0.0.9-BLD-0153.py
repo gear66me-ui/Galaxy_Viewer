@@ -3294,20 +3294,16 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     console.info('GV THREE-STAGE CAMERA TEST: ZOOM-OUT COMMAND',{fov:maxFov});
                 }
                 if(t>=zoomOutCompleteThreshold&&!translationIssued){
-                    zoomOutCompleted=true;
                     try{onZoomOutComplete?.()}catch(error){console.error('GV 130H ZOOM-OUT COMPLETE CALLBACK FAILED',error)}
                     gvSetEarthPointerPosition(ra1,dec1,true);
                     aladin.gotoRaDec(ra1,dec1);
                     coordinate?.update(ra1,dec1);
                     gvUpdateTravelConstellationAt(ra1,dec1,true);
                     aladin.setRotation(targetRotation);
-                    destinationCenterApplied=true;
-                    birdseyeSettled=true;
                     translationIssued=true;
                     console.info('GV THREE-STAGE CAMERA TEST: TRANSLATE + ROTATE COMMAND',{ra:ra1,dec:dec1,rotation:targetRotation});
                 }
                 if(t>=zoomInThreshold&&!zoomInIssued){
-                    zoomInStarted=true;
                     try{console.info('GV HD HANDOFF REQUESTED — ZOOM-IN START');onZoomInStart?.()}
                     catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
                     aladin.setFov(finalFov);
@@ -3317,16 +3313,6 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 lastSample=sample;
             }
             if(t<1){requestAnimationFrame(frame);return}
-            if(!zoomOutIssued){aladin.setFov(maxFov);zoomOutIssued=true}
-            if(!translationIssued){
-                gvSetEarthPointerPosition(ra1,dec1,true);
-                aladin.gotoRaDec(ra1,dec1);
-                coordinate?.update(ra1,dec1);
-                gvUpdateTravelConstellationAt(ra1,dec1,true);
-                aladin.setRotation(targetRotation);
-                destinationCenterApplied=true;birdseyeSettled=true;translationIssued=true;
-            }
-            if(!zoomInIssued){aladin.setFov(finalFov);zoomInIssued=true}
             gvHdTravelRetired=false;
             applyDirectHdOpacity();
             gvNavigationTravelActive=false;
