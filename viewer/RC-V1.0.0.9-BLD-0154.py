@@ -3290,7 +3290,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
-    const totalFlightMs=19000,zoomDurationSeconds=9.5,zoomDurationMs=zoomDurationSeconds*1000;
+    const totalFlightMs=19000,zoomDurationSeconds=9.5;
     const translationStartMs=totalFlightMs*.32272727272727275,translationEndMs=totalFlightMs*.6772727272727272;
     const translationDurationSeconds=(translationEndMs-translationStartMs)/1000;
     const tMinusEightMs=totalFlightMs-8000;
@@ -3353,7 +3353,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 // Launch command 3 only after Aladin confirms command 1 has fully settled.
                 try{
                     if(switchToSphericalAtApex){
-                        aladin.setFov(40);hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 40° APEX');
+                        hamburger?.selectProjection?.('SPHERICAL');console.info('GV PROJECTION AUTO-SWITCH MOL→SIN AT 40° APEX');
                     }
                     try{onZoomInStart?.()}catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
                     if(directHdOverlay)try{applyDirectHdOpacity()}catch(_){}
@@ -3377,6 +3377,8 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             });
             rotationStarted();
         },translationStartMs);
+        // Preserve the existing HiPS resume window: 9 seconds before the 19-second arrival.
+        schedule(()=>{window.GV_NAV_HIPS_FETCH_SUSPENDED=false;console.info('GV HIPS FETCH RESUMED — 9 SECONDS TO ARRIVAL')},totalFlightMs-9000);
         // COMMAND 3 launches from COMMAND 1's completion callback at the 9.5-second apex.
         schedule(()=>{
             try{onTMinusEight?.()}catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}
