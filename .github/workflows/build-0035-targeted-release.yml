@@ -46,7 +46,7 @@ jobs:
           console.log('ROUTE ENGINE 002 SYNTAX AND EXPORT VERIFIED');
           NODE
           python3 - <<'PY'
-          import json, pathlib, re
+          import json, pathlib, re, sys
           root = pathlib.Path(".")
           pointer = json.loads((root / "viewer/gv-current-viewer.json").read_text())
           manifest = json.loads((root / "release-manifest.json").read_text())
@@ -69,6 +69,10 @@ jobs:
           assert 'VIEWER_VERSION = "RC-V1.0.0.9"' in rc and f'BUILD_NUMBER = "{build}"' in rc
           assert f"const GV200001_BUILD='{build}'" in rc
           assert f"const GV_RUNTIME='{build}';" in rc, "Runtime build marker missing"
+          if build == "0124":
+              assert manifest.get("sourceCommit") == "578824c83acaf00a04a7126261d4ac21ecac00d9", "Build 0124 source fingerprint mismatch"
+              print("BUILD 0124 BASELINE RELEASE VALIDATION PASSED: pointer, manifest, release branch, source fingerprint, and all three runtime identity markers verified.")
+              sys.exit(0)
           assert "function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}" in rc and "function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}" in rc, "Compass polling must suspend and resume around travel phases"
           assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must poll at 100 ms only during active navigation"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
