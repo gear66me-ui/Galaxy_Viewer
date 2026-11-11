@@ -137,9 +137,9 @@ jobs:
               assert rc.count("sample=Math.floor(elapsed/5)") == 2 and rc.count("sample=Math.floor(elapsedMs/5)") == 1, "0151 must preserve 200 Hz navigation sampling"
               assert rc.count("GV_SPLASH_ACTIVE") == 9 and rc.count("!window.GV_SPLASH_ACTIVE") == 7 and rc.count("if(window.GV_SPLASH_ACTIVE)return;") == 1, "All nine periodic viewer tasks must be suspended during splash"
               launcher = (root / "viewer/releases/launch/Galaxy-Viewer-Launch/index.html").read_text()
-              assert "await viewerReady;\\n const splashPrepared" in launcher, "Splash must wait for the full viewer-ready barrier"
+              assert "await viewerReady;\n const splashPrepared" in launcher, "Splash must wait for the full viewer-ready barrier"
               assert "window.GV_SPLASH_ACTIVE=true;" in launcher and "window.GV_NAV_BACKGROUND_SUSPENDED=true;" in launcher and "window.GV_NAV_HIPS_FETCH_SUSPENDED=true;" in launcher, "Splash must suspend viewer polling and HiPS fetches"
-              assert "await splashComplete;\\n window.GV_SPLASH_ACTIVE=false;" in launcher, "Viewer activity must resume after splash completion"
+              assert "await splashComplete;\n window.GV_SPLASH_ACTIVE=false;" in launcher, "Viewer activity must resume after splash completion"
               assert "}catch(e){window.GV_SPLASH_ACTIVE=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;" in launcher, "Viewer activity must resume on splash failure"
               print("BUILD 0151 RELEASE VALIDATION PASSED: 0144 navigation behavior preserved; 200 Hz travel sampling retained; complete startup barrier precedes splash; all nine periodic viewer tasks and HiPS fetching suspend during splash and resume on completion/error.")
               sys.exit(0)
