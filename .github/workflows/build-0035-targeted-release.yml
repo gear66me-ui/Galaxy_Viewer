@@ -73,6 +73,15 @@ jobs:
               assert manifest.get("sourceCommit") == "578824c83acaf00a04a7126261d4ac21ecac00d9", "Build 0124 source fingerprint mismatch"
               print("BUILD 0124 BASELINE RELEASE VALIDATION PASSED: pointer, manifest, release branch, source fingerprint, and all three runtime identity markers verified.")
               sys.exit(0)
+          if build == "0142":
+              assert manifest.get("sourceCommit") == "6dcdf3846575a9434c2d72d9dd5a4a819c0e2a5b", "Build 0142 source fingerprint mismatch"
+              assert "const translateSeconds=4.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "First trip must use 4s translation plus 7s zoom-in"
+              assert "const durationSeconds=20,duration=durationSeconds*1000" in rc, "Standard trip must total 20 seconds"
+              assert "zoomInThreshold=.695,zoomOutCompleteThreshold=.305" in rc, "Standard phase boundaries must be 6.1s / 7.8s / 6.1s"
+              assert "maxFov:40" in rc and "aladin.setFov(40)" in rc, "Navigation FOV apex must be capped at 40 degrees"
+              assert "else if(t>=.695){" in rc, "Zoom-in phase must begin at 69.5 percent"
+              print("BUILD 0142 RELEASE VALIDATION PASSED: 40-degree FOV apex, 20-second standard trip, 4s+7s first trip, and all runtime identity markers verified.")
+              sys.exit(0)
           assert "function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}" in rc and "function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}" in rc, "Compass polling must suspend and resume around travel phases"
           assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must poll at 100 ms only during active navigation"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
