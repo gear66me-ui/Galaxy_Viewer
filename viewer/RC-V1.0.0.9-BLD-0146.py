@@ -381,18 +381,15 @@ let gvAuthoritativeRotation=HOME.rotation;
 let gvReticleEnabled=true;
 let directionalReticleTimer=0;
 let gvEarthBearingTimer=0;
-let gvReticlePollingSuspended=false;
 function gvStartReticlePolling(){
-    if(!gvReticleEnabled||gvReticlePollingSuspended)return;
+    if(!gvReticleEnabled)return;
     if(!directionalReticleTimer)directionalReticleTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')updateDirectionalReticle()},250);
-    if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);
+    if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled)gvUpdateEarthBearingPointer()},25);
 }
 function gvStopReticlePolling(){
     if(directionalReticleTimer){clearInterval(directionalReticleTimer);directionalReticleTimer=0}
     if(gvEarthBearingTimer){clearInterval(gvEarthBearingTimer);gvEarthBearingTimer=0}
 }
-function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}
-function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}
 function gvSetReticleEnabled(enabled){
     gvReticleEnabled=!!enabled;
     reticle.style.display=gvReticleEnabled?'block':'none';
@@ -1949,7 +1946,7 @@ function gvStartRandomNavigationWatchdog(generation){
         ++gvRandomNavigationGeneration;
         try{gvInvalidateNextTripPrewarm('random navigation no-motion watchdog')}catch(error){console.warn('GV WATCHDOG PREWARM INVALIDATION FAILED',error)}
         try{gvSetTravelConstellationGlow(activeDestination?.constellation,Number(activeDestination?.ra),Number(activeDestination?.dec),false)}catch(_){}
-        gvNavigationTravelActive=false;gvResumeReticlePolling();
+        gvNavigationTravelActive=false;
         window.GV_NAV_HIPS_FETCH_SUSPENDED=false;
         window.GV_NAV_BACKGROUND_SUSPENDED=false;
         navigationInFlight=false;
@@ -3119,16 +3116,16 @@ function gvFlightGreatCirclePosition(ra1,dec1,ra2,dec2,progress){
 }
 function gvFlightLogLerp(a,b,u){const x=Math.max(Number(a),1e-12),y=Math.max(Number(b),1e-12),t=gvFlightClamp01(u);return Math.exp(Math.log(x)+(Math.log(y)-Math.log(x))*t)}
 function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotation,targetRotation}){
-    const duration=firstHomeTrip?7.5:22,t=gvFlightClamp01((Math.max(0,Number(sec)||0))/duration);
+    const duration=firstHomeTrip?7.5:21,t=gvFlightClamp01((Math.max(0,Number(sec)||0))/duration);
     if(firstHomeTrip){
         const translateStart=.305,translationComplete=.695;
         let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
         let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
         return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
     }
-    const translateStart=.255,translationComplete=.645;
+    const translateStart=.2904761904761905,translationComplete=.6619047619047619;
     let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
-    let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
+    let fov;if(t<=.5238095238095238){const p=gvFlightNavigationSmootherstep(t/.5238095238095238);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.5238095238095238)/.47619047619047616);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
 let gvTravelConstellationLastName=null;
@@ -3219,7 +3216,6 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
     const initialCenter=prepared?.imageCenter;let ra1=Number(initialCenter?.[0]),dec1=Number(initialCenter?.[1]),finalFov=Number(prepared?.finalFov),targetRotation=Number(prepared?.rotation);
     if(!Number.isFinite(ra1)||!Number.isFinite(dec1)||!Number.isFinite(finalFov)||finalFov<=0||!Number.isFinite(targetRotation))throw new Error('GV 130H DESTINATION STATE INVALID');
     gvNavigationTravelActive=true;
-    gvSuspendReticlePolling();
     // Stop new HiPS tile fetches synchronously before any await or animation frame.
     window.GV_NAV_BACKGROUND_SUSPENDED=true;
     window.GV_NAV_HIPS_FETCH_SUSPENDED=true;
@@ -3244,7 +3240,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{if(!isCurrent())throw new Error('GV RANDOM NAVIGATION SUPERSEDED');
                 const elapsed=Math.min(translateSeconds*1000,now-translateStarted),u=gvFlightNavigationSmootherstep(elapsed/(translateSeconds*1000)),sample=Math.floor(elapsed/10),t=Math.min(1,(now-translateStarted)/(durationSeconds*1000)),tMinusEightThreshold=Math.max(0,1-8/durationSeconds);
-                window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<(1-2/durationSeconds);
+                window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=t<(1-9/durationSeconds);
                 if(!tMinusEightStarted&&t>=tMinusEightThreshold){tMinusEightStarted=true;try{console.info('GV T-MINUS-EIGHT WORK WINDOW OPEN',{remainingSeconds:8,firstHomeTrip:true});onTMinusEight?.()}catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}}
                 if(sample!==lastSample){
                     const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u),rotation=startRotation+rotationDelta*u;
@@ -3256,7 +3252,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     lastSample=sample;
                 }
                 if(elapsed<translateSeconds*1000){requestAnimationFrame(frame);return}resolve();
-            }catch(error){gvNavigationTravelActive=false;gvResumeReticlePolling();gvSetTravelConstellationGlow(constellationName,ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
+            }catch(error){gvNavigationTravelActive=false;gvSetTravelConstellationGlow(constellationName,ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
         });
         aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1);gvSetEarthPointerPosition(ra1,dec1,true);
         aladin.setRotation(targetRotation);
@@ -3264,25 +3260,25 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         const zoomStarted=performance.now(),zoomStartRaw=aladin.getFov?.(),zoomStartFov=Number(Array.isArray(zoomStartRaw)?zoomStartRaw[0]:zoomStartRaw);let projectionSwitchedAt55=false;if(switchToSphericalAtApex&&Number.isFinite(zoomStartFov)&&zoomStartFov<=10){projectionSwitchedAt55=true;hamburger?.selectProjection?.('SPHERICAL');console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN: START FOV ≤10°')}lastSample=-1;
         await new Promise((resolve,reject)=>{
             const frame=now=>{try{if(!isCurrent())throw new Error('GV RANDOM NAVIGATION SUPERSEDED');
-                const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed/10);window.GV_NAV_HIPS_FETCH_SUSPENDED=(now-translateStarted)<((durationSeconds-2)*1000);
+                const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed/10);
                 if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvHoldDirectHdDuringTravel(now);if(switchToSphericalAtApex&&!projectionSwitchedAt55&&zoomStartFov>10&&fov<=10){projectionSwitchedAt55=true;aladin.setFov(10);hamburger?.selectProjection?.('SPHERICAL');console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 10°')}else{aladin.setFov(fov)}lastSample=sample}
-                if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;gvNavigationTravelActive=false;gvResumeReticlePolling();resolve();
-            }catch(error){gvNavigationTravelActive=false;gvResumeReticlePolling();gvSetTravelConstellationGlow(ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
+                if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;gvNavigationTravelActive=false;resolve();
+            }catch(error){gvNavigationTravelActive=false;gvSetTravelConstellationGlow(ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
         });
         aladin.setFov(finalFov);
-        gvNavigationTravelActive=false;gvResumeReticlePolling();gvSetTravelConstellationGlow(ra1,dec1,false);
+        gvNavigationTravelActive=false;gvSetTravelConstellationGlow(ra1,dec1,false);
         try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}
         return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
-    const durationSeconds=20,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.645,zoomOutCompleteThreshold=.255,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
+    const durationSeconds=21,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.6619047619047619,zoomOutCompleteThreshold=.2904761904761905,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{if(!isCurrent())throw new Error('GV RANDOM NAVIGATION SUPERSEDED');
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/10);
             // BUILD 0028: only FOV changes during 0–30% and 70–100%.
             // Suspend application polling in both phases; the FOV readout stays live.
             window.GV_NAV_BACKGROUND_SUSPENDED=true; // Preserve the verified zero-stutter rule: app polling stays paused through arrival.
-            window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<(1-6/durationSeconds));
+            window.GV_NAV_HIPS_FETCH_SUSPENDED=(t<(1-9/durationSeconds));
             if(!tMinusEightStarted&&t>=tMinusEightThreshold){tMinusEightStarted=true;try{console.info('GV T-MINUS-EIGHT WORK WINDOW OPEN',{remainingSeconds:8,firstHomeTrip:false});onTMinusEight?.()}catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}}
 
             if(t>=zoomOutCompleteThreshold&&!zoomOutCompleted){
@@ -3300,11 +3296,11 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:40,startRotation,targetRotation});
                 if(t<zoomOutCompleteThreshold){
-                    // Phase 1 (0–25.5%): FOV is the only changing view property.
+                    // Phase 1 (0–29.0%): FOV is the only changing view property.
                     aladin.setFov(state.fov);
                     lastSample=sample;
-                }else if(t>=.645){
-                    // Phase 3 (64.5–100%): settle the bird's-eye view once, then
+                }else if(t>=.6619047619047619){
+                    // Phase 3 (66.2–100%): settle the bird's-eye view once, then
                     // issue FOV commands only until arrival.
                     if(!birdseyeSettled){
                         gvSetEarthPointerPosition(ra1,dec1,true);
@@ -3317,7 +3313,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     aladin.setFov(state.fov);
                     lastSample=sample;
                 }else{
-                    // Phase 2 (25.5–64.5%): normal travel motion and app updates resume.
+                    // Phase 2 (29.0–66.2%): normal travel motion and app updates resume.
                     if(t<=zoomInThreshold&&state.fov>=GV_HD_RETIRE_FOV&&!gvHdTravelRetired){gvHdTravelRetired=true;applyDirectHdOpacity();console.info('GV HD RETIRED — 50° FOV THRESHOLD',{fov:Number(state.fov.toFixed(2))});}
                     aladin.setFov(state.fov);
                     if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);gvUpdateTravelConstellationAt(pos[0],pos[1]);if(now-gvEarthDistanceLastTravelSyncAt>=GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS){gvEarthDistanceLastTravelSyncAt=now;gvSyncEarthDistanceToCenter(true)}}
@@ -3328,8 +3324,8 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             }
             if(t<1){requestAnimationFrame(frame);return}
             if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
-            aladin.setFov(finalFov);if(!birdseyeSettled)aladin.setRotation(targetRotation);gvHdTravelRetired=false;applyDirectHdOpacity();gvNavigationTravelActive=false;gvResumeReticlePolling();try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}console.info('GV HD CROSSFADE RESTORED AT ARRIVAL');window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
-        }catch(error){gvNavigationTravelActive=false;gvResumeReticlePolling();gvSetTravelConstellationGlow(ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
+            aladin.setFov(finalFov);if(!birdseyeSettled)aladin.setRotation(targetRotation);gvHdTravelRetired=false;applyDirectHdOpacity();gvNavigationTravelActive=false;try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}console.info('GV HD CROSSFADE RESTORED AT ARRIVAL');window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
+        }catch(error){gvNavigationTravelActive=false;gvSetTravelConstellationGlow(ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
     });
     return prepared;
 }
