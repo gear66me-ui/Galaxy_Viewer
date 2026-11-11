@@ -525,8 +525,8 @@ function gvApplyEarthPointerFovVisibility(){
 }
 function gvUpdateEarthBearingPointer(){
     if(!gvReticleEnabled)return;
-    if(gvReticlePollingSuspended)return;
     if(window.GV_NAV_BACKGROUND_SUSPENDED&&!gvNavigationTravelActive)return;
+    if(gvReticlePollingSuspended)return;
     const rotor=document.getElementById('gv-earth-bearing-rotor');if(!rotor)return;
     try{
         const p=aladin.getRaDec?.(),ra=Number(Array.isArray(p)?p[0]:p?.ra),dec=Number(Array.isArray(p)?p[1]:p?.dec);
