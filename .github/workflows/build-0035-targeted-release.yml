@@ -154,7 +154,7 @@ jobs:
               assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0152 must leave first-home-trip inputs untouched"
               assert rc.count("sample=Math.floor(elapsed/5)") == 2 and rc.count("sample=Math.floor(elapsedMs/5)") == 1, "0152 must preserve 200 Hz sampling"
               launcher = (root / "viewer/releases/launch/Galaxy-Viewer-Launch/index.html").read_text()
-              assert "window.GV_SPLASH_ACTIVE=true;" in launcher and "await splashComplete;\\n window.GV_SPLASH_ACTIVE=false;" in launcher, "0152 must preserve splash suspension behavior"
+              assert "window.GV_SPLASH_ACTIVE=true;" in launcher and "await splashComplete;\n window.GV_SPLASH_ACTIVE=false;" in launcher, "0152 must preserve splash suspension behavior"
               print("BUILD 0152 RELEASE VALIDATION PASSED: only numeric duration/phase inputs changed; first-trip timing, easing, choreography, rotation, callbacks, and 200 Hz sampling preserved.")
               sys.exit(0)
 
