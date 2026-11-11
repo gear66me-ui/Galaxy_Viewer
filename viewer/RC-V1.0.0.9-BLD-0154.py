@@ -3296,6 +3296,8 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
     const tMinusEightMs=totalFlightMs-8000;
     window.GV_NATIVE_FLIGHT_GENERATION=(Number(window.GV_NATIVE_FLIGHT_GENERATION)||0)+1;
     const flightGeneration=window.GV_NATIVE_FLIGHT_GENERATION;
+    // A replacement trip must retire any still-running native animations from the previous trip.
+    try{aladin.stopAnimation?.()}catch(_){}
     window.GV_NATIVE_FLIGHT_ACTIVE=true;
     const flightIsCurrent=()=>flightGeneration===window.GV_NATIVE_FLIGHT_GENERATION&&isCurrent();
     console.info('GV NATIVE THREE-COMMAND FLIGHT START',{totalSeconds:19,zoomOutSeconds:9.5,translationStartSeconds:translationStartMs/1000,translationEndSeconds:translationEndMs/1000,zoomInStartSeconds:9.5,zoomInSeconds:9.5});
