@@ -1,7 +1,7 @@
 {
   "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
-  "sourceCommit": "e1667f0d53b9e441ddc6fe24ec5d11a00c98de5c",
+  "sourceCommit": "879f860c4d07712a767bc515d3529b6d43b27f83",
   "build": "0146",
   "policy": "allowlist-only; no product image mirrors in deployment artifact",
   "runtime": [
