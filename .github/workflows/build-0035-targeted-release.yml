@@ -155,7 +155,7 @@ jobs:
               assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "First-home-trip choreography must remain unchanged"
               assert "window.GV_NAV_BACKGROUND_SUSPENDED=true" in rc and "window.GV_NAV_HIPS_FETCH_SUSPENDED=true" in rc, "Travel performance suspensions must remain"
               compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
               assert match, "Embedded viewer JavaScript block could not be extracted"
               pathlib.Path("/tmp/gv-build-0154-runtime.js").write_text(match.group(1))
               import subprocess
