@@ -1,5 +1,5 @@
 name: Validate and Deploy RC-V1.0.0.9 (pointer-driven release)
-# Pointer-driven release validation: validate the selected build and preserve existing runtime checks.
+# try again Pointer-driven release validation: validate the selected build and preserve existing runtime checks.
 
 on:
   push:
