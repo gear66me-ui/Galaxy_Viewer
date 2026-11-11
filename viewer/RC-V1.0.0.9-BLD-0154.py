@@ -920,7 +920,7 @@ function gvInstallEarthDistanceInteractionListeners(){
 // HD pan/pinch is intentionally isolated in the destination module.
 let gvNativeTravelPositionLastAt=0;
 try{aladin.on('positionChanged',()=>{
-    if(gvNavigationTravelActive){
+    if(window.GV_NATIVE_FLIGHT_ACTIVE&&gvNavigationTravelActive){
         const now=performance.now(),center=aladin.getRaDec?.(),ra=Number(center?.[0]),dec=Number(center?.[1]);
         if(Number.isFinite(ra)&&Number.isFinite(dec)&&now-gvNativeTravelPositionLastAt>=80){
             gvNativeTravelPositionLastAt=now;
@@ -934,7 +934,7 @@ try{aladin.on('positionChanged',()=>{
         }
         return;
     }
-    if(gvZoomInteractionActive)return;
+    if(gvZoomInteractionActive||gvNavigationTravelActive)return;
     gvSyncEarthDistanceToCenter();
 })}catch(error){console.warn('GV0005 EARTH POSITION EVENT REGISTRATION FAILED',error)}
 try{aladin.on('zoomChanged',()=>{if(gvZoomInteractionActive||gvNavigationTravelActive)return;gvSyncEarthDistanceToCenter();gvUpdateLivePhysicalScale()})}catch(error){console.warn('GV0005 EARTH ZOOM EVENT REGISTRATION FAILED',error)}
@@ -3296,6 +3296,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
     const tMinusEightMs=totalFlightMs-8000;
     window.GV_NATIVE_FLIGHT_GENERATION=(Number(window.GV_NATIVE_FLIGHT_GENERATION)||0)+1;
     const flightGeneration=window.GV_NATIVE_FLIGHT_GENERATION;
+    window.GV_NATIVE_FLIGHT_ACTIVE=true;
     const flightIsCurrent=()=>flightGeneration===window.GV_NATIVE_FLIGHT_GENERATION&&isCurrent();
     console.info('GV NATIVE THREE-COMMAND FLIGHT START',{totalSeconds:19,zoomOutSeconds:9.5,translationStartSeconds:translationStartMs/1000,translationEndSeconds:translationEndMs/1000,zoomInStartSeconds:9.5,zoomInSeconds:9.5});
     await new Promise((resolve,reject)=>{
@@ -3307,7 +3308,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             if(!flightIsCurrent()){abort(new Error('GV RANDOM NAVIGATION SUPERSEDED'));return}
             settled=true;clearScheduled();
             gvSetEarthPointerPosition(ra1,dec1,true);coordinate?.update(ra1,dec1);gvUpdateTravelConstellationAt(ra1,dec1,true);
-            gvHdTravelRetired=false;applyDirectHdOpacity();gvNavigationTravelActive=false;
+            gvHdTravelRetired=false;applyDirectHdOpacity();gvNavigationTravelActive=false;window.GV_NATIVE_FLIGHT_ACTIVE=false;
             try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}
             console.info('GV NATIVE THREE-COMMAND FLIGHT COMPLETE');
             window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;
@@ -3318,7 +3319,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             settled=true;clearScheduled();
             if(flightGeneration===window.GV_NATIVE_FLIGHT_GENERATION){
                 try{aladin.stopAnimation?.()}catch(_){}
-                gvNavigationTravelActive=false;gvSetTravelConstellationGlow(constellationName,ra1,dec1,false);
+                gvNavigationTravelActive=false;window.GV_NATIVE_FLIGHT_ACTIVE=false;gvSetTravelConstellationGlow(constellationName,ra1,dec1,false);
                 window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;
             }
             reject(error);
