@@ -148,9 +148,9 @@ jobs:
               assert manifest.get("sourceCommit") == "355d850317f5d7239b811f90405c8246a5c26111", "Build 0152 source fingerprint mismatch"
               assert "const durationSeconds=19,duration=durationSeconds*1000" in rc, "0152 standard travel duration must be 19 seconds"
               assert "firstHomeTrip?7.5:19" in rc, "0152 flight state must use the 19-second standard duration"
-              assert "zoomInThreshold=.7052631578947368,zoomOutCompleteThreshold=.29473684210526313" in rc, "0152 zoom phase thresholds must equal 5.6 seconds each"
-              assert "const translateStart=.29473684210526313,translationComplete=.7052631578947368;" in rc, "0152 translation phase boundaries must match the adjusted zoom boundaries"
-              assert "}else if(t>=.7052631578947368){" in rc, "0152 zoom-in phase gate must match adjusted boundary"
+              assert "zoomInThreshold=.6772727272727272,zoomOutCompleteThreshold=.32272727272727275" in rc, "0152 must preserve original zoom phase thresholds"
+              assert "const translateStart=.32272727272727275,translationComplete=.6772727272727272;" in rc, "0152 must preserve original translation phase boundaries"
+              assert "}else if(t>=.6772727272727272){" in rc, "0152 must preserve original zoom-in phase gate"
               assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0152 must leave first-home-trip inputs untouched"
               assert rc.count("sample=Math.floor(elapsed/5)") == 2 and rc.count("sample=Math.floor(elapsedMs/5)") == 1, "0152 must preserve 200 Hz sampling"
               launcher = (root / "viewer/releases/launch/Galaxy-Viewer-Launch/index.html").read_text()

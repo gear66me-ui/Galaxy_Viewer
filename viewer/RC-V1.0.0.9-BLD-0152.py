@@ -3124,7 +3124,7 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
         let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
         return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
     }
-    const translateStart=.29473684210526313,translationComplete=.7052631578947368;
+    const translateStart=.32272727272727275,translationComplete=.6772727272727272;
     let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
     let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
@@ -3272,7 +3272,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
-    const durationSeconds=19,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.7052631578947368,zoomOutCompleteThreshold=.29473684210526313,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
+    const durationSeconds=19,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.6772727272727272,zoomOutCompleteThreshold=.32272727272727275,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{if(!isCurrent())throw new Error('GV RANDOM NAVIGATION SUPERSEDED');
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/5);
@@ -3300,7 +3300,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     // Phase 1 (0–30.5%): FOV is the only changing view property.
                     aladin.setFov(state.fov);
                     lastSample=sample;
-                }else if(t>=.7052631578947368){
+                }else if(t>=.6772727272727272){
                     // Phase 3 (69.5–100%): settle the bird's-eye view once, then
                     // issue FOV commands only until arrival.
                     if(!birdseyeSettled){
