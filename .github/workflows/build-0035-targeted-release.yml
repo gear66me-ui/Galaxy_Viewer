@@ -154,6 +154,7 @@ jobs:
               assert "const durationSeconds=19,duration=durationSeconds*1000" not in rc and "if(t<1&&sample!==lastSample)" not in rc, "Old standard continuous camera feedback loop must be absent"
               assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "First-home-trip choreography must remain unchanged"
               assert "window.GV_NAV_BACKGROUND_SUSPENDED=true" in rc and "window.GV_NAV_HIPS_FETCH_SUSPENDED=true" in rc, "Travel performance suspensions must remain"
+              assert "schedule(()=>{window.GV_NAV_HIPS_FETCH_SUSPENDED=false" in rc and "totalFlightMs-9000" in rc, "HiPS fetching must resume at the existing 9-seconds-before-arrival point"
               compile(rc, expected_viewer, "exec")
               match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
               assert match, "Embedded viewer JavaScript block could not be extracted"
