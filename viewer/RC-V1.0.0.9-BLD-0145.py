@@ -385,7 +385,7 @@ let gvReticlePollingSuspended=false;
 function gvStartReticlePolling(){
     if(!gvReticleEnabled||gvReticlePollingSuspended)return;
     if(!directionalReticleTimer)directionalReticleTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')updateDirectionalReticle()},250);
-    if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&!gvReticlePollingSuspended&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);
+    if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);
 }
 function gvStopReticlePolling(){
     if(directionalReticleTimer){clearInterval(directionalReticleTimer);directionalReticleTimer=0}
