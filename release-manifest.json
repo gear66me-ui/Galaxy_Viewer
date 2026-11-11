@@ -1,10 +1,10 @@
 {
   "release": "RC-V1.0.0.9",
   "sourceBranch": "release",
-  "sourceCommit": "3a6edf5fe3f0f722cb94223d02ec636f5f6bcc52",
-  "build": "0153",
+  "sourceCommit": "355d850317f5d7239b811f90405c8246a5c26111",
+  "build": "0152",
   "policy": "allowlist-only; no product image mirrors in deployment artifact",
   "runtime": [
-    "viewer/RC-V1.0.0.9-BLD-0153.py"
+    "viewer/RC-V1.0.0.9-BLD-0152.py"
   ]
 }
