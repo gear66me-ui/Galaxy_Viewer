@@ -160,7 +160,7 @@ jobs:
               vendor = (root / "viewer/vendor/aladin-lite/3.8.2/aladin.js").read_text()
               assert "p*p*p*(p*(p*6-15)+10)" in vendor and "Math.log(a)+(Math.log(b)-Math.log(a))*e" in vendor, "Eased Aladin native animation implementation missing"
               compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
               assert match, "Embedded viewer JavaScript block could not be extracted"
               pathlib.Path("/tmp/gv-build-0156-runtime.js").write_text(match.group(1))
               import subprocess
