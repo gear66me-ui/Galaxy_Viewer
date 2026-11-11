@@ -457,7 +457,7 @@ window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;
     };
 })();
 const updateDirectionalReticle=()=>{
-    if(window.GV_NAV_BACKGROUND_SUSPENDED)return;
+    if(window.GV_NAV_BACKGROUND_SUSPENDED&&!gvNavigationTravelActive)return;
     const state=reticle.gvDirectional;
     if(!state)return;
     const northBearing=readCelestialNorthBearing(aladin,compassRoot);
