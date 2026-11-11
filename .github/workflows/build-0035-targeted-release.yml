@@ -101,6 +101,19 @@ jobs:
               print("BUILD 0144 RELEASE VALIDATION PASSED: first trip 5s+7s; standard phases 7.1s/7.8s/7.1s; first-trip projection threshold 10 degrees.")
               sys.exit(0)
 
+          if build == "0149":
+              assert manifest.get("sourceCommit") == "9b29b8a7c4748d3b114056733d0ffed3d02f0c86", "Build 0149 source fingerprint mismatch"
+              assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0149 must preserve 0144 first-trip timing"
+              assert "zoomStartFov<=10" in rc and "zoomStartFov>10&&fov<=10" in rc, "0149 must preserve 0144 first-trip projection threshold"
+              assert "const durationSeconds=22,duration=durationSeconds*1000" in rc, "0149 must preserve 0144 standard-trip duration"
+              assert "zoomInThreshold=.6772727272727272,zoomOutCompleteThreshold=.32272727272727275" in rc, "0149 must preserve 0144 standard phase boundaries"
+              assert "const translateStart=.32272727272727275,translationComplete=.6772727272727272;" in rc, "0149 must preserve 0144 flight interpolation boundaries"
+              assert rc.count("sample=Math.floor(elapsed/25)") == 2, "0149 must use 25 ms sampling in both elapsed-time gates"
+              assert rc.count("sample=Math.floor(elapsedMs/25)") == 1, "0149 must use 25 ms sampling in the elapsedMs gate"
+              assert "sample=Math.floor(elapsed/10)" not in rc and "sample=Math.floor(elapsedMs/10)" not in rc, "0149 must not retain 10 ms sampling gates"
+              print("BUILD 0149 RELEASE VALIDATION PASSED: exact 0144 navigation behavior preserved; only the three sampling intervals are 25 ms.")
+              sys.exit(0)
+
           assert "function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}" in rc and "function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}" in rc, "Compass polling must suspend and resume around travel phases"
           assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must poll at 100 ms only during active navigation"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
