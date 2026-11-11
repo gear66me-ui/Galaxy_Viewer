@@ -3402,7 +3402,6 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         execute();
     });
     return prepared;
-}    return prepared;
 }
 
 
