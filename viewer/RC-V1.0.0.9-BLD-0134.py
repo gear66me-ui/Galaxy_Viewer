@@ -6,8 +6,8 @@ import json
 # ECO: GV200-001
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.9"
-# BUILD 0132 — demand-driven constellation and reticle polling. BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
-BUILD_NUMBER = "0134"
+# BUILD 0124 — demand-driven constellation and reticle polling. BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
+BUILD_NUMBER = "0124"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
@@ -89,8 +89,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.9';
-const GV200001_BUILD='0134'
-const GV_RUNTIME='0134';
+const GV200001_BUILD='0124'
+const GV_RUNTIME='0124';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.9-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
@@ -114,8 +114,7 @@ window.GV_BOOT_CONFIG=Object.freeze({
     providerArtworkFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/ae9eb4d29f5b0d6190bc72da3bca70b04eea6d23/viewer/modules/provider-artwork/gv-provider-artwork-0005.js',
     travelPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@1c816067e9fe46a94015d31d5364197660e07a5d/viewer/modules/random-galaxy/gv-random-travel-presentation-006.js',
     destinationPresentationUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@3ae9f10f2a5658e82d385c525b3c80a39028bcd4/viewer/modules/destination-presentation/gv-destination-presentation-0062.js',
-    fontsReadyUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f8dd73fcf3c97102decf7c30e7dbb52db40cb71e/viewer/modules/font-readiness/gv-fonts-ready-0001.js',
-    fontsReadyFallbackUrl:'https://raw.githubusercontent.com/gear66me-ui/Galaxy_Viewer/f8dd73fcf3c97102decf7c30e7dbb52db40cb71e/viewer/modules/font-readiness/gv-fonts-ready-0001.js'
+    fontsReadyUrl:'https://cdn.jsdelivr.net/gh/gear66me-ui/Galaxy_Viewer@f8dd73fcf3c97102decf7c30e7dbb52db40cb71e/viewer/modules/font-readiness/gv-fonts-ready-0001.js'
 });
 
 
@@ -141,13 +140,6 @@ function loadScript(url){
         return attempt(true);
     });
 }
-function loadScriptWithFallback(primaryUrl,fallbackUrl){
-    return loadScript(primaryUrl).catch(primaryError=>{
-        if(!fallbackUrl)throw primaryError;
-        console.warn('GV SCRIPT CDN LOAD FAILED; RETRYING RAW GITHUB',primaryUrl,primaryError);
-        return loadScript(fallbackUrl);
-    });
-}
 
 
 // ============================================================================
@@ -156,7 +148,7 @@ function loadScriptWithFallback(primaryUrl,fallbackUrl){
 // ============================================================================
 const config=window.GV_BOOT_CONFIG;
 if(!config?.fontsReadyUrl)throw new Error('BOOT CONFIG MISSING: fontsReadyUrl');
-await loadScriptWithFallback(config.fontsReadyUrl,config.fontsReadyFallbackUrl);
+await loadScript(config.fontsReadyUrl);
 if(window.GVFontsReady?.VERSION!=='0001')throw new Error('GV FONT READINESS SERVICE 0001 EXPORT MISSING');
 
 // PROVIDER ARTWORK 0009 EMBEDDED FALLBACK: resilient constellation sources and preload cache.
@@ -210,7 +202,7 @@ globalThis.GVProviderArtwork=Object.freeze({VERSION,ART,CDN_ART,PAGES_ART,PROVID
 for(const key of [
     'viewerVersion','aladinVersion','aladinCssUrl','aladinJsUrl',
     'hamburgerBaseUrl','hamburgerUrl','coordinateUrl','targetUrl',
-    'galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl','providerArtworkUrl','travelPresentationUrl','destinationPresentationUrl','fontsReadyUrl','fontsReadyFallbackUrl'
+    'galaxyRouteEngineUrl','galaxyNavigatorUrl','headsUpDisplayUrl','providerArtworkUrl','travelPresentationUrl','destinationPresentationUrl','fontsReadyUrl'
 ]){
     if(!config?.[key])throw new Error(`BOOT CONFIG MISSING: ${key}`);
 }
@@ -224,7 +216,7 @@ for(const key of [
  // for this same binding later in boot; leaving it undefined aborts the entire
  // viewer before the initial destination can be shown.
  const gvModuleLoadPromise=Promise.all([
-     loadScriptWithFallback(config.fontsReadyUrl,config.fontsReadyFallbackUrl),
+     loadScript(config.fontsReadyUrl),
      loadScript(config.hamburgerBaseUrl).catch(error=>{console.error('HAMBURGER MODULE LOAD FAILED',error)}),
      loadScript(config.constellationOverlayUrl)
        .catch(error=>{console.error('CONSTELLATION CDN LOAD FAILED; RETRYING RAW GITHUB',error);return loadScript(config.constellationOverlayFallbackUrl)})
@@ -2260,10 +2252,9 @@ if(gvTripHud){
     document.getElementById('aladin-cosmic-command-test')?.appendChild(gvTripPointer);
 }
 function gvSetTripCycle(active){
-    const on=Boolean(active);
-    try{window.GVNative?.setPerformanceMode?.(on)}catch(error){console.warn('GV NATIVE PERFORMANCE MODE UNAVAILABLE',error)}
     const p=document.getElementById('gv-trip-pointer');
     if(!p)return;
+    const on=Boolean(active);
     if(on){
         p.style.visibility='visible';
         p.style.display='flex';
@@ -2480,10 +2471,7 @@ async function gvRuntimeAvmRecord(destination){
         :(id==='ssc2004-12a1'||/ssc2004-12a1/i.test(url))
             ?{...record,fovXDegrees:0.21,fovYDegrees:8.2/60,fovDegrees:0.21,
                 fieldOfViewDegrees:{widthDegrees:0.21,heightDegrees:8.2/60,effectiveDegrees:Math.sqrt(0.21*(8.2/60))},
-                // Register NGC 7331's nucleus at its measured vertical image position.
-                // Source JPEG is 320x208; galaxy center is approximately y=80 px.
-                // Scale to the published 1239x805 reference grid; X remains at geometric center.
-                referencePixel:[620,310],referenceDimension:[1239,805]}
+                referenceDimension:[1239,805]}
             :record;
     const recordUrl=gvCanonicalAvmImageUrl(effectiveRecord?.imageUrl).toLowerCase();
     if(url&&recordUrl!==url)throw new Error('GV AVM RUNTIME IMAGE MISMATCH: destination='+url+' record='+recordUrl);
@@ -3128,7 +3116,7 @@ function gvFlightGreatCirclePosition(ra1,dec1,ra2,dec2,progress){
 }
 function gvFlightLogLerp(a,b,u){const x=Math.max(Number(a),1e-12),y=Math.max(Number(b),1e-12),t=gvFlightClamp01(u);return Math.exp(Math.log(x)+(Math.log(y)-Math.log(x))*t)}
 function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotation,targetRotation}){
-    const duration=firstHomeTrip?7.5:20,t=gvFlightClamp01((Math.max(0,Number(sec)||0))/duration);
+    const duration=firstHomeTrip?7.5:17,t=gvFlightClamp01((Math.max(0,Number(sec)||0))/duration);
     if(firstHomeTrip){
         const translateStart=.30,translationComplete=.70;
         let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
@@ -3245,7 +3233,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 }
             }catch(error){console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error)}
         }
-        const translateSeconds=3.0,zoomSeconds=7.5,durationSeconds=translateSeconds+zoomSeconds;
+        const translateSeconds=3.0,zoomSeconds=6.0,durationSeconds=translateSeconds+zoomSeconds;
         const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
         const translateStarted=performance.now();let lastSample=-1,tMinusEightStarted=false;
         window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=true;
@@ -3283,7 +3271,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
-    const durationSeconds=20,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50,zoomOutCompleteThreshold=.30,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
+    const durationSeconds=17,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.50,zoomOutCompleteThreshold=.30,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{if(!isCurrent())throw new Error('GV RANDOM NAVIGATION SUPERSEDED');
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/10);
@@ -3306,7 +3294,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 }catch(error){console.error('GV 130H ZOOM-IN CALLBACK FAILED',error)}
             }
             if(t<1&&sample!==lastSample){
-                const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:40,startRotation,targetRotation});
+                const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:55,startRotation,targetRotation});
                 if(t<zoomOutCompleteThreshold){
                     // Phase 1 (0–30%): FOV is the only changing view property.
                     aladin.setFov(state.fov);
