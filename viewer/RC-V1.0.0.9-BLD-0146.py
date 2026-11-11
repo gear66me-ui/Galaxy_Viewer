@@ -385,7 +385,7 @@ let gvReticlePollingSuspended=false;
 function gvStartReticlePolling(){
     if(!gvReticleEnabled||gvReticlePollingSuspended)return;
     if(!directionalReticleTimer)directionalReticleTimer=setInterval(()=>{if(gvReticleEnabled&&!gvReticlePollingSuspended&&document.visibilityState==='visible')updateDirectionalReticle()},250);
-    if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&!gvReticlePollingSuspended)gvUpdateEarthBearingPointer()},100);
+    if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);
 }
 function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}
 function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}
@@ -1951,6 +1951,7 @@ function gvStartRandomNavigationWatchdog(generation){
         try{gvInvalidateNextTripPrewarm('random navigation no-motion watchdog')}catch(error){console.warn('GV WATCHDOG PREWARM INVALIDATION FAILED',error)}
         try{gvSetTravelConstellationGlow(activeDestination?.constellation,Number(activeDestination?.ra),Number(activeDestination?.dec),false)}catch(_){}
         gvNavigationTravelActive=false;
+        gvConstellationPollingSuspended=false;gvResumeReticlePolling();
         window.GV_NAV_HIPS_FETCH_SUSPENDED=false;
         window.GV_NAV_BACKGROUND_SUSPENDED=false;
         navigationInFlight=false;
@@ -3270,7 +3271,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted),p=gvFlightNavigationSmootherstep(elapsed/(zoomSeconds*1000)),sample=Math.floor(elapsed/10);
                 if(sample!==lastSample){const fov=gvFlightLogLerp(zoomStartFov,finalFov,p);gvHoldDirectHdDuringTravel(now);if(switchToSphericalAtApex&&!projectionSwitchedAt55&&zoomStartFov>10&&fov<=10){projectionSwitchedAt55=true;aladin.setFov(10);hamburger?.selectProjection?.('SPHERICAL');console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 10°')}else{aladin.setFov(fov)}lastSample=sample}
                 if(elapsed<zoomSeconds*1000){requestAnimationFrame(frame);return}window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;gvNavigationTravelActive=false;resolve();
-            }catch(error){gvNavigationTravelActive=false;gvSetTravelConstellationGlow(ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
+            }catch(error){gvNavigationTravelActive=false;gvConstellationPollingSuspended=false;gvResumeReticlePolling();gvSetTravelConstellationGlow(ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
         });
         aladin.setFov(finalFov);
         gvNavigationTravelActive=false;gvConstellationPollingSuspended=false;gvResumeReticlePolling();gvSetTravelConstellationGlow(ra1,dec1,false);gvSyncConstellationCenterLabel(true);
@@ -3334,7 +3335,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             if(t<1){requestAnimationFrame(frame);return}
             if(!destinationCenterApplied){gvSetEarthPointerPosition(ra1,dec1,true);aladin.gotoRaDec(ra1,dec1);coordinate?.update(ra1,dec1)}
             aladin.setFov(finalFov);if(!birdseyeSettled)aladin.setRotation(targetRotation);gvHdTravelRetired=false;applyDirectHdOpacity();gvNavigationTravelActive=false;gvConstellationPollingSuspended=false;gvResumeReticlePolling();gvSetTravelConstellationGlow(ra1,dec1,false);gvSyncConstellationCenterLabel(true);try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}console.info('GV HD CROSSFADE RESTORED AT ARRIVAL');window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;resolve(prepared);
-        }catch(error){gvNavigationTravelActive=false;gvSetTravelConstellationGlow(ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
+        }catch(error){gvNavigationTravelActive=false;gvConstellationPollingSuspended=false;gvResumeReticlePolling();gvSetTravelConstellationGlow(ra1,dec1,false);window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;reject(error)}};requestAnimationFrame(frame);
     });
     return prepared;
 }
