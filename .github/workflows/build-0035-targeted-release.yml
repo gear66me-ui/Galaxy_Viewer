@@ -127,6 +127,23 @@ jobs:
               print("BUILD 0150 RELEASE VALIDATION PASSED: exact 0144 navigation behavior preserved; only the three sampling intervals are 5 ms (200 Hz).")
               sys.exit(0)
 
+          if build == "0151":
+              assert manifest.get("sourceCommit") == "355d850317f5d7239b811f90405c8246a5c26111", "Build 0151 source fingerprint mismatch"
+              assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0151 must preserve 0144 first-trip timing"
+              assert "zoomStartFov<=10" in rc and "zoomStartFov>10&&fov<=10" in rc, "0151 must preserve 0144 first-trip projection threshold"
+              assert "const durationSeconds=22,duration=durationSeconds*1000" in rc, "0151 must preserve 0144 standard-trip duration"
+              assert "zoomInThreshold=.6772727272727272,zoomOutCompleteThreshold=.32272727272727275" in rc, "0151 must preserve 0144 standard phase boundaries"
+              assert "const translateStart=.32272727272727275,translationComplete=.6772727272727272;" in rc, "0151 must preserve 0144 flight interpolation boundaries"
+              assert rc.count("sample=Math.floor(elapsed/5)") == 2 and rc.count("sample=Math.floor(elapsedMs/5)") == 1, "0151 must preserve 200 Hz navigation sampling"
+              assert rc.count("GV_SPLASH_ACTIVE") == 9 and rc.count("!window.GV_SPLASH_ACTIVE") == 7 and rc.count("if(window.GV_SPLASH_ACTIVE)return;") == 1, "All nine periodic viewer tasks must be suspended during splash"
+              launcher = (root / "viewer/releases/launch/Galaxy-Viewer-Launch/index.html").read_text()
+              assert "await viewerReady;\\n const splashPrepared" in launcher, "Splash must wait for the full viewer-ready barrier"
+              assert "window.GV_SPLASH_ACTIVE=true;" in launcher and "window.GV_NAV_BACKGROUND_SUSPENDED=true;" in launcher and "window.GV_NAV_HIPS_FETCH_SUSPENDED=true;" in launcher, "Splash must suspend viewer polling and HiPS fetches"
+              assert "await splashComplete;\\n window.GV_SPLASH_ACTIVE=false;" in launcher, "Viewer activity must resume after splash completion"
+              assert "}catch(e){window.GV_SPLASH_ACTIVE=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;" in launcher, "Viewer activity must resume on splash failure"
+              print("BUILD 0151 RELEASE VALIDATION PASSED: 0144 navigation behavior preserved; 200 Hz travel sampling retained; complete startup barrier precedes splash; all nine periodic viewer tasks and HiPS fetching suspend during splash and resume on completion/error.")
+              sys.exit(0)
+
           assert "function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}" in rc and "function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}" in rc, "Compass polling must suspend and resume around travel phases"
           assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must poll at 100 ms only during active navigation"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
