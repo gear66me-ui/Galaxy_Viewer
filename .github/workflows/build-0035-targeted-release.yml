@@ -154,7 +154,7 @@ jobs:
               assert 'BUILD_NUMBER = "0159"' in rc and "const GV200001_BUILD='0159'" in rc and "const GV_RUNTIME='0159';" in rc, "0159 runtime identity markers mismatch"
               assert "zoomSeconds=7.0" not in rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")], "0159 must not retain the old first-home zoom timer"
               compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
               assert match, "0159 embedded JavaScript extraction failed"
               pathlib.Path("/tmp/gv-build-0159-runtime.js").write_text(match.group(1))
               import subprocess
