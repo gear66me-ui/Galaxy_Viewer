@@ -3115,19 +3115,6 @@ function gvFlightGreatCirclePosition(ra1,dec1,ra2,dec2,progress){
     let ra=Math.atan2(v[1],v[0])*r2d;if(ra<0)ra+=360;return [ra,Math.atan2(v[2],Math.hypot(v[0],v[1]))*r2d];
 }
 function gvFlightLogLerp(a,b,u){const x=Math.max(Number(a),1e-12),y=Math.max(Number(b),1e-12),t=gvFlightClamp01(u);return Math.exp(Math.log(x)+(Math.log(y)-Math.log(x))*t)}
-function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotation,targetRotation}){
-    const duration=firstHomeTrip?7.5:22,t=gvFlightClamp01((Math.max(0,Number(sec)||0))/duration);
-    if(firstHomeTrip){
-        const translateStart=.305,translationComplete=.695;
-        let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
-        let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
-        return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
-    }
-    const translateStart=.32272727272727275,translationComplete=.6772727272727272;
-    let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
-    let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
-    return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
-}
 let gvTravelConstellationLastName=null;
 let gvTravelConstellationLastCheck=0;
 function gvRenderTravelConstellationLabel(name){
