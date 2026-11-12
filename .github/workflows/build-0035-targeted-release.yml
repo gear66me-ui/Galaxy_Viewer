@@ -291,9 +291,11 @@ jobs:
               assert "zoomStartFov>10&&fov<=10" in rc, "0158D must preserve the first-home-trip 10-degree projection switch"
               assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0158D must preserve the 0150 first-home-trip timing"
               compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
-              assert match, "0158D embedded JavaScript block could not be extracted"
-              pathlib.Path("/tmp/gv-build-0158D-runtime.js").write_text(match.group(1))
+              js_start_marker = 'display(Javascript(r"""'
+              js_start = rc.index(js_start_marker) + len(js_start_marker)
+              js_end = rc.rfind('"""))')
+              assert js_end > js_start, "0158D embedded JavaScript block could not be extracted"
+              pathlib.Path("/tmp/gv-build-0158D-runtime.js").write_text(rc[js_start:js_end])
               import subprocess
               subprocess.run(["node", "--check", "/tmp/gv-build-0158D-runtime.js"], check=True)
               print("BUILD 0158D TARGETED VALIDATION PASSED: 18-second rounded-goalpost choreography; continuous RAF; 4.2s translation/rotation join; 7.8s 40-degree apex; shared translation/rotation easing; first-home trip preserved; compass polling suspended/resumed; Python and JavaScript syntax.")
