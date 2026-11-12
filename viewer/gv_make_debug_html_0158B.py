@@ -43,7 +43,7 @@ document = """<!doctype html>
 <title>Galaxy Viewer Build 0158B</title></head><body>
 """
 document += html_parts[0]
-safe_js = re.sub(r"</script", r"<\\/script", js_parts[0], flags=re.IGNORECASE)
+safe_js = re.sub(r"</script", r"<\/script", js_parts[0], flags=re.IGNORECASE)
 document += "\n<script>\n" + safe_js + "\n</script>\n</body></html>\n"
 output.write_text(document, encoding="utf-8")
 print(f"Created {output.resolve()} ({output.stat().st_size} bytes)")
