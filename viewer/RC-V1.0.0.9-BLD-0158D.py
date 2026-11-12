@@ -661,7 +661,7 @@ function gvInstallEarthDistanceBanner(){
     const b=document.createElement('div');b.id='gv-earth-distance-banner';document.body.appendChild(b);
     const s=document.createElement('div');s.id='gv-live-physical-scale';s.innerHTML='<span class="gv-live-scale-label"></span><span class="gv-live-scale-line"></span>';document.body.appendChild(s);
 }
-let gvNavigationTravelActive=false;gvResumeReticlePolling();
+let gvNavigationTravelActive=false;
 let gvLiveScaleValueLy=null;
 let gvEarthDistanceTarget=null;
 let gvEarthDistanceTargetKey='';
