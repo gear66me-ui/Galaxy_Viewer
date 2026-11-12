@@ -274,6 +274,30 @@ jobs:
               assert "await splashComplete;" in launcher and "window.GV_SPLASH_ACTIVE=false;" in launcher, "0158B splash must resume viewer after completion"
               print("BUILD 0158B TARGETED VALIDATION PASSED: Python/runtime syntax; 5s+7s first-home trip; 18s standard three-phase trip; projection switch; travel suspensions; splash startup barrier.")
               sys.exit(0)
+          if build == "0158D":
+              assert manifest.get("sourceCommit") == "8626601de3e164d81499a8ead87e1c3b7a8aa46c", "0158D source fingerprint mismatch"
+              assert "const totalMs=18000,apexMs=7800,translationStartMs=4200" in rc, "0158D must use the 18-second rounded-goalpost timing"
+              assert "await runPhase(" not in rc, "0158D must use one continuous animation clock, not sequential phase promises"
+              assert "const translationProgress=gvFlightNavigationSmootherstep((elapsed-translationStartMs)/(totalMs-translationStartMs))" in rc, "0158D translation/rotation must join at 4.2 seconds and ease continuously"
+              assert "gvFlightLogLerp(startFov,40,gvFlightNavigationSmootherstep(elapsed/apexMs))" in rc and "gvFlightLogLerp(40,finalFov,gvFlightNavigationSmootherstep((elapsed-apexMs)/(totalMs-apexMs)))" in rc, "0158D must round the zoom-out/zoom-in corner at the 7.8-second 40-degree apex"
+              assert "const rotation=startRotation+rotationDelta*translationProgress" in rc, "0158D rotation must share the continuous translation progress"
+              assert "const frame=now=>" in rc and "requestAnimationFrame(frame)" in rc, "0158D must use one requestAnimationFrame flight clock"
+              assert "function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}" in rc and "function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}" in rc, "0158D compass polling suspend/resume functions missing"
+              assert "gvNavigationTravelActive=true;gvSuspendReticlePolling();" in rc, "0158D must suspend compass polling at travel start"
+              assert "gvNavigationTravelActive=false;gvResumeReticlePolling();" in rc, "0158D must resume compass polling on all travel exit paths"
+              assert "if(!gvReticleEnabled||gvReticlePollingSuspended)return;" in rc, "0158D must prevent polling restart while travel is active"
+              assert "setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100)" in rc, "0158D Earth pointer polling must use 100 ms cadence"
+              assert "let gvNavigationTravelActive=false;gvResumeReticlePolling();" not in rc, "0158D must not resume polling during module initialization"
+              assert "zoomStartFov>10&&fov<=10" in rc, "0158D must preserve the first-home-trip 10-degree projection switch"
+              assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0158D must preserve the 0150 first-home-trip timing"
+              compile(rc, expected_viewer, "exec")
+              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              assert match, "0158D embedded JavaScript block could not be extracted"
+              pathlib.Path("/tmp/gv-build-0158D-runtime.js").write_text(match.group(1))
+              import subprocess
+              subprocess.run(["node", "--check", "/tmp/gv-build-0158D-runtime.js"], check=True)
+              print("BUILD 0158D TARGETED VALIDATION PASSED: 18-second rounded-goalpost choreography; continuous RAF; 4.2s translation/rotation join; 7.8s 40-degree apex; shared translation/rotation easing; first-home trip preserved; compass polling suspended/resumed; Python and JavaScript syntax.")
+              sys.exit(0)
           assert "function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}" in rc and "function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}" in rc, "Compass polling must suspend and resume around travel phases"
           assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must poll at 100 ms only during active navigation"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
