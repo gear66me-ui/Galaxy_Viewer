@@ -144,6 +144,24 @@ jobs:
               print("BUILD 0151 RELEASE VALIDATION PASSED: 0144 navigation behavior preserved; 200 Hz travel sampling retained; complete startup barrier precedes splash; all nine periodic viewer tasks and HiPS fetching suspend during splash and resume on completion/error.")
               sys.exit(0)
 
+          if build == "0159":
+              assert manifest.get("sourceCommit") == "94ba74c4e43cd46f4b407c8634f1e970af168084", "Build 0159 source fingerprint mismatch"
+              assert "const translateSeconds=5.0,zoomSeconds=9.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0159 first-home trip must use 5s translation plus 9s zoom-in"
+              assert "zoomStartFov<=10" in rc and "zoomStartFov>10&&fov<=10" in rc, "0159 must preserve first-trip projection switch at 10 degrees"
+              assert "const durationSeconds=22,duration=durationSeconds*1000" in rc, "0159 must preserve 22-second standard trip"
+              assert "zoomInThreshold=.6772727272727272,zoomOutCompleteThreshold=.32272727272727275" in rc, "0159 must preserve standard phase boundaries"
+              assert rc.count("sample=Math.floor(elapsed/5)") == 2 and rc.count("sample=Math.floor(elapsedMs/5)") == 1, "0159 must preserve 200 Hz navigation sampling"
+              assert 'BUILD_NUMBER = "0159"' in rc and "const GV200001_BUILD='0159'" in rc and "const GV_RUNTIME='0159';" in rc, "0159 runtime identity markers mismatch"
+              assert "zoomSeconds=7.0" not in rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")], "0159 must not retain the old first-home zoom timer"
+              compile(rc, expected_viewer, "exec")
+              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              assert match, "0159 embedded JavaScript extraction failed"
+              pathlib.Path("/tmp/gv-build-0159-runtime.js").write_text(match.group(1))
+              import subprocess
+              subprocess.run(["node", "--check", "/tmp/gv-build-0159-runtime.js"], check=True)
+              print("BUILD 0159 RELEASE VALIDATION PASSED: only first-home zoom-in extended from 7s to 9s; translation remains 5s; standard 22s trip, projection threshold, 200Hz sampling, Python and JavaScript syntax preserved.")
+              sys.exit(0)
+
           if build == "0157":
               assert manifest.get("sourceCommit") == "0c76f37e31f14537336b919a428abb51cc5b448c", "Build 0157 source fingerprint mismatch"
               assert "const totalFlightMs=18000;" in rc, "Build 0157 must use the exact 18-second flight"
