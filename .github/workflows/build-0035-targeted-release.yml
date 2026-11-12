@@ -273,6 +273,7 @@ jobs:
               assert "window.GV_SPLASH_ACTIVE=true;" in launcher and "window.GV_NAV_BACKGROUND_SUSPENDED=true;" in launcher and "window.GV_NAV_HIPS_FETCH_SUSPENDED=true;" in launcher, "0158B splash must suspend viewer polling and HiPS"
               assert "await splashComplete;" in launcher and "window.GV_SPLASH_ACTIVE=false;" in launcher, "0158B splash must resume viewer after completion"
               print("BUILD 0158B TARGETED VALIDATION PASSED: Python/runtime syntax; 5s+7s first-home trip; 18s standard three-phase trip; projection switch; travel suspensions; splash startup barrier.")
+              sys.exit(0)
           assert "function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}" in rc and "function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}" in rc, "Compass polling must suspend and resume around travel phases"
           assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must poll at 100 ms only during active navigation"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
