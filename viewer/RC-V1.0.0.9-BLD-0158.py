@@ -3235,13 +3235,8 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}
         }).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
     }
-    const phaseMs=6000,totalMs=18000,rotationDelta=()=>gvFlightNormalizeRotationDelta(targetRotation-startRotation);
+    const phaseMs=6000,rotationDelta=()=>gvFlightNormalizeRotationDelta(targetRotation-startRotation);
     let tMinusEightStarted=false,lastSample=-1;
-    const fail=error=>{
-        gvNavigationTravelActive=false;gvSetTravelConstellationGlow(constellationName,ra1,dec1,false);
-        window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;
-        throw error;
-    };
     const animate=(durationMs,step)=>{
         return new Promise((resolve,reject)=>{
             const started=performance.now();
@@ -3265,7 +3260,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             if(fov>=GV_HD_RETIRE_FOV&&!gvHdTravelRetired){gvHdTravelRetired=true;applyDirectHdOpacity();console.info('GV HD RETIRED — ZOOM-OUT FOV THRESHOLD',{fov:Number(fov.toFixed(2))})}
         });
         aladin.setFov(40);
-        try{onZoomOutComplete?.()}catch(error){console.error('GV 130H ZOOM-OUT COMPLETE CALLBACK FAILED',error)}
+        if(!firstHomeTrip){try{onZoomOutComplete?.()}catch(error){console.error('GV 130H ZOOM-OUT COMPLETE CALLBACK FAILED',error)}}
         lastSample=-1;
 
         // PHASE 2 — position and rotation only: fixed 40-degree FOV, exactly 6 seconds.
@@ -3297,13 +3292,12 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         lastSample=-1;
 
         // PHASE 3 — zoom only: 40 degrees to destination FOV, exactly 6 seconds.
+        let firstTripProjectionSwitched=false;
+        if(firstHomeTrip&&switchToSphericalAtApex&&startFov<=10){firstTripProjectionSwitched=true;try{hamburger?.selectProjection?.('SPHERICAL');console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN: START FOV ≤10°')}catch(error){console.error('GV FIRST-TRIP PROJECTION SWITCH FAILED',error)}}
         await animate(phaseMs,(p,elapsed,now)=>{
             const fov=gvFlightLogLerp(40,finalFov,p);
             gvHoldDirectHdDuringTravel(now);
-            if(firstHomeTrip&&switchToSphericalAtApex&&fov<=10&&fov>finalFov){
-                try{hamburger?.selectProjection?.('SPHERICAL');console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 10°')}
-                catch(error){console.error('GV FIRST-TRIP PROJECTION SWITCH FAILED',error)}
-            }
+            if(firstHomeTrip&&switchToSphericalAtApex&&!firstTripProjectionSwitched&&fov<=10){firstTripProjectionSwitched=true;try{aladin.setFov(10);hamburger?.selectProjection?.('SPHERICAL');console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 10°')}catch(error){console.error('GV FIRST-TRIP PROJECTION SWITCH FAILED',error)}}
             aladin.setFov(fov);
         });
         aladin.setFov(finalFov);
