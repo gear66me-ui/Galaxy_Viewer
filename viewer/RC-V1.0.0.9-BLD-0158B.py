@@ -3271,7 +3271,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         return prepared;
     }
     if(registeredPromise)registeredPromise.then(registered=>{const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);if(Number.isFinite(nra)&&Number.isFinite(ndec)&&Number.isFinite(nfov)&&nfov>0&&Number.isFinite(nrotation)){ra1=nra;dec1=ndec;finalFov=nfov;targetRotation=nrotation}}).catch(error=>console.error('GV 130H REGISTERED DESTINATION PREPARE FAILED',error));
-    const phaseMs=6000,totalMs=18000,startFov=Math.max(Number.isFinite(startFov)?startFov:40,1),rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
+    const phaseMs=6000,totalMs=18000,rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
     let totalElapsed=0,lastTMinusEight=false,projectionSwitchedAtApex=false,zoomOutCompleted=false,zoomInStarted=false,destinationCenterApplied=false;
     const runPhase=(phase,step)=>new Promise((resolve,reject)=>{
         const phaseStarted=performance.now();let lastSample=-1;
