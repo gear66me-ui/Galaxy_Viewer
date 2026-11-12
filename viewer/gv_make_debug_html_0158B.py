@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build a plain Chrome page from the 0158B IPython payloads; no UI is injected."""
+"""Build a plain Chrome page from the 0158B IPython payloads; injects no UI."""
 import ast
 import pathlib
 import re
@@ -37,13 +37,13 @@ for node in calls:
 if len(html_parts) != 1 or len(js_parts) != 1:
     raise SystemExit(f"Expected exactly one HTML and one Javascript payload; found HTML={len(html_parts)} JS={len(js_parts)}")
 
-document = (
-    "<!doctype html>\\n<html><head><meta charset=\\"utf-8\\">"
-    "<meta name=\\"viewport\\" content=\\"width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no\\">"
-    "<title>Galaxy Viewer Build 0158B</title></head><body>\\n"
-)
+document = """<!doctype html>
+<html><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Galaxy Viewer Build 0158B</title></head><body>
+"""
 document += html_parts[0]
 safe_js = re.sub(r"</script", r"<\\/script", js_parts[0], flags=re.IGNORECASE)
-document += "\\n<script>\\n" + safe_js + "\\n</script>\\n</body></html>\\n"
+document += "\n<script>\n" + safe_js + "\n</script>\n</body></html>\n"
 output.write_text(document, encoding="utf-8")
 print(f"Created {output.resolve()} ({output.stat().st_size} bytes)")
