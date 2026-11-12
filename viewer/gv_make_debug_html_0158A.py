@@ -47,16 +47,16 @@ html,body{margin:0;width:100%;height:100%;background:#000;color:#fff}
  function report(label,detail){
   var p=document.getElementById("gv-0158a-error");
   if(!p){p=document.createElement("pre");p.id="gv-0158a-error";document.body.appendChild(p);}
-  p.textContent="GALAXY VIEWER "+label+"\\n\\n"+String(detail&&(detail.stack||detail.message)||detail||"Unknown error");
+  p.textContent="GALAXY VIEWER "+label+"\n\n"+String(detail&&(detail.stack||detail.message)||detail||"Unknown error");
  }
  window.addEventListener("error",function(e){report("SCRIPT ERROR",e.error||e.message||e);});
  window.addEventListener("unhandledrejection",function(e){report("UNHANDLED PROMISE REJECTION",e.reason);});
 })();
 </script>
 """
-document += "\\n".join(html_parts)
+document += "\n".join(html_parts)
 for js in js_parts:
-    document += "\\n<script>\\n" + js.replace("</script>", "<\\\\/script>") + "\\n</script>\\n"
-document += "\\n</body></html>\\n"
+    document += "\n<script>\n" + js.replace("</script>", "<\\/script>") + "\n</script>\n"
+document += "\n</body></html>\n"
 output.write_text(document, encoding="utf-8")
 print(f"Created {output.resolve()} from {source} ({len(html_parts)} HTML block(s), {len(js_parts)} JavaScript block(s)).")
