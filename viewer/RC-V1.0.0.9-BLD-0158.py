@@ -4326,5 +4326,10 @@ console.info(`${VERSION} — TRIAL READY`,{
 });
 })().catch(error=>{
     console.error('GV200-001 BOOT FAILURE',error);
+    try{
+        let panel=document.getElementById('gv-boot-failure');
+        if(!panel){panel=document.createElement('pre');panel.id='gv-boot-failure';panel.style.cssText='position:fixed;inset:12px;z-index:2147483647;overflow:auto;white-space:pre-wrap;word-break:break-word;background:#160909;color:#ffb4b4;border:2px solid #ff5555;border-radius:8px;padding:14px;font:14px/1.45 monospace';document.body.appendChild(panel)}
+        panel.textContent='GALAXY VIEWER STARTUP FAILED\\n\\n'+String(error?.stack||error?.message||error);
+    }catch(_){}
 });
 """))
