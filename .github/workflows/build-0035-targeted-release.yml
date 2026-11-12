@@ -1,5 +1,5 @@
 name: Validate and Deploy RC-V1.0.0.9 (pointer-driven release)
-# Build 0154: validate native three-command flight choreography on release.
+# Build 0158B: validate restored 0150 first-home trip plus 18-second three-phase standard travel.
 
 on:
   push:
@@ -53,7 +53,7 @@ jobs:
           build = str(pointer.get("build", ""))
           release = str(pointer.get("version", ""))
           expected_viewer = f"RC-V1.0.0.9-BLD-{build}.py"
-          assert release == "RC-V1.0.0.9" and build.isdigit(), pointer
+          assert release == "RC-V1.0.0.9" and re.fullmatch(r"\d{4}[A-Z]?", build), pointer
           assert pointer.get("viewer") == expected_viewer, pointer
           assert manifest.get("release") == release and manifest.get("build") == build, manifest
           assert manifest.get("runtime") == [f"viewer/{expected_viewer}"], manifest
@@ -253,6 +253,26 @@ jobs:
               print("BUILD 0152 RELEASE VALIDATION PASSED: only numeric duration/phase inputs changed; first-trip timing, easing, choreography, rotation, callbacks, and 200 Hz sampling preserved.")
               sys.exit(0)
 
+          if build == "0158B":
+              assert manifest.get("sourceCommit") == "61d70873acf811bf9885d70aa7dabbc3e111bd48", "Build 0158B source commit fingerprint mismatch"
+              assert "const translateSeconds=5.0,zoomSeconds=7.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0158B must preserve the 0150 first-home trip: 5s translation + 7s zoom-in"
+              assert "const phaseMs=6000,totalMs=18000" in rc, "0158B standard travel must total exactly 18 seconds"
+              assert "await runPhase(1," in rc and "await runPhase(2," in rc and "await runPhase(3," in rc, "0158B must execute exactly three standard travel phases"
+              assert rc.count("sample=Math.floor(elapsed/5)") == 2, "0158B first-home trip must retain 5ms sampling"
+              assert rc.count("sample=Math.floor(elapsed/16)") == 1, "0158B standard travel must retain 16ms phase sampling"
+              assert "GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 10°" in rc and "zoomStartFov>10&&fov<=10" in rc, "0158B first-trip 10-degree projection switch missing"
+              assert "window.GV_NAV_BACKGROUND_SUSPENDED=true" in rc and "window.GV_NAV_HIPS_FETCH_SUSPENDED=true" in rc, "0158B travel suspension guards missing"
+              compile(rc, expected_viewer, "exec")
+              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              assert match, "0158B embedded JavaScript block could not be extracted"
+              pathlib.Path("/tmp/gv-build-0158B-runtime.js").write_text(match.group(1))
+              import subprocess
+              subprocess.run(["node", "--check", "/tmp/gv-build-0158B-runtime.js"], check=True)
+              launcher = (root / "viewer/releases/launch/Galaxy-Viewer-Launch/index.html").read_text()
+              assert "await viewerReady;\\n const splashPrepared" in launcher, "0158B must preserve the complete startup barrier before splash"
+              assert "window.GV_SPLASH_ACTIVE=true;" in launcher and "window.GV_NAV_BACKGROUND_SUSPENDED=true;" in launcher and "window.GV_NAV_HIPS_FETCH_SUSPENDED=true;" in launcher, "0158B splash must suspend viewer polling and HiPS"
+              assert "await splashComplete;\\n window.GV_SPLASH_ACTIVE=false;" in launcher, "0158B splash must resume viewer after completion"
+              print("BUILD 0158B TARGETED VALIDATION PASSED: Python/runtime syntax; 5s+7s first-home trip; 18s standard three-phase trip; projection switch; travel suspensions; splash startup barrier.")
           assert "function gvSuspendReticlePolling(){gvReticlePollingSuspended=true;gvStopReticlePolling()}" in rc and "function gvResumeReticlePolling(){gvReticlePollingSuspended=false;gvStartReticlePolling()}" in rc, "Compass polling must suspend and resume around travel phases"
           assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must poll at 100 ms only during active navigation"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
