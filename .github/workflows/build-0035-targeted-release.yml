@@ -162,6 +162,26 @@ jobs:
               print("BUILD 0159 RELEASE VALIDATION PASSED: only first-home zoom-in extended from 7s to 9s; translation remains 5s; standard 22s trip, projection threshold, 200Hz sampling, Python and JavaScript syntax preserved.")
               sys.exit(0)
 
+          if build == "0161":
+              assert manifest.get("sourceCommit") == "776889cb3847173ed8c6d8d3c167aa5ee050dd33", "Build 0161 source fingerprint mismatch"
+              assert "const translateSeconds=5.0,zoomSeconds=9.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0161 must preserve 0160 first-home timing"
+              assert "const durationSeconds=22,duration=durationSeconds*1000" in rc, "0161 must preserve the 22-second standard trip"
+              assert "zoomInThreshold=.6772727272727272,zoomOutCompleteThreshold=.32272727272727275" in rc, "0161 must preserve standard phase boundaries"
+              assert rc.count("sample=Math.floor(elapsed/5)") == 2 and rc.count("sample=Math.floor(elapsedMs/5)") == 1, "0161 must preserve 200 Hz sampling"
+              assert 'BUILD_NUMBER = "0161"' in rc and "const GV200001_BUILD='0161'" in rc and "const GV_RUNTIME='0161';" in rc, "0161 runtime identity markers mismatch"
+              first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
+              assert "const elapsed=Math.min(zoomSeconds*1000,now-zoomStarted)" in first_trip, "0161 first-trip zoom RAF missing"
+              assert "if(!tMinusEightStarted&&t>=tMinusEightThreshold)" in first_trip, "0161 must trigger the T-minus-eight callback during first-trip zoom-in"
+              assert "remainingSeconds:8,firstHomeTrip:true" in first_trip, "0161 first-trip preparation callback metadata missing"
+              compile(rc, expected_viewer, "exec")
+              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              assert match, "0161 embedded JavaScript extraction failed"
+              pathlib.Path("/tmp/gv-build-0161-runtime.js").write_text(match.group(1))
+              import subprocess
+              subprocess.run(["node", "--check", "/tmp/gv-build-0161-runtime.js"], check=True)
+              print("BUILD 0161 RELEASE VALIDATION PASSED: first-trip T-minus-eight callback now fires during zoom-in; travel timing, projection, sampling, Python and JavaScript syntax preserved.")
+              sys.exit(0)
+
           if build == "0160":
               assert manifest.get("sourceCommit") == "67ef07d495244b5807ec94b654c402172db446e3", "Build 0160 source fingerprint mismatch"
               assert "const translateSeconds=5.0,zoomSeconds=9.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0160 must preserve 0159 first-home timing: 5s translation + 9s zoom-in"
