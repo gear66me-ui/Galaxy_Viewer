@@ -176,7 +176,7 @@ jobs:
               assert "stagedInstallPromise=null;" in rc and "throw error;" in rc, "0160 must clear failed pending installs so retry is possible"
               assert rc.count("await installWhenReady(retryPrepared,{stage:true});") == 2, "0160 must retry AVM installation at both first-trip and subsequent arrivals"
               compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
               assert match, "0160 embedded JavaScript extraction failed"
               pathlib.Path("/tmp/gv-build-0160-runtime.js").write_text(match.group(1))
               import subprocess
