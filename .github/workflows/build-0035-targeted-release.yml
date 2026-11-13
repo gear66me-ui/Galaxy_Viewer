@@ -174,7 +174,7 @@ jobs:
               assert "if(!tMinusEightStarted&&t>=tMinusEightThreshold)" in first_trip, "0161 must trigger the T-minus-eight callback during first-trip zoom-in"
               assert "remainingSeconds:8,firstHomeTrip:true" in first_trip, "0161 first-trip preparation callback metadata missing"
               compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
               assert match, "0161 embedded JavaScript extraction failed"
               pathlib.Path("/tmp/gv-build-0161-runtime.js").write_text(match.group(1))
               import subprocess
