@@ -25,7 +25,7 @@
      ECO: GV200-001
      ======================================================================= -->
 <style>
-html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#000;font-family:"GV Space Age",sans-serif}
 #aladin-cosmic-command-test{position:relative;width:100%;height:100dvh;max-height:100%;overflow:hidden;background:radial-gradient(ellipse at 50% 44%,#123d78 0%,#0a2855 42%,#04152f 76%,#011813 100%);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box;touch-action:none}#aladin-cosmic-command-test .aladin-container,#aladin-cosmic-command-test .aladin-box{background:radial-gradient(ellipse at 50% 44%,#123d78 0%,#0a2855 42%,#04152f 76%,#011813 100%)!important}
 #aladin-cosmic-command-test .aladin-logo-container,#aladin-cosmic-command-test .aladin-logo{display:none!important;visibility:hidden!important;opacity:0!important;pointer-events:none!important}
 </style>
@@ -4309,6 +4309,11 @@ console.info(`${VERSION} — TRIAL READY`,{
 });
 })().catch(error=>{
     console.error('GV200-001 BOOT FAILURE',error);
+    const panel=document.createElement('pre');
+    panel.id='gv-boot-failure-visible';
+    panel.textContent='GALAXY VIEWER 0161A — STARTUP FAILED\\n\\n'+String(error?.stack||error?.message||error);
+    Object.assign(panel.style,{position:'fixed',inset:'12px',zIndex:'2147483647',margin:'0',padding:'14px',overflow:'auto',whiteSpace:'pre-wrap',overflowWrap:'anywhere',boxSizing:'border-box',border:'1px solid #58BFFF',borderRadius:'8px',background:'rgba(1,8,22,.97)',color:'#FFD84A',font:'12px/1.5 monospace'});
+    document.body.appendChild(panel);
 });
 
 </script>
