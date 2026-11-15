@@ -3245,12 +3245,17 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         aladin.setRotation(targetRotation);
         gvUpdateTravelConstellationAt(ra1,dec1,true);
         // PHASE 3 — eight seconds: hold destination coordinates and rotation; zoom to final image FOV.
-        if(switchToSphericalAtApex){
-            try{aladin.setFov(apexFov);hamburger?.selectProjection?.('SPHERICAL');console.info('GV 0161A PROJECTION SWITCH AT PHASE-3 START')}catch(error){console.error('GV 0161A PROJECTION SWITCH FAILED',error)}
+        let projectionSwitched=false;
+        if(switchToSphericalAtApex&&!firstHomeTrip){
+            try{aladin.setFov(apexFov);hamburger?.selectProjection?.('SPHERICAL');projectionSwitched=true;console.info('GV 0161A PROJECTION SWITCH AT PHASE-3 START')}catch(error){console.error('GV 0161A PROJECTION SWITCH FAILED',error)}
         }
         try{console.info('GV 0161A HD HANDOFF REQUESTED — ZOOM-IN START');onZoomInStart?.()}catch(error){console.error('GV 0161A ZOOM-IN CALLBACK FAILED',error)}
         await animate(zoomInSeconds,(p,elapsed,now)=>{
-            aladin.setFov(gvFlightLogLerp(apexFov,finalFov,p));
+            const fov=gvFlightLogLerp(apexFov,finalFov,p);
+            if(switchToSphericalAtApex&&firstHomeTrip&&!projectionSwitched&&fov<=10){
+                aladin.setFov(10);hamburger?.selectProjection?.('SPHERICAL');projectionSwitched=true;
+                console.info('GV 0161A FIRST-TRIP PROJECTION SWITCH AT 10°');
+            }else aladin.setFov(fov);
             gvHoldDirectHdDuringTravel(now);
         },'ZOOM_IN');
         aladin.setFov(finalFov);
