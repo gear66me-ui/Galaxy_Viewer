@@ -4306,9 +4306,24 @@ window.GalaxyViewerStartupReady=(async()=>{
 // Standalone Chrome launch: Android normally triggers the cosmic reveal through
 // its native bridge. A browser page has no such bridge, so release the black
 // reveal veil as soon as the web startup readiness barrier resolves.
-window.GalaxyViewerStartupReady.then(()=>{
-    if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
-}).catch(error=>console.error('GV BROWSER COSMIC REVEAL START FAILED',error));
+// Start the browser reveal on a bounded timer as well as on the full readiness
+// barrier. The first-destination HD prewarm can remain pending on slow mobile
+// networks; it must never be allowed to hold a full-screen black veil indefinitely.
+let gvBrowserRevealStarted=false;
+const gvStartBrowserReveal=()=>{
+    if(gvBrowserRevealStarted)return;
+    gvBrowserRevealStarted=true;
+    if(typeof window.GalaxyViewerStartCosmicReveal==='function'){
+        window.GalaxyViewerStartCosmicReveal();
+    }else{
+        document.getElementById('gv-cosmic-reveal')?.remove();
+    }
+};
+window.GalaxyViewerStartupReady.then(gvStartBrowserReveal).catch(error=>{
+    console.error('GV BROWSER STARTUP BARRIER FAILED',error);
+    gvStartBrowserReveal();
+});
+setTimeout(gvStartBrowserReveal,4000);
 console.info(`${VERSION} — TRIAL READY`,{
     routeLength:activeRoute.length,
     navigation:navigationRuntime.snapshot()
