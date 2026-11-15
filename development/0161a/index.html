@@ -4318,19 +4318,22 @@ window.GalaxyViewerCore=Object.freeze({
 window.GalaxyViewerPrepareCosmicReveal=gvCosmicReveal.prepare;
 window.GalaxyViewerStartCosmicReveal=gvCosmicReveal.start;
 window.GalaxyViewerStartupReady=(async()=>{
+ // Only core rendering dependencies gate first paint. HD image preparation,
+ // thumbnail indexing and constellation artwork are background enhancements;
+ // none may hold the browser page behind its startup veil.
  const required=[
   gvSpaceAgeReady,gvNavigatorSpaceAgeReady,gvTravelSpaceAgeReady,
-  gvCoordinateSpaceAgeReady,gvDestinationSpaceAgeReady,coordinate?.ready,
-  gvSurveyThumbnailPackReady,gvFirstDestinationPreloadKick,
-  window.GV_CONSTELLATION_PRELOAD_READY,
-  Promise.resolve().then(()=>gvCosmicReveal.prepare())
+  gvCoordinateSpaceAgeReady,gvDestinationSpaceAgeReady,coordinate?.ready
  ].filter(Boolean);
- const results=await Promise.allSettled(required);
+ const results=await Promise.race([
+  Promise.allSettled(required),
+  new Promise((_,reject)=>setTimeout(()=>reject(new Error('CORE STARTUP RESOURCE TIMEOUT after 15000 ms')),15000))
+ ]);
  const failures=results.filter(result=>result.status==='rejected');
- if(failures.length)throw new Error('STARTUP RESOURCE BARRIER FAILED: '+failures.map(result=>String(result.reason?.message||result.reason)).join(' | '));
+ if(failures.length)throw new Error('CORE STARTUP RESOURCE BARRIER FAILED: '+failures.map(result=>String(result.reason?.message||result.reason)).join(' | '));
  await document.fonts.ready;
  return Object.freeze({ready:true,resources:results.length,navigation:navigationRuntime.snapshot(),firstDestination:true});
-})();
+})();;
 // Standalone Chrome launch: Android normally triggers the cosmic reveal through
 // its native bridge. A browser page has no such bridge, so release the black
 // reveal veil as soon as the web startup readiness barrier resolves.
