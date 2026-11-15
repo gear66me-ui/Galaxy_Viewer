@@ -4356,6 +4356,7 @@ window.GalaxyViewerStartupReady.then(()=>{
     gvStartBrowserReveal();
     if(gvBootStatus)gvBootStatus.remove();
 }).catch(error=>{
+    clearTimeout(gvBootWatchdog);
     console.error('GV BROWSER STARTUP BARRIER FAILED',error);
     gvSetBootStage('Viewer startup incomplete',String(error?.message||error));
     gvStartBrowserReveal();
