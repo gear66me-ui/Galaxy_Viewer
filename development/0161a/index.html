@@ -4303,6 +4303,12 @@ window.GalaxyViewerStartupReady=(async()=>{
  await document.fonts.ready;
  return Object.freeze({ready:true,resources:results.length,navigation:navigationRuntime.snapshot(),firstDestination:true});
 })();
+// Standalone Chrome launch: Android normally triggers the cosmic reveal through
+// its native bridge. A browser page has no such bridge, so release the black
+// reveal veil as soon as the web startup readiness barrier resolves.
+window.GalaxyViewerStartupReady.then(()=>{
+    if(typeof window.GalaxyViewerStartCosmicReveal==='function')window.GalaxyViewerStartCosmicReveal();
+}).catch(error=>console.error('GV BROWSER COSMIC REVEAL START FAILED',error));
 console.info(`${VERSION} — TRIAL READY`,{
     routeLength:activeRoute.length,
     navigation:navigationRuntime.snapshot()
