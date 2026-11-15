@@ -1005,6 +1005,15 @@ const gvCosmicReveal=(()=>{
     return {prepare,start};
 })();
 
+// Standalone Chrome: do not install the opaque full-screen pixel veil.
+// The Android host owns that animation in the native app. In a normal browser
+// there is no native compositor handoff, so the safest presentation is direct
+// rendering with no full-screen black canvas at all.
+gvCosmicReveal.prepare=()=>true;
+gvCosmicReveal.start=()=>{
+    document.getElementById('gv-cosmic-reveal')?.remove();
+};
+
 // ============================================================================
 // SECTION 018 — GALAXY VIEWER MODULE LOAD
 // ECO: GV200-001
