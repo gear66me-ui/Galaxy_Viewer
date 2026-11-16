@@ -3263,11 +3263,13 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 reject(error);
             }};requestAnimationFrame(frame);
         });
-        aladin.setFov(40);
         if(switchToSphericalAtApex){
             hamburger?.selectProjection?.('SPHERICAL');
             console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 40° FOV');
         }
+        // Set the 40° boundary once after projection selection. Do not issue
+        // redundant setFov(40) calls at 200 Hz during the six-second translation.
+        aladin.setFov(40);
 
         // PHASE 2 — translate and rotate to the final RA/Dec over 6 seconds.
         lastSample=-1;
@@ -3287,8 +3289,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}
                 }
                 if(sample!==lastSample){
-                    // Lock the camera scale throughout translation/rotation: Phase 2 is exactly 40°.
-                    aladin.setFov(40);
+                    // Phase 2 keeps the FOV fixed at the boundary value set above.
                     const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u);
                     const rotation=startRotation+rotationDelta*u;
                     if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
