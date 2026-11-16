@@ -28,6 +28,32 @@ jobs:
           ref: release
           fetch-depth: 1
 
+      - name: Independently validate repaired BUILD 0162 runtime syntax and first-trip phases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib, re, subprocess
+          source = pathlib.Path("viewer/RC-V1.0.0.9-BLD-0162.py").read_text()
+          compile(source, "RC-V1.0.0.9-BLD-0162.py", "exec")
+          match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', source, re.S)
+          assert match, "BUILD 0162 JavaScript extraction failed"
+          runtime = match.group(1)
+          first = runtime[runtime.index("async function gvFly130H"):runtime.index("const durationSeconds=22,duration=durationSeconds*1000")]
+          phase2 = first[first.index("// PHASE 2"):first.index("// PHASE 3")]
+          phase3 = first[first.index("// PHASE 3"):]
+          assert "const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0" in first
+          assert "aladin.setFov(40);" in first
+          assert "aladin.setFov(40)" not in phase2, "Phase 2 must not issue redundant 200Hz FOV redraws"
+          assert "gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u)" in phase2
+          assert "aladin.setRotation(rotation)" in phase2
+          assert "aladin.gotoRaDec" not in phase3 and "aladin.setRotation" not in phase3
+          assert "gvFlightLogLerp(40,finalFov,p)" in phase3
+          pathlib.Path("/tmp/gv-build-0162-runtime.js").write_text(runtime)
+          subprocess.run(["node", "--check", "/tmp/gv-build-0162-runtime.js"], check=True)
+          print("REPAIRED BUILD 0162 PYTHON/JS SYNTAX AND 4s+6s+6s PHASE CONTRACT VERIFIED")
+          PY
+
       - name: Validate active release pointer, Earth pointer travel persistence, font readiness, linear AVM-anchored Earth distance, and preserved release behavior
         shell: bash
         run: |
