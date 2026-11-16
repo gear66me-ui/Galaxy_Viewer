@@ -3287,6 +3287,8 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     catch(error){console.error('GV T-MINUS-EIGHT CALLBACK FAILED',error)}
                 }
                 if(sample!==lastSample){
+                    // Lock the camera scale throughout translation/rotation: Phase 2 is exactly 40°.
+                    aladin.setFov(40);
                     const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u);
                     const rotation=startRotation+rotationDelta*u;
                     if(elapsed>0)gvSetEarthPointerPosition(pos[0],pos[1],true);
