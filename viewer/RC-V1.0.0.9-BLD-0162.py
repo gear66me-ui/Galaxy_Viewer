@@ -1300,10 +1300,10 @@ hamburger.root.style.width='100%';
 hamburger.root.style.height='100%';
 hamburger.root.style.pointerEvents='none';
 hamburger.menuButton.style.pointerEvents='auto';
-// BUILD 0162 REPAIR: constellation asterisms and IAU boundary zones are enabled on startup.
-hamburger.root.__gvConstellationsEnabled=true;
-hamburger.root.querySelector('[data-gv-menu-action="CONSTELLATIONS"] .gv-reticle-mini')?.classList.add('gv-on');
-hamburger.root.querySelector('[data-gv-menu-action="CONSTELLATIONS"] .gv-viewer-menu-label')?.setAttribute('aria-pressed','true');
+// BUILD 0162: keep the initial white sky map clean; first Random Galaxy reveals the sky overlays.
+hamburger.root.__gvConstellationsEnabled=false;
+hamburger.root.querySelector('[data-gv-menu-action="CONSTELLATIONS"] .gv-reticle-mini')?.classList.remove('gv-on');
+hamburger.root.querySelector('[data-gv-menu-action="CONSTELLATIONS"] .gv-viewer-menu-label')?.setAttribute('aria-pressed','false');
 
 // ============================================================================
 // SECTION 024 — COORDINATE OVERLAY 0008 INITIALIZATION
@@ -2023,10 +2023,8 @@ let gvConstellationCenterName=undefined;
 let gvConstellationLastCheckedCenter=null;
 let gvConstellationCheckTimer=0;
 let gvConstellationSettleTimer=0;
-let gvConstellationsActive=true;
+let gvConstellationsActive=false;
 let gvConstellationArtworkWatchdog=0;
-// Mount and activate both constellation asterisms and IAU boundary highlighting at startup.
-gvSetSkyOverlaysEnabled(true);
 function gvStopConstellationPolling(){
     if(gvConstellationCheckTimer){clearTimeout(gvConstellationCheckTimer);gvConstellationCheckTimer=0}
     if(gvConstellationSettleTimer){clearTimeout(gvConstellationSettleTimer);gvConstellationSettleTimer=0}
