@@ -36,7 +36,7 @@ jobs:
           import pathlib, re, subprocess
           source = pathlib.Path("viewer/RC-V1.0.0.9-BLD-0162.py").read_text()
           compile(source, "RC-V1.0.0.9-BLD-0162.py", "exec")
-          match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', source, re.S)
+          match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', source, re.S)
           assert match, "BUILD 0162 JavaScript extraction failed"
           runtime = match.group(1)
           first = runtime[runtime.index("async function gvFly130H"):runtime.index("const durationSeconds=22,duration=durationSeconds*1000")]
