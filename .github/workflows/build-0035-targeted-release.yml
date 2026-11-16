@@ -182,6 +182,27 @@ jobs:
               print("BUILD 0161 RELEASE VALIDATION PASSED: first-trip T-minus-eight callback now fires during zoom-in; travel timing, projection, sampling, Python and JavaScript syntax preserved.")
               sys.exit(0)
 
+          if build == "0162":
+              first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
+              assert "const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0,totalSeconds=phase1Seconds+phase2Seconds+phase3Seconds;" in first_trip, "0162 first-trip phases must be 4s + 6s + 6s"
+              assert "aladin.setFov(gvFlightLogLerp(startFov,40,p))" in first_trip and "aladin.setFov(40);" in first_trip, "0162 phase 1 must zoom directly to 40 degrees"
+              assert "hamburger?.selectProjection?.('SPHERICAL')" in first_trip and "GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 40° FOV" in first_trip, "0162 must switch MOL to SIN on arrival at 40 degrees"
+              phase2 = first_trip[first_trip.index("// PHASE 2"):first_trip.index("// PHASE 3")]
+              phase3 = first_trip[first_trip.index("// PHASE 3"):]
+              assert "gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u)" in phase2 and "aladin.setRotation(rotation)" in phase2, "0162 phase 2 must translate and rotate to destination RA/Dec"
+              assert "aladin.gotoRaDec" not in phase3 and "aladin.setRotation" not in phase3, "0162 phase 3 must be a straight zoom without translation or rotation"
+              assert "gvFlightLogLerp(40,finalFov,p)" in phase3, "0162 phase 3 must zoom from 40 degrees to destination FOV"
+              assert "remainingSeconds:8,firstHomeTrip:true" in first_trip, "0162 must preserve first-trip HD preparation callback"
+              assert 'BUILD_NUMBER = "0162"' in rc and "const GV200001_BUILD='0162'" in rc and "const GV_RUNTIME='0162';" in rc, "0162 runtime identity markers mismatch"
+              compile(rc, expected_viewer, "exec")
+              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              assert match, "0162 embedded JavaScript extraction failed"
+              pathlib.Path("/tmp/gv-build-0162-runtime.js").write_text(match.group(1))
+              import subprocess
+              subprocess.run(["node", "--check", "/tmp/gv-build-0162-runtime.js"], check=True)
+              print("BUILD 0162 RELEASE VALIDATION PASSED: first-trip 4s zoom to 40 degrees, SIN switch at 40 degrees, 6s RA/Dec translation and rotation, 6s straight final zoom; Python and JavaScript syntax verified.")
+              sys.exit(0)
+
           if build == "0160":
               assert manifest.get("sourceCommit") == "67ef07d495244b5807ec94b654c402172db446e3", "Build 0160 source fingerprint mismatch"
               assert "const translateSeconds=5.0,zoomSeconds=9.0,durationSeconds=translateSeconds+zoomSeconds;" in rc, "0160 must preserve 0159 first-home timing: 5s translation + 9s zoom-in"
