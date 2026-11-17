@@ -3263,12 +3263,8 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 reject(error);
             }};requestAnimationFrame(frame);
         });
-        if(switchToSphericalAtApex){
-            hamburger?.selectProjection?.('SPHERICAL');
-            console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 40° FOV');
-        }
-        // Set the 40° boundary once after projection selection. Do not issue
-        // redundant setFov(40) calls at 200 Hz during the six-second translation.
+        // Keep Mollweide through the 40° translation/rotation boundary.
+        // The first-trip projection change now occurs during Phase 3 at 10° FOV.
         aladin.setFov(40);
 
         // PHASE 2 — translate and rotate to the final RA/Dec over 6 seconds.
@@ -3320,6 +3316,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
 
         // PHASE 3 — straight zoom from 40° to the destination FOV over 6 seconds.
         try{onZoomInStart?.()}catch(error){console.error('GV 130H FIRST-TRIP ZOOM-IN CALLBACK FAILED',error)}
+        let projectionSwitchedAtTen=false;
         lastSample=-1;
         const phase3Started=performance.now();
         await new Promise((resolve,reject)=>{
@@ -3333,6 +3330,14 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 if(sample!==lastSample){
                     const fov=gvFlightLogLerp(40,finalFov,p);
                     gvHoldDirectHdDuringTravel(now);
+                    if(switchToSphericalAtApex&&!projectionSwitchedAtTen&&finalFov<=10&&fov<=10){
+                        // Reach 10° in Mollweide first, then switch to SIN at that exact boundary.
+                        aladin.setFov(10);
+                        hamburger?.selectProjection?.('SPHERICAL');
+                        aladin.setFov(10);
+                        projectionSwitchedAtTen=true;
+                        console.info('GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 10° FOV');
+                    }
                     aladin.setFov(fov);
                     lastSample=sample;
                 }
