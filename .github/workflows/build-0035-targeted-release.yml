@@ -212,7 +212,8 @@ jobs:
               first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
               assert "const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0,totalSeconds=phase1Seconds+phase2Seconds+phase3Seconds;" in first_trip, "0162 first-trip phases must be 4s + 6s + 6s"
               assert "aladin.setFov(gvFlightLogLerp(startFov,40,p))" in first_trip and "aladin.setFov(40);" in first_trip, "0162 phase 1 must zoom directly to 40 degrees"
-              assert "hamburger?.selectProjection?.('SPHERICAL')" in first_trip and "GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 40° FOV" in first_trip, "0162 must switch MOL to SIN on arrival at 40 degrees"
+              assert "hamburger?.selectProjection?.('SPHERICAL')" in first_trip and "GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 10° FOV" in first_trip, "0162 must switch MOL to SIN when the first-trip zoom reaches 10 degrees"
+              assert "projectionSwitchedAtTen" in first_trip and "fov<=10" in first_trip, "0162 projection switch must be gated by the 10-degree FOV crossing"
               phase2 = first_trip[first_trip.index("// PHASE 2"):first_trip.index("// PHASE 3")]
               phase3 = first_trip[first_trip.index("// PHASE 3"):]
               assert "gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u)" in phase2 and "aladin.setRotation(rotation)" in phase2, "0162 phase 2 must translate and rotate to destination RA/Dec"
@@ -226,7 +227,7 @@ jobs:
               pathlib.Path("/tmp/gv-build-0162-runtime.js").write_text(match.group(1))
               import subprocess
               subprocess.run(["node", "--check", "/tmp/gv-build-0162-runtime.js"], check=True)
-              print("BUILD 0162 RELEASE VALIDATION PASSED: first-trip 4s zoom to 40 degrees, SIN switch at 40 degrees, 6s RA/Dec translation and rotation, 6s straight final zoom; Python and JavaScript syntax verified.")
+              print("BUILD 0162 RELEASE VALIDATION PASSED: first-trip 4s zoom to 40 degrees, SIN switch at 10 degrees during the final zoom, 6s RA/Dec translation and rotation, 6s straight final zoom; Python and JavaScript syntax verified.")
               sys.exit(0)
 
           if build == "0160":
