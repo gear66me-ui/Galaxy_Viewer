@@ -3264,7 +3264,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             }};requestAnimationFrame(frame);
         });
         // Keep Mollweide through the 40° translation/rotation boundary.
-        // The first-trip projection change now occurs during Phase 3 at 10° FOV.
+        // The first-trip projection change now occurs at the 10° FOV crossing during Phase 3.
         aladin.setFov(40);
 
         // PHASE 2 — translate and rotate to the final RA/Dec over 6 seconds.
