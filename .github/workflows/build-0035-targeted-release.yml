@@ -219,7 +219,7 @@ jobs:
               assert "remainingSeconds:8,firstHomeTrip:true" in first_trip, "0163 must preserve first-trip T-minus-eight callback"
               assert 'BUILD_NUMBER = "0163"' in rc and "const GV200001_BUILD='0163'" in rc and "const GV_RUNTIME='0163';" in rc, "0163 runtime identity markers mismatch"
               compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
               assert match, "0163 embedded JavaScript extraction failed"
               pathlib.Path("/tmp/gv-build-0163-runtime.js").write_text(match.group(1))
               import subprocess
