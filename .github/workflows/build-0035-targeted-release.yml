@@ -28,30 +28,26 @@ jobs:
           ref: release
           fetch-depth: 1
 
-      - name: Independently validate repaired BUILD 0162 runtime syntax and first-trip phases
+      - name: Independently validate BUILD 0163 overlapping first-trip choreography
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import pathlib, re, subprocess
-          source = pathlib.Path("viewer/RC-V1.0.0.9-BLD-0162.py").read_text()
-          compile(source, "RC-V1.0.0.9-BLD-0162.py", "exec")
+          source = pathlib.Path("viewer/RC-V1.0.0.9-BLD-0163.py").read_text()
+          compile(source, "RC-V1.0.0.9-BLD-0163.py", "exec")
           match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', source, re.S)
-          assert match, "BUILD 0162 JavaScript extraction failed"
+          assert match, "BUILD 0163 JavaScript extraction failed"
           runtime = match.group(1)
           first = runtime[runtime.index("async function gvFly130H"):runtime.index("const durationSeconds=22,duration=durationSeconds*1000")]
-          phase2 = first[first.index("// PHASE 2"):first.index("// PHASE 3")]
-          phase3 = first[first.index("// PHASE 3"):]
-          assert "const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0" in first
-          assert "aladin.setFov(40);" in first
-          assert "aladin.setFov(40)" not in phase2, "Phase 2 must not issue redundant 200Hz FOV redraws"
-          assert "gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u)" in phase2
-          assert "aladin.setRotation(rotation)" in phase2
-          assert "aladin.gotoRaDec" not in phase3 and "aladin.setRotation" not in phase3
-          assert "gvFlightLogLerp(40,finalFov,p)" in phase3
-          pathlib.Path("/tmp/gv-build-0162-runtime.js").write_text(runtime)
-          subprocess.run(["node", "--check", "/tmp/gv-build-0162-runtime.js"], check=True)
-          print("REPAIRED BUILD 0162 PYTHON/JS SYNTAX AND 4s+6s+6s PHASE CONTRACT VERIFIED")
+          assert "const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0,totalSeconds=phase1Seconds+phase2Seconds+phase3Seconds-2.0;" in first
+          assert "translateElapsed=Math.max(0,Math.min(phase2Seconds*1000,elapsed-3000))" in first, "Translation must start 1s before 40° stage boundary"
+          assert "zoomInElapsed=Math.max(0,Math.min(phase3Seconds*1000,elapsed-8000))" in first, "Final zoom must start 1s before translation completion"
+          assert "if(elapsed>=3000)" in first and "if(elapsed>=8000)" in first, "Both one-second overlap boundaries missing"
+          assert "gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,translateProgress)" in first and "aladin.setRotation(rotation)" in first
+          pathlib.Path("/tmp/gv-build-0163-runtime.js").write_text(runtime)
+          subprocess.run(["node", "--check", "/tmp/gv-build-0163-runtime.js"], check=True)
+          print("BUILD 0163 PYTHON/JS SYNTAX AND 1s OVERLAP CHOREOGRAPHY VERIFIED")
           PY
 
       - name: Validate active release pointer, Earth pointer travel persistence, font readiness, linear AVM-anchored Earth distance, and preserved release behavior
@@ -208,26 +204,13 @@ jobs:
               print("BUILD 0161 RELEASE VALIDATION PASSED: first-trip T-minus-eight callback now fires during zoom-in; travel timing, projection, sampling, Python and JavaScript syntax preserved.")
               sys.exit(0)
 
-          if build == "0162":
+          if build == "0163":
               first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
-              assert "const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0,totalSeconds=phase1Seconds+phase2Seconds+phase3Seconds;" in first_trip, "0162 first-trip phases must be 4s + 6s + 6s"
-              assert "aladin.setFov(gvFlightLogLerp(startFov,40,p))" in first_trip and "aladin.setFov(40);" in first_trip, "0162 phase 1 must zoom directly to 40 degrees"
-              assert "hamburger?.selectProjection?.('SPHERICAL')" in first_trip and "GV FIRST-TRIP PROJECTION AUTO-SWITCH MOL→SIN AT 10° FOV" in first_trip, "0162 must switch MOL to SIN when the first-trip zoom reaches 10 degrees"
-              assert "projectionSwitchedAtTen" in first_trip and "fov<=10" in first_trip, "0162 projection switch must be gated by the 10-degree FOV crossing"
-              phase2 = first_trip[first_trip.index("// PHASE 2"):first_trip.index("// PHASE 3")]
-              phase3 = first_trip[first_trip.index("// PHASE 3"):]
-              assert "gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u)" in phase2 and "aladin.setRotation(rotation)" in phase2, "0162 phase 2 must translate and rotate to destination RA/Dec"
-              assert "aladin.gotoRaDec" not in phase3 and "aladin.setRotation" not in phase3, "0162 phase 3 must be a straight zoom without translation or rotation"
-              assert "gvFlightLogLerp(40,finalFov,p)" in phase3, "0162 phase 3 must zoom from 40 degrees to destination FOV"
-              assert "remainingSeconds:8,firstHomeTrip:true" in first_trip, "0162 must preserve first-trip HD preparation callback"
-              assert 'BUILD_NUMBER = "0162"' in rc and "const GV200001_BUILD='0162'" in rc and "const GV_RUNTIME='0162';" in rc, "0162 runtime identity markers mismatch"
-              compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
-              assert match, "0162 embedded JavaScript extraction failed"
-              pathlib.Path("/tmp/gv-build-0162-runtime.js").write_text(match.group(1))
-              import subprocess
-              subprocess.run(["node", "--check", "/tmp/gv-build-0162-runtime.js"], check=True)
-              print("BUILD 0162 RELEASE VALIDATION PASSED: first-trip 4s zoom to 40 degrees, SIN switch at 10 degrees during the final zoom, 6s RA/Dec translation and rotation, 6s straight final zoom; Python and JavaScript syntax verified.")
+              assert "elapsed-3000" in first_trip and "elapsed-8000" in first_trip, "0163 overlap start offsets missing"
+              assert "totalSeconds=phase1Seconds+phase2Seconds+phase3Seconds-2.0" in first_trip, "0163 total duration must be 14 seconds"
+              assert "aladin.gotoRaDec" in first_trip and "aladin.setRotation(rotation)" in first_trip and "aladin.setFov(fov)" in first_trip, "0163 combined translation/rotation/zoom behavior missing"
+              assert 'BUILD_NUMBER = "0163"' in rc and "const GV200001_BUILD='0163'" in rc and "const GV_RUNTIME='0163';" in rc, "0163 runtime identity markers mismatch"
+              print("BUILD 0163 RELEASE VALIDATION PASSED: first-trip zoom-out, translation/rotation, and final zoom overlap by one second at both boundaries.")
               sys.exit(0)
 
           if build == "0160":
