@@ -208,7 +208,7 @@ jobs:
               print("BUILD 0161 RELEASE VALIDATION PASSED: first-trip T-minus-eight callback now fires during zoom-in; travel timing, projection, sampling, Python and JavaScript syntax preserved.")
               sys.exit(0)
 
-                    if build == "0163":
+          if build == "0163":
               first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
               assert "const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0;" in first_trip, "0163 must preserve 4s/6s/6s phase durations"
               assert "const phase2StartSeconds=phase1Seconds-1.0;" in first_trip, "0163 movement must start 1s before 40-degree zoom ends"
@@ -227,7 +227,7 @@ jobs:
               print("BUILD 0163 RELEASE VALIDATION PASSED: first-trip 4s zoom to 40°, movement/rotation starts at T-1s, final zoom starts at movement T-1s, projection/prepare callbacks and Python/JS syntax verified.")
               sys.exit(0)
 
-if build == "0162":
+          if build == "0162":
               first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
               assert "const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0,totalSeconds=phase1Seconds+phase2Seconds+phase3Seconds;" in first_trip, "0162 first-trip phases must be 4s + 6s + 6s"
               assert "aladin.setFov(gvFlightLogLerp(startFov,40,p))" in first_trip and "aladin.setFov(40);" in first_trip, "0162 phase 1 must zoom directly to 40 degrees"
