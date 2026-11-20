@@ -3240,11 +3240,12 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         const phase3StartSeconds=phase2StartSeconds+phase2Seconds-1.0;
         const totalSeconds=phase3StartSeconds+phase3Seconds;
         const rotationDelta=gvFlightNormalizeRotationDelta(targetRotation-startRotation);
-        let lastSample=-1,tMinusEightStarted=false,zoomInStarted=false,projectionSwitchedAtTen=false,movementCompleted=false;
+        let lastSample=-1,tMinusEightStarted=false,zoomInStarted=false,projectionSwitchedAtTen=false,movementCompleted=false,firstTripAnimationStopped=false;
         window.GV_NAV_BACKGROUND_SUSPENDED=true;window.GV_NAV_HIPS_FETCH_SUSPENDED=true;
         const firstTripStarted=performance.now();
         await new Promise((resolve,reject)=>{
-            const frame=now=>{try{
+            const guardTimer=setTimeout(()=>{firstTripAnimationStopped=true;reject(new Error('GV BUILD 0163 FIRST-TRIP ANIMATION TIMEOUT'))},totalSeconds*1000+5000);
+            const frame=now=>{if(firstTripAnimationStopped)return;try{
                 if(!isCurrent())throw new Error('GV RANDOM NAVIGATION SUPERSEDED');
                 const elapsed=Math.min(totalSeconds*1000,now-firstTripStarted);
                 const sample=Math.floor(elapsed/5);
@@ -3308,6 +3309,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     lastSample=sample;
                 }
                 if(elapsed<totalSeconds*1000){requestAnimationFrame(frame);return}
+                firstTripAnimationStopped=true;clearTimeout(guardTimer);
                 window.GV_NAV_HIPS_FETCH_SUSPENDED=false;
                 window.GV_NAV_BACKGROUND_SUSPENDED=false;
                 gvNavigationTravelActive=false;
@@ -4001,7 +4003,15 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
         console.info('GV ROLL 0085 CAMERA TAKEOFF',{name:presentationDestination?.name||presentationDestination?.objectName||''});
         const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,switchToSphericalAtApex:true,constellationName:presentationDestination?.constellation||presentationBase?.constellation||'',registeredPromise:registeredTravelPromise,isCurrent,onTMinusEight:startArrivalHdPreparation,onArrival:()=>gvActivateStagedHd(presentationDestination)});
-        await travelPromise;
+        try{await travelPromise}catch(error){
+            console.error('GV BUILD 0163 FIRST-TRIP CHOREOGRAPHY FAILED — FORCING ARRIVAL/AVM RECOVERY',error);
+            if(isCurrent()&&activeDestination===presentationDestination){
+                try{aladin.gotoRaDec(presentationDestination.ra,presentationDestination.dec);coordinate?.update(presentationDestination.ra,presentationDestination.dec);gvSetEarthPointerPosition(presentationDestination.ra,presentationDestination.dec,true);aladin.setRotation(Number(presentationDestination.rotation)||0);aladin.setFov(Number(presentationDestination.fov)||v.fov)}catch(recoveryError){console.error('GV BUILD 0163 FIRST-TRIP CAMERA RECOVERY FAILED',recoveryError)}
+                gvNavigationTravelActive=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;
+                gvSetTravelConstellationGlow(presentationDestination?.constellation,Number(presentationDestination?.ra),Number(presentationDestination?.dec),false);
+                try{gvActivateStagedHd(presentationDestination)}catch(_){}
+            }
+        }
         if(!isCurrent()||activeDestination!==presentationDestination)return v.destination;
         gvStopRandomNavigationWatchdog();
         if(stagedInstallPromise)await stagedInstallPromise.catch(error=>console.error('GV FIRST-TRIP STAGED LAYER SETTLE FAILED',error));
