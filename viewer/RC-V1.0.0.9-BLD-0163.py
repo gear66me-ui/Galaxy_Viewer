@@ -4015,17 +4015,19 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         }
         if(!isCurrent()||activeDestination!==presentationDestination)return v.destination;
         gvStopRandomNavigationWatchdog();
-        if(stagedInstallPromise)await stagedInstallPromise.catch(error=>console.error('GV FIRST-TRIP STAGED LAYER SETTLE FAILED',error));
-        if(!installed){
-            const retryPrepared=await ensurePrepared();
-            await installWhenReady(retryPrepared,{stage:true});
+        // BUILD 0163 recovery: never let a slow AVM/Aladin layer-load promise keep the travel presentation stuck.
+        if(stagedInstallPromise){
+            await Promise.race([stagedInstallPromise.catch(error=>console.error('GV FIRST-TRIP STAGED LAYER SETTLE FAILED',error)),new Promise(resolve=>setTimeout(()=>{console.warn('GV BUILD 0163 FIRST-TRIP STAGED AVM LOAD STILL PENDING — CONTINUING ARRIVAL');resolve(false)},5000))]);
         }
-        gvActivateStagedHd(presentationDestination);
+        if(installed)gvActivateStagedHd(presentationDestination);
         travelPresentation.end();
         window.GV_RETRY_MID_TRIP_AVM=null;
-        const arrivedPrepared=await ensurePrepared();
-        directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
-        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:arrivedPrepared.cleanImageObjectUrl});
+        const arrivedPrepared=await Promise.race([ensurePrepared().catch(error=>{console.error('GV BUILD 0163 ARRIVAL HD PREP FAILED',error);return null}),new Promise(resolve=>setTimeout(()=>{console.warn('GV BUILD 0163 ARRIVAL HD PREP TIMEOUT — USING DIRECT IMAGE URL');resolve(null)},5000))]);
+        if(arrivedPrepared){
+            directHdPresentationObjectUrl=arrivedPrepared.cleanImageObjectUrl;
+            if(!installed)installWhenReady(arrivedPrepared,{stage:true}).then(ready=>{if(ready&&isCurrent())gvActivateStagedHd(presentationDestination)}).catch(error=>console.error('GV BUILD 0163 LATE AVM INSTALL FAILED',error));
+        }
+        destinationPresentation.arrive(presentationDestination,{imageUrl:String(directHdUrl(v.destination)).trim(),preparedImageUrl:arrivedPrepared?.cleanImageObjectUrl||undefined});
         // BUILD 0030: let the arrival presentation paint before noncritical work.
         // The identity guard prevents stale post-arrival work if another trip starts.
         requestAnimationFrame(()=>requestAnimationFrame(()=>{
