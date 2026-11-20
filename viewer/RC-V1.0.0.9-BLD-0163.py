@@ -3315,6 +3315,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 gvNavigationTravelActive=false;
                 resolve();
             }catch(error){
+                firstTripAnimationStopped=true;clearTimeout(guardTimer);
                 gvNavigationTravelActive=false;
                 gvSetTravelConstellationGlow(constellationName,ra1,dec1,false);
                 window.GV_NAV_HIPS_FETCH_SUSPENDED=false;
