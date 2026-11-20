@@ -219,6 +219,7 @@ jobs:
               assert "remainingSeconds:8,firstHomeTrip:true" in first_trip, "0163 must preserve first-trip T-minus-eight callback"
               assert "GV BUILD 0163 FIRST-TRIP ANIMATION TIMEOUT" in first_trip and "clearTimeout(guardTimer)" in first_trip, "0163 must guard first-trip animation timeout and clean timer"
               assert "FORCING ARRIVAL/AVM RECOVERY" in rc and "GV BUILD 0163 FIRST-TRIP CAMERA RECOVERY FAILED" in rc, "0163 must recover arrival/AVM path after choreography failure"
+              assert "GV BUILD 0163 FIRST-TRIP STAGED AVM LOAD STILL PENDING" in rc and "GV BUILD 0163 ARRIVAL HD PREP TIMEOUT" in rc, "0163 must bound AVM waits so travel presentation cannot remain stuck"
               assert 'BUILD_NUMBER = "0163"' in rc and "const GV200001_BUILD='0163'" in rc and "const GV_RUNTIME='0163';" in rc, "0163 runtime identity markers mismatch"
               compile(rc, expected_viewer, "exec")
               match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
