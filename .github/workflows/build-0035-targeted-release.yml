@@ -208,6 +208,28 @@ jobs:
               print("BUILD 0161 RELEASE VALIDATION PASSED: first-trip T-minus-eight callback now fires during zoom-in; travel timing, projection, sampling, Python and JavaScript syntax preserved.")
               sys.exit(0)
 
+          if build == "0164":
+              first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
+              assert "const phase1Seconds=6.0,phase2Seconds=7.0,phase3Seconds=6.0;" in first_trip, "0164 must use 6s/7s/6s first-trip phases"
+              assert "const phase2StartSeconds=phase1Seconds-1.0;" in first_trip, "0164 movement must start 1s before 40-degree zoom ends"
+              assert "const phase3StartSeconds=phase2StartSeconds+phase2Seconds-1.0;" in first_trip, "0164 final zoom must start 1s before movement/rotation ends"
+              assert "gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,u)" in first_trip and "aladin.setRotation(rotation)" in first_trip, "0164 must translate and rotate during staggered Stage 1/2"
+              assert "gvFlightLogLerp(startFov,40,p)" in first_trip and "gvFlightLogLerp(40,finalFov,p)" in first_trip, "0164 must zoom to 40 degrees then final FOV"
+              assert "projectionSwitchedAtTen" in first_trip and "hamburger?.selectProjection?.('SPHERICAL')" in first_trip, "0164 must preserve first-trip 10-degree projection switch"
+              assert "remainingSeconds:8,firstHomeTrip:true" in first_trip, "0164 must preserve first-trip T-minus-eight callback"
+              assert "GV BUILD 0164 FIRST-TRIP ANIMATION TIMEOUT" in first_trip and "clearTimeout(guardTimer)" in first_trip, "0164 must guard first-trip animation timeout and clean timer"
+              assert "FORCING ARRIVAL/AVM RECOVERY" in rc and "GV BUILD 0164 FIRST-TRIP CAMERA RECOVERY FAILED" in rc, "0164 must recover arrival/AVM path after choreography failure"
+              assert "GV BUILD 0164 FIRST-TRIP STAGED AVM LOAD STILL PENDING" in rc and "GV BUILD 0164 ARRIVAL HD PREP TIMEOUT" in rc, "0164 must bound AVM waits so travel presentation cannot remain stuck"
+              assert 'BUILD_NUMBER = "0164"' in rc and "const GV200001_BUILD='0164'" in rc and "const GV_RUNTIME='0164';" in rc, "0164 runtime identity markers mismatch"
+              compile(rc, expected_viewer, "exec")
+              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
+              assert match, "0164 embedded JavaScript extraction failed"
+              pathlib.Path("/tmp/gv-build-0164-runtime.js").write_text(match.group(1))
+              import subprocess
+              subprocess.run(["node", "--check", "/tmp/gv-build-0164-runtime.js"], check=True)
+              print("BUILD 0164 RELEASE VALIDATION PASSED: first-trip 6s zoom to 40°, movement/rotation starts at T-1s, final zoom starts at movement T-1s; projection, preparation callbacks and Python/JS syntax verified.")
+              sys.exit(0)
+
           if build == "0163":
               first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
               assert "const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0;" in first_trip, "0163 must preserve 4s/6s/6s phase durations"
