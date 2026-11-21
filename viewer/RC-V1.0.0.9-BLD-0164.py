@@ -3233,9 +3233,9 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 }
             }catch(error){console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error)}
         }
-        // BUILD 0163 — staggered first trip: zoom to 40° for 4s; movement starts 1s before
-        // that zoom completes; final zoom starts 1s before movement/rotation reaches destination.
-        const phase1Seconds=4.0,phase2Seconds=6.0,phase3Seconds=6.0;
+        // BUILD 0164 — extend first-trip stage 1 by 2s and stage 2 by 1s; stage 3 unchanged.
+        // Preserve the 1s overlap timing between stages.
+        const phase1Seconds=6.0,phase2Seconds=7.0,phase3Seconds=6.0;
         const phase2StartSeconds=phase1Seconds-1.0;
         const phase3StartSeconds=phase2StartSeconds+phase2Seconds-1.0;
         const totalSeconds=phase3StartSeconds+phase3Seconds;
