@@ -7,7 +7,7 @@ import json
 # ============================================================================
 VIEWER_VERSION = "RC-V1.0.0.9"
 # BUILD 0142 — demand-driven constellation and reticle polling. BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
-BUILD_NUMBER = "0164"
+BUILD_NUMBER = "0165"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
@@ -2486,7 +2486,7 @@ function gvSyntheticWcsFromRuntimeRecord(record,width,height){
     if(!Number.isFinite(fovX)||fovX<=0||!Number.isFinite(fovY)||fovY<=0)throw new Error('GV JSON WCS FOV INVALID');
     if(!Number.isFinite(rotation))throw new Error('GV JSON WCS ROTATION INVALID');
     if(!Number.isFinite(width)||width<=0||!Number.isFinite(height)||height<=0)throw new Error('GV JSON WCS DIMENSION INVALID');
-    const sx=fovX/width,sy=fovY/height,t=rotation*Math.PI/180,c=Math.cos(t),s=Math.sin(t);
+    const sx=fovX/width,sy=fovY/height,t=0,c=1,s=0;
     const referencePixel=record?.referencePixel,referenceDimension=record?.referenceDimension;
     const rawCrpix1=Number(referencePixel?.[0]),rawCrpix2=Number(referencePixel?.[1]);
     const rawWidth=Number(referenceDimension?.[0]),rawHeight=Number(referenceDimension?.[1]);
@@ -2523,7 +2523,7 @@ function gvRegisteredTravelStateFromRecord(record){
         const wcs=gvSyntheticWcsFromRuntimeRecord(record,width,height);
         imageCenter=gvTanPixelToWorld(wcs,(width+1)/2,(height+1)/2);
     }
-    return {imageCenter,finalFov:Math.max(fovX,fovY)*1.0,rotation};
+    return {imageCenter,finalFov:fovX,rotation:0};
 }
 function gvControlPanel(id,title,side){
     const panel=document.createElement('div');
@@ -2973,7 +2973,7 @@ async function gvPrepareDirectHdUnlocked(destination,recordPromise=gvRuntimeAvmR
     const cleanImageObjectUrl=gvTrackCleanImageObjectUrl(URL.createObjectURL(raster.originalBlob));
     const displayWcs=gvSyntheticWcsFromRuntimeRecord(record,raster.width,raster.height);
     const imageCenter=gvTanPixelToWorld(displayWcs,(raster.width+1)/2,(raster.height+1)/2);
-    const prepared={destination,record,imageUrl:url,imageObjectUrl,cleanImageObjectUrl,displayWcs,imageCenter,rotation,finalFov:Math.max(fovX,fovY)*1.0};
+    const prepared={destination,record,imageUrl:url,imageObjectUrl,cleanImageObjectUrl,displayWcs,imageCenter,rotation:0,finalFov:fovX};
     console.info('GV HD PREPARED',{ms:Math.round(performance.now()-prepStarted),name:destination?.name||destination?.objectName||'',resources:gvHdResourceSnapshot()});
     return prepared;
 }
@@ -3223,8 +3223,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
     gvHideEarthDistance();
     const startRaDec=aladin.getRaDec?.()||[HOME.ra,HOME.dec],ra0=Number(startRaDec[0]),dec0=Number(startRaDec[1]),rawFov=aladin.getFov?.(),startFov=Number(Array.isArray(rawFov)?rawFov[0]:rawFov);
     let startRotation=0;try{startRotation=Number(aladin.getRotation?.()??aladin.view?.rotation??0)||0}catch(_){}
-    if(firstHomeTrip){
-        if(registeredPromise){
+    if(registeredPromise){
             try{
                 const registered=await registeredPromise;
                 const center=registered?.imageCenter,nra=Number(center?.[0]),ndec=Number(center?.[1]),nfov=Number(registered?.finalFov),nrotation=Number(registered?.rotation);
@@ -3233,6 +3232,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                 }
             }catch(error){console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error)}
         }
+        if(firstHomeTrip){
         // BUILD 0164 — extend first-trip stage 1 by 2s and stage 2 by 1s; stage 3 unchanged.
         // Preserve the 1s overlap timing between stages.
         const phase1Seconds=6.0,phase2Seconds=7.0,phase3Seconds=6.0;
@@ -4001,13 +4001,13 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
     // translation and rotation. At zoom-in start the current HD is retired,
     // then the next galaxy HD is installed and activated.
     if(firstTrip){
-        const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
+        const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:0};
         console.info('GV ROLL 0085 CAMERA TAKEOFF',{name:presentationDestination?.name||presentationDestination?.objectName||''});
         const travelPromise=gvFly130H(provisional,{firstHomeTrip:true,switchToSphericalAtApex:true,constellationName:presentationDestination?.constellation||presentationBase?.constellation||'',registeredPromise:registeredTravelPromise,isCurrent,onTMinusEight:startArrivalHdPreparation,onArrival:()=>gvActivateStagedHd(presentationDestination)});
         try{await travelPromise}catch(error){
             console.error('GV BUILD 0164 FIRST-TRIP CHOREOGRAPHY FAILED — FORCING ARRIVAL/AVM RECOVERY',error);
             if(isCurrent()&&activeDestination===presentationDestination){
-                try{aladin.gotoRaDec(presentationDestination.ra,presentationDestination.dec);coordinate?.update(presentationDestination.ra,presentationDestination.dec);gvSetEarthPointerPosition(presentationDestination.ra,presentationDestination.dec,true);aladin.setRotation(Number(presentationDestination.rotation)||0);aladin.setFov(Number(presentationDestination.fov)||v.fov)}catch(recoveryError){console.error('GV BUILD 0164 FIRST-TRIP CAMERA RECOVERY FAILED',recoveryError)}
+                try{aladin.gotoRaDec(presentationDestination.ra,presentationDestination.dec);coordinate?.update(presentationDestination.ra,presentationDestination.dec);gvSetEarthPointerPosition(presentationDestination.ra,presentationDestination.dec,true);aladin.setRotation(0);aladin.setFov(Number(presentationDestination.fov)||v.fov)}catch(recoveryError){console.error('GV BUILD 0164 FIRST-TRIP CAMERA RECOVERY FAILED',recoveryError)}
                 gvNavigationTravelActive=false;window.GV_NAV_HIPS_FETCH_SUSPENDED=false;window.GV_NAV_BACKGROUND_SUSPENDED=false;
                 gvSetTravelConstellationGlow(presentationDestination?.constellation,Number(presentationDestination?.ra),Number(presentationDestination?.dec),false);
                 try{gvActivateStagedHd(presentationDestination)}catch(_){}
@@ -4046,7 +4046,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
         }));
         return v.destination;
     }
-    const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};
+    const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:0};
     console.info('GV ROLL 0085 CAMERA TAKEOFF',{name:presentationDestination?.name||presentationDestination?.objectName||''});
     const travelPromise=gvFly130H(provisional,{firstHomeTrip:false,constellationName:presentationDestination?.constellation||presentationBase?.constellation||'',registeredPromise:registeredTravelPromise,switchToSphericalAtApex,isCurrent,onZoomOutComplete:startArrivalHdPreparation,onTMinusEight:startArrivalHdPreparation,onArrival:()=>gvActivateStagedHd(presentationDestination)});
     await travelPromise;
