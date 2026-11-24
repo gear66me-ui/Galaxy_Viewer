@@ -209,7 +209,7 @@ jobs:
               sys.exit(0)
 
           if build == "0167":
-              assert manifest.get("sourceCommit") == "1014f99e69adab3052951f3b0eb1bef880f45f6c", "Build 0167 source fingerprint mismatch"
+              assert manifest.get("sourceCommit") == "3b45fd5aca4ddf0c1c85a396b5f2963a820bc4c3", "Build 0167 source fingerprint mismatch"
               assert 'BUILD_NUMBER = "0167"' in rc and "const GV200001_BUILD='0167'" in rc and "const GV_RUNTIME='0167';" in rc, "0167 runtime identity markers mismatch"
               assert "const sx=fovX/width,sy=fovY/height,t=rotation*Math.PI/180,c=Math.cos(t),s=Math.sin(t);" in rc, "0167 WCS matrix must apply AVM rotation"
               assert "CD1_1:-sx*c,CD1_2:-sy*s,CD2_1:-sx*s,CD2_2:sy*c" in rc, "0167 WCS CD matrix must preserve rotated axes and handedness"
