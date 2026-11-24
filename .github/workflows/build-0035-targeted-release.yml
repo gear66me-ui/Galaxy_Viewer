@@ -208,6 +208,34 @@ jobs:
               print("BUILD 0161 RELEASE VALIDATION PASSED: first-trip T-minus-eight callback now fires during zoom-in; travel timing, projection, sampling, Python and JavaScript syntax preserved.")
               sys.exit(0)
 
+          if build == "0167":
+              assert manifest.get("sourceCommit") == "93b3140ec4ae4e3ecffb05c5717dec68b4820556", "Build 0167 source fingerprint mismatch"
+              assert 'BUILD_NUMBER = "0167"' in rc and "const GV200001_BUILD='0167'" in rc and "const GV_RUNTIME='0167';" in rc, "0167 runtime identity markers mismatch"
+              assert "const sx=fovX/width,sy=fovY/height,t=rotation*Math.PI/180,c=Math.cos(t),s=Math.sin(t);" in rc, "0167 WCS matrix must apply AVM rotation"
+              assert "CD1_1:-sx*c,CD1_2:-sy*s,CD2_1:-sx*s,CD2_2:sy*c" in rc, "0167 WCS CD matrix must preserve rotated axes and handedness"
+              assert "return {imageCenter,finalFov:fovX,rotation};" in rc, "0167 registered travel must preserve AVM camera rotation"
+              assert "imageCenter,rotation,finalFov:fovX" in rc, "0167 prepared HD state must retain AVM rotation"
+              assert rc.count("const provisional={imageCenter:[v.ra,v.dec],finalFov:v.fov,rotation:v.rotation};") == 2, "0167 first and subsequent trips must inherit destination rotation"
+              assert "aladin.setRotation(Number(presentationDestination.rotation)||0)" in rc, "0167 recovery must restore destination camera orientation"
+              assert "wcs:displayWcs" in rc, "0167 HD overlay must use the same AVM-derived WCS"
+              compile(rc, expected_viewer, "exec")
+              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              assert match, "0167 embedded JavaScript extraction failed"
+              pathlib.Path("/tmp/gv-build-0167-runtime.js").write_text(match.group(1))
+              import subprocess
+              subprocess.run(["node", "--check", "/tmp/gv-build-0167-runtime.js"], check=True)
+              import math
+              for degrees in (0, 45, -29.46, 90):
+                  t = math.radians(degrees)
+                  c, s = math.cos(t), math.sin(t)
+                  sx, sy = 0.001, 0.002
+                  cd = (-sx*c, -sy*s, -sx*s, sy*c)
+                  assert all(math.isfinite(x) for x in cd)
+                  if degrees:
+                      assert abs(cd[1]) + abs(cd[2]) > 1e-8, f"rotation {degrees} did not rotate both pixel axes"
+              print("BUILD 0167 RELEASE VALIDATION PASSED: AVM rotation retained in WCS, HD layer and travel/recovery handoff; Python/JavaScript syntax and rotation matrix cases verified.")
+              sys.exit(0)
+
           if build == "0165":
               assert manifest.get("sourceCommit") == "45954123929e60b51819314c82b19f049c604186", "Build 0165 source fingerprint mismatch"
               assert 'BUILD_NUMBER = "0165"' in rc and "const GV200001_BUILD='0165'" in rc and "const GV_RUNTIME='0165';" in rc, "0165 runtime identity markers mismatch"
