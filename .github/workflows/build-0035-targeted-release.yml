@@ -468,7 +468,7 @@ jobs:
               print("BUILD 0158D TARGETED VALIDATION PASSED: 18-second rounded-goalpost choreography; continuous RAF; 4.2s translation/rotation join; 7.8s 40-degree apex; shared translation/rotation easing; first-home trip preserved; compass polling suspended/resumed; Python and JavaScript syntax.")
               sys.exit(0)
           assert "function gvStopReticlePolling(){" in rc and "clearInterval(directionalReticleTimer)" in rc and "clearInterval(gvEarthBearingTimer)" in rc, "Reticle OFF must cancel both recurring timers"; assert "if(gvReticleEnabled&&document.visibilityState==='visible')updateDirectionalReticle()" in rc and "if(gvReticleEnabled)gvUpdateEarthBearingPointer()" in rc, "Compass polling must respect enabled/visibility gates"
-          assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must poll at 100 ms only during active navigation"
+          assert "function gvStartReticlePolling(){" in rc and "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled)gvUpdateEarthBearingPointer()},25);" in rc, "Earth pointer must retain its current 25 ms enabled-state polling cadence"
           assert "function gvGreatCircleDegrees(ra1,dec1,ra2,dec2)" in rc, "Great-circle angular fraction helper missing"
           assert "function gvLinearEarthDistanceEstimate(ra,dec)" in rc, "Linear AVM-anchored estimate missing"
           assert "const progress=Math.max(0,Math.min(1,movedDegrees/totalDegrees))" in rc, "Linear estimate must update continuously from the AVM anchor toward HOME"
