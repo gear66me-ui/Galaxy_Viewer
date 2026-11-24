@@ -219,7 +219,7 @@ jobs:
               assert "aladin.setRotation(Number(presentationDestination.rotation)||0)" in rc, "0167 recovery must restore destination camera orientation"
               assert "wcs:displayWcs" in rc, "0167 HD overlay must use the same AVM-derived WCS"
               compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
               assert match, "0167 embedded JavaScript extraction failed"
               pathlib.Path("/tmp/gv-build-0167-runtime.js").write_text(match.group(1))
               import subprocess
