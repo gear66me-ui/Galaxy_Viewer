@@ -507,7 +507,7 @@ jobs:
           assert rc.count("gvEarthPointerActive=true;") == 2, "Build 0112 pointer activation path must remain intact"
           assert "gv-earth-pointer-yellow-final-1080-crisp.png" in rc, "Earth pointer artwork URL missing"
           assert "function gvUpdateEarthBearingPointer(){\n    if(!gvReticleEnabled)return;\n    if(window.GV_NAV_BACKGROUND_SUSPENDED&&!gvNavigationTravelActive)return;" in rc, "Pointer refresh must stop when reticle is off and remain suspended off-travel"
-          assert "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled&&document.visibilityState==='visible')gvUpdateEarthBearingPointer()},100);" in rc, "Earth pointer must refresh every 25 ms only while reticle is enabled"
+          assert "if(!gvEarthBearingTimer)gvEarthBearingTimer=setInterval(()=>{if(gvReticleEnabled)gvUpdateEarthBearingPointer()},25);" in rc, "Earth pointer must retain the Build 0166 25 ms enabled-state polling cadence"
           assert rc.count("gvEarthPointerArrivalPresentationReady=true;") == 2, "Both arrival paths must enable the Earth pointer"
           assert rc.count("gvEarthPointerArrivalPresentationReady=true;") == 2, "Both arrival paths must release the 0112 arrival visibility gate"
           assert "if(gvEarthBearingTimer){clearInterval(gvEarthBearingTimer);gvEarthBearingTimer=0}" in rc, "Earth pointer timer must be cancellable when reticle is disabled"
