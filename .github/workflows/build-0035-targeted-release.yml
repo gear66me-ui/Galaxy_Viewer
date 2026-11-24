@@ -209,7 +209,7 @@ jobs:
               sys.exit(0)
 
           if build == "0165":
-              assert manifest.get("sourceCommit") == "46da7b642b0255e9639cc6384e898bce3996f369", "Build 0165 source fingerprint mismatch"
+              assert manifest.get("sourceCommit") == "45954123929e60b51819314c82b19f049c604186", "Build 0165 source fingerprint mismatch"
               assert 'BUILD_NUMBER = "0165"' in rc and "const GV200001_BUILD='0165'" in rc and "const GV_RUNTIME='0165';" in rc, "0165 runtime identity markers mismatch"
               assert "gvRegisteredTravelStateFromRecord" in rc and "fovXDegrees" in rc, "0165 registered AVM camera-state resolver missing"
               first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
