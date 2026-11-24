@@ -215,7 +215,7 @@ jobs:
               first_trip = rc[rc.index("async function gvFly130H"):rc.index("const durationSeconds=22,duration=durationSeconds*1000")]
               assert "prepared?.imageCenter" in first_trip and "prepared?.finalFov" in first_trip and "prepared?.rotation" in first_trip, "0165 first-trip camera landing must consume prepared AVM state"
               compile(rc, expected_viewer, "exec")
-              match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', rc, re.S)
+              match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', rc, re.S)
               assert match, "0165 embedded JavaScript extraction failed"
               pathlib.Path("/tmp/gv-build-0165-runtime.js").write_text(match.group(1))
               import subprocess
