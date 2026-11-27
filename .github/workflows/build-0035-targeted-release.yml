@@ -78,6 +78,27 @@ jobs:
           print('BUILD 0174 PYTHON/JS SYNTAX; FIRST-TRIP 6s/7s/6s STAGGER AND 1s OVERLAPS VERIFIED')
           PY
 
+      - name: Independently validate Build 0175 runtime syntax and staggered travel phases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib, re, subprocess
+          source = pathlib.Path('viewer/RC-V1.0.0.9-BLD-0175.py').read_text()
+          compile(source, 'RC-V1.0.0.9-BLD-0175.py', 'exec')
+          match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', source, re.S)
+          assert match, 'Build 0175 JavaScript extraction failed'
+          runtime = match.group(1)
+          assert "const phase1Seconds=6.0,phase2Seconds=7.0,phase3Seconds=7.0" in runtime
+          assert "const phase2StartSeconds=phase1Seconds-2.0;" in runtime and "const phase3StartSeconds=phase2StartSeconds+phase2Seconds-2.0;" in runtime
+          assert "zoomInThreshold=.52,zoomOutCompleteThreshold=.48" in runtime
+          assert "if(t<.284)" in runtime and "else if(t>=.716)" in runtime
+          assert "onZoomOutComplete:retireCurrentHdAtZoomOutComplete" in runtime and "onZoomInStart:activateArrivalHdAtZoomInStart" in runtime
+          pathlib.Path('/tmp/gv-build-0175-runtime.js').write_text(runtime)
+          subprocess.run(['node','--check','/tmp/gv-build-0175-runtime.js'],check=True)
+          print('BUILD 0175 PYTHON/JS SYNTAX; FIRST TRIP 6s/7s/7s WITH 2s OVERLAPS AND STANDARD TRIP +1s STAGGER VERIFIED')
+          PY
+
       - name: Validate active release pointer, Earth pointer travel persistence, font readiness, linear AVM-anchored Earth distance, and preserved release behavior
         shell: bash
         run: |
@@ -603,6 +624,15 @@ jobs:
               assert "const totalSeconds=phase3StartSeconds+phase3Seconds;" in rc, "Build 0174 total first-trip duration calculation missing"
               assert "onZoomOutComplete:retireCurrentHdAtZoomOutComplete" in rc and "onZoomInStart:activateArrivalHdAtZoomInStart" in rc, "Build 0174 must preserve AVM handoff"
               print("BUILD 0174 RELEASE VALIDATION PASSED: first trip 6s/7s/6s with 1s overlaps; AVM handoff preserved.")
+              sys.exit(0)
+          elif build == "0175":
+              assert manifest.get("sourceCommit") == "1cae514a4f37ed19d8518379032f6c90ff51dc8b", "Build 0175 source fingerprint mismatch"
+              assert "const phase1Seconds=6.0,phase2Seconds=7.0,phase3Seconds=7.0" in rc, "Build 0175 first trip must use 6/7/7-second stages"
+              assert "const phase2StartSeconds=phase1Seconds-2.0;" in rc and "const phase3StartSeconds=phase2StartSeconds+phase2Seconds-2.0;" in rc, "Build 0175 must preserve two-second first-trip overlaps"
+              assert "zoomInThreshold=.52,zoomOutCompleteThreshold=.48" in rc, "Build 0175 standard trips must increase zoom/translation overlap by one second"
+              assert "if(t<.284)" in rc and "else if(t>=.716)" in rc, "Build 0175 standard trip phase boundaries must be 28.4/71.6 percent"
+              assert "onZoomOutComplete:retireCurrentHdAtZoomOutComplete" in rc and "onZoomInStart:activateArrivalHdAtZoomInStart" in rc, "Build 0175 must preserve AVM handoff"
+              print("BUILD 0175 RELEASE VALIDATION PASSED: first trip 6s/7s/7s with 2s overlaps; standard trip overlap increased by 1s; AVM handoff preserved.")
               sys.exit(0)
           elif build == "0173":
               assert "let arrivalHdPreparationStarted=false,arrivalHdActivationRequested=false;" in rc, "Build 0174 AVM preparation/activation state missing"
