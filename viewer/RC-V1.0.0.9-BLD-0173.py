@@ -3354,9 +3354,9 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             }catch(error){console.error('GV 130H FIRST-TRIP REGISTERED DESTINATION PREPARE FAILED',error)}
         }
         if(firstHomeTrip){
-        // BUILD 0166 — add exactly 1s to each first-trip stage; preserve the existing 1s overlaps.
-        // Preserve the 1s overlap timing between stages.
-        const phase1Seconds=7.0,phase2Seconds=8.0,phase3Seconds=7.0;
+        // BUILD 0174 — stagger first trip; shorten stage 1, translation/rotation, and stage 3 by 1s each.
+        // Preserve the existing 1s overlap timing between stages.
+        const phase1Seconds=6.0,phase2Seconds=7.0,phase3Seconds=6.0;
         const phase2StartSeconds=phase1Seconds-1.0;
         const phase3StartSeconds=phase2StartSeconds+phase2Seconds-1.0;
         const totalSeconds=phase3StartSeconds+phase3Seconds;
