@@ -54,29 +54,29 @@ jobs:
           print("REPAIRED BUILD 0162 PYTHON/JS SYNTAX AND 4s+6s+6s PHASE CONTRACT VERIFIED")
           PY
 
-      - name: Independently validate Build 0173 runtime syntax and restored 0171 staggered choreography
+      - name: Independently validate Build 0174 runtime syntax and first-trip 6s/7s/6s stagger
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import pathlib, re, subprocess
-          source = pathlib.Path('viewer/RC-V1.0.0.9-BLD-0173.py').read_text()
-          compile(source, 'RC-V1.0.0.9-BLD-0173.py', 'exec')
+          source = pathlib.Path('viewer/RC-V1.0.0.9-BLD-0174.py').read_text()
+          compile(source, 'RC-V1.0.0.9-BLD-0174.py', 'exec')
           match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', source, re.S)
-          assert match, 'Build 0173 JavaScript extraction failed'
+          assert match, 'Build 0174 JavaScript extraction failed'
           runtime = match.group(1)
-          assert 'zoomInThreshold=.56,zoomOutCompleteThreshold=.44' in runtime
-          assert 'const translateStart=.324,translationComplete=.676;' in runtime
-          assert 'if(t<.324){' in runtime
-          assert '}else if(t>=.6772727272727272){' in runtime
-          assert 't<=.44' in runtime and 't>=.56' in runtime
+          assert 'const phase1Seconds=6.0,phase2Seconds=7.0,phase3Seconds=6.0' in runtime
+          assert 'const phase2StartSeconds=phase1Seconds-1.0;' in runtime and 'const phase3StartSeconds=phase2StartSeconds+phase2Seconds-1.0;' in runtime
+          assert 'const totalSeconds=phase3StartSeconds+phase3Seconds;' in runtime
+          assert 'phase1Seconds=6.0,phase2Seconds=7.0,phase3Seconds=6.0' in runtime
+          assert 'phase2StartSeconds=phase1Seconds-1.0' in runtime
           assert 'onZoomOutComplete:retireCurrentHdAtZoomOutComplete' in runtime
           assert 'onZoomInStart:activateArrivalHdAtZoomInStart' in runtime
           assert 'GV CURRENT AVM IMAGE RETIRED AT ZOOM-OUT COMPLETE' in runtime
           assert 'GV ARRIVAL AVM ACTIVATED AT ZOOM-IN STAGE START' in runtime
           pathlib.Path('/tmp/gv-build-0173-runtime.js').write_text(runtime)
           subprocess.run(['node','--check','/tmp/gv-build-0173-runtime.js'],check=True)
-          print('BUILD 0173 PYTHON/JS SYNTAX; 11s ZOOM-OUT + ORIGINAL 0171 TRANSLATION WINDOW + 11s ZOOM-IN VERIFIED')
+          print('BUILD 0174 PYTHON/JS SYNTAX; FIRST-TRIP 6s/7s/6s STAGGER AND 1s OVERLAPS VERIFIED')
           PY
 
       - name: Validate active release pointer, Earth pointer travel persistence, font readiness, linear AVM-anchored Earth distance, and preserved release behavior
@@ -598,7 +598,7 @@ jobs:
               assert "GV ARRIVAL AVM ACTIVATED AT ZOOM-IN STAGE START" in rc, "Build 0172 arrival AVM activation diagnostic missing"
               assert "zoomInThreshold=.736,zoomOutCompleteThreshold=.264" in rc, "Build 0172 must shorten each zoom phase by 1.5s"
           elif build == "0173":
-              assert "let arrivalHdPreparationStarted=false,arrivalHdActivationRequested=false;" in rc, "Build 0173 AVM preparation/activation state missing"
+              assert "let arrivalHdPreparationStarted=false,arrivalHdActivationRequested=false;" in rc, "Build 0174 AVM preparation/activation state missing"
               assert "onTMinusEight:startArrivalHdPreparation" in rc, "Build 0173 must retain the T-minus-eight AVM preparation fallback"
               assert "onZoomOutComplete:retireCurrentHdAtZoomOutComplete" in rc, "Build 0173 must retire current AVM at zoom-out completion"
               assert "onZoomInStart:activateArrivalHdAtZoomInStart" in rc, "Build 0173 arrival AVM must activate at zoom-in stage start"
