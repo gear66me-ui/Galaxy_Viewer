@@ -463,7 +463,7 @@ window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;
         state.blocked++;state.syntheticFetch++;
         state.lastBlocked={transport:'fetch-fake-url-204',url,at:performance.now()};
         // A local data: fake URL is used as the suppression target; never contact the tile origin.
-        return Promise.resolve(new Response(null,{status:204,statusText:'HiPS tile suppressed during Galaxy Viewer travel',headers:{'Cache-Control':'no-store','X-GV-HiPS-Suppressed':'0171','X-GV-Fake-URL':GV_FAKE_TILE_URL}}));
+        const suppressedResponse=()=>new Response(null,{status:204,statusText:'HiPS tile suppressed during Galaxy Viewer travel',headers:{'Cache-Control':'no-store','X-GV-HiPS-Suppressed':'0171','X-GV-Fake-URL':GV_FAKE_TILE_URL}});\n        return nativeFetch(GV_FAKE_TILE_URL).then(()=>suppressedResponse(),()=>suppressedResponse());
     }
     window.fetch=function(input,init){
         const url=getURL(input);
