@@ -8,7 +8,7 @@ import json
 VIEWER_VERSION = "RC-V1.0.0.9"
 # BUILD 0142 — demand-driven constellation and reticle polling. BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
 # BUILD 0167 — preserve AVM image orientation through the HD WCS and Aladin camera handoff.
-BUILD_NUMBER = "0170"
+BUILD_NUMBER = "0169"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
@@ -431,7 +431,7 @@ window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;
     if(window.__GV_TRAVEL_HIPS_FETCH_GATE__)return;
     const tilePath=/(?:^|\/)Norder\d+\/Dir\d+\/Npix\d+(?:\.[a-z0-9]+)?(?:[?#]|$)/i;
     const state=window.__GV_TRAVEL_HIPS_FETCH_GATE__={
-        blocked:0,syntheticFetch:0,queuedFetch:0,queuedXHR:0,queuedImages:0,leakedResources:0,
+        blocked:0,queuedFetch:0,queuedXHR:0,queuedImages:0,leakedResources:0,
         lastBlocked:null,lastResumeAt:0,suspendStartedAt:0,
         pendingFetch:new Set(),pendingXHR:new Set(),pendingImages:new Map(),
         isTileURL(url){return tilePath.test(String(url||''))}
@@ -456,14 +456,19 @@ window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;
         if(entry.signal?.aborted){entry.reject(abortError());return}
         nativeFetch(entry.input,entry.init).then(entry.resolve,entry.reject);
     }
-    function suppressFetch(url){
-        state.blocked++;state.syntheticFetch++;
-        state.lastBlocked={transport:'fetch-synthetic-204',url,at:performance.now()};
-        return Promise.resolve(new Response(null,{status:204,statusText:'HiPS tile suppressed during Galaxy Viewer travel',headers:{'Cache-Control':'no-store','X-GV-HiPS-Suppressed':'0170'}}));
+    function queueFetch(input,init,url){
+        return new Promise((resolve,reject)=>{
+            const signal=init?.signal||(typeof Request!=='undefined'&&input instanceof Request?input.signal:null);
+            if(signal?.aborted){reject(abortError());return}
+            const entry={input,init,resolve,reject,signal,abortHandler:null,url};
+            if(signal){entry.abortHandler=()=>{state.pendingFetch.delete(entry);settleFetch(entry);reject(abortError())};signal.addEventListener('abort',entry.abortHandler,{once:true})}
+            state.pendingFetch.add(entry);state.queuedFetch++;state.blocked++;
+            state.lastBlocked={transport:'fetch',url,at:performance.now()};
+        });
     }
     window.fetch=function(input,init){
         const url=getURL(input);
-        if(suspended()&&isTile(url))return suppressFetch(url);
+        if(suspended()&&isTile(url))return queueFetch(input,init,url);
         return nativeFetch(input,init);
     };
     if(nativeXhrOpen&&nativeXhrSend&&xhrProto){
@@ -541,7 +546,7 @@ window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;
     const changed=next=>{if(next){state.suspendStartedAt=performance.now();return}if(!suspended())flush()};
     installFlag('GV_NAV_HIPS_FETCH_SUSPENDED',fetchSuspended,next=>{fetchSuspended=next;changed(next)});
     installFlag('GV_NAV_HIPS_ZOOM_SUSPENDED',zoomSuspended,next=>{zoomSuspended=next;changed(next)});
-    state.diagnostics=()=>({build:"0170",suspended:suspended(),blocked:state.blocked,syntheticFetch:state.syntheticFetch,queuedFetch:state.pendingFetch.size,queuedXHR:state.pendingXHR.size,queuedImages:state.pendingImages.size,leakedResources:state.leakedResources,lastBlocked:state.lastBlocked,lastResumeAt:state.lastResumeAt});
+    state.diagnostics=()=>({suspended:suspended(),blocked:state.blocked,queuedFetch:state.pendingFetch.size,queuedXHR:state.pendingXHR.size,queuedImages:state.pendingImages.size,leakedResources:state.leakedResources,lastBlocked:state.lastBlocked,lastResumeAt:state.lastResumeAt});
     window.GV_NAV_HIPS_GATE_DIAGNOSTICS=state.diagnostics;
     if(typeof PerformanceObserver!=='undefined'){
         try{
