@@ -8,7 +8,7 @@ import json
 VIEWER_VERSION = "RC-V1.0.0.9"
 # BUILD 0142 — demand-driven constellation and reticle polling. BUILD 0031 THREE-ROW HUD TRIP PLANNER: minimal transient caches and hidden-page polling suspension; preserve 0027 zoom behavior.
 # BUILD 0167 — preserve AVM image orientation through the HD WCS and Aladin camera handoff.
-BUILD_NUMBER = "0172"
+BUILD_NUMBER = "0173"
 # Build 0022: canonical emission age computed from redshift with one flat-LCDM cosmic-age equation for every galaxy.
 # BUILD 0013 — live Earth-distance match constrained to current field of view
 # ROLLUP 1.0.0.3 / BUILD 0003 — Galaxy Search result simplification
@@ -90,8 +90,8 @@ display(Javascript(r"""
 (async()=>{
 'use strict';
 const VERSION='RC-V1.0.0.9';
-const GV200001_BUILD='0172'
-const GV_RUNTIME='0172';
+const GV200001_BUILD='0173'
+const GV_RUNTIME='0173';
 const fresh=url=>`${url}${url.includes('?')?'&':'?'}v=GV200001-${GV200001_BUILD}-RELEASE-1.0.0.9-BUILD-${GV200001_BUILD}`;
 const requestPortraitLock=()=>{try{const lock=screen?.orientation?.lock;if(typeof lock==='function')Promise.resolve(lock.call(screen.orientation,'portrait-primary')).catch(()=>{})}catch(_){}};
 requestPortraitLock();
@@ -3244,9 +3244,9 @@ function gvFlightStateAt(sec,{firstHomeTrip,startFov,finalFov,maxFov,startRotati
         let fov;if(t<=.50){const p=gvFlightNavigationSmootherstep(t/.50);fov=gvFlightLogLerp(startFov,maxFov,p)}else{const p=gvFlightNavigationSmootherstep((t-.50)/.50);fov=gvFlightLogLerp(maxFov,finalFov,p)}
         return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
     }
-    const translateStart=.264,translationComplete=.736;
+    const translateStart=.324,translationComplete=.676;
     let translation;if(t<=translateStart)translation=0;else if(t>=translationComplete)translation=1;else translation=gvFlightNavigationSmootherstep((t-translateStart)/(translationComplete-translateStart));
-    let fov;if(t<=.264){const p=gvFlightNavigationSmootherstep(t/.264);fov=gvFlightLogLerp(startFov,maxFov,p)}else if(t>=.736){const p=gvFlightNavigationSmootherstep((t-.736)/.264);fov=gvFlightLogLerp(maxFov,finalFov,p)}else{fov=maxFov}
+    let fov;if(t<=.44){const p=gvFlightNavigationSmootherstep(t/.44);fov=gvFlightLogLerp(startFov,maxFov,p)}else if(t>=.56){const p=gvFlightNavigationSmootherstep((t-.56)/.44);fov=gvFlightLogLerp(maxFov,finalFov,p)}else{fov=maxFov}
     return {translation,fov,rotation:startRotation+gvFlightNormalizeRotationDelta(targetRotation-startRotation)*translation};
 }
 let gvTravelConstellationLastName=null;
@@ -3449,7 +3449,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
         try{onArrival?.()}catch(error){console.error('GV 130H ARRIVAL CALLBACK FAILED',error)}
         return prepared;
     }
-    const durationSeconds=25,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.736,zoomOutCompleteThreshold=.264,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
+    const durationSeconds=25,duration=durationSeconds*1000,started=performance.now(),zoomInThreshold=.56,zoomOutCompleteThreshold=.44,tMinusEightThreshold=Math.max(0,1-8/durationSeconds);let lastSample=-1,destinationCenterApplied=false,birdseyeSettled=false,zoomInStarted=false,zoomOutCompleted=false,projectionSwitchedAtApex=false,tMinusEightStarted=false;
     await new Promise((resolve,reject)=>{
         const frame=now=>{try{if(!isCurrent())throw new Error('GV RANDOM NAVIGATION SUPERSEDED');
             const elapsedMs=now-started,t=Math.min(1,elapsedMs/duration),sample=Math.floor(elapsedMs/5);
@@ -3473,11 +3473,11 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
             }
             if(t<1&&sample!==lastSample){
                 const state=gvFlightStateAt(t*durationSeconds,{firstHomeTrip:false,startFov,finalFov,maxFov:40,startRotation,targetRotation});
-                if(t<zoomOutCompleteThreshold){
-                    // Phase 1 (0–30.5%): FOV is the only changing view property.
+                if(t<.324){
+                    // Phase 1 (0–32.4%): FOV is the only changing view property.
                     aladin.setFov(state.fov);
                     lastSample=sample;
-                }else if(t>=zoomInThreshold){
+                }else if(t>=.6772727272727272){
                     // Phase 3 (69.5–100%): settle the bird's-eye view once, then
                     // issue FOV commands only until arrival.
                     if(!birdseyeSettled){
@@ -3491,7 +3491,7 @@ async function gvFly130H(prepared,{firstHomeTrip=false,onZoomInStart=null,onZoom
                     aladin.setFov(state.fov);
                     lastSample=sample;
                 }else{
-                    // Phase 2 (30.5–69.5%): normal travel motion and app updates resume.
+                    // Phase 2 (32.4–67.6%): restore Build 0171 staggered travel choreography.
                     if(t<=zoomInThreshold&&state.fov>=GV_HD_RETIRE_FOV&&!gvHdTravelRetired){gvHdTravelRetired=true;applyDirectHdOpacity();console.info('GV HD RETIRED — 50° FOV THRESHOLD',{fov:Number(state.fov.toFixed(2))});}
                     aladin.setFov(state.fov);
                     if(state.translation>0&&state.translation<1){const pos=gvFlightGreatCirclePosition(ra0,dec0,ra1,dec1,state.translation);gvSetEarthPointerPosition(pos[0],pos[1],true);aladin.gotoRaDec(pos[0],pos[1]);coordinate?.update(pos[0],pos[1]);gvUpdateTravelConstellationAt(pos[0],pos[1]);if(now-gvEarthDistanceLastTravelSyncAt>=GV_EARTH_DISTANCE_TRAVEL_SYNC_INTERVAL_MS){gvEarthDistanceLastTravelSyncAt=now;gvSyncEarthDistanceToCenter(true)}}
@@ -4085,7 +4085,7 @@ async function showDestination(destination,{firstTrip=false,preloadedPrepared=nu
             return Promise.reject(error);
         }
     };
-    // BUILD 0172: stage the arrival AVM during zoom-out; activate it at zoom-in stage start.
+    // BUILD 0173: retain AVM handoff; restore Build 0171 staggered choreography with zoom-out/in each shortened by 1.5 seconds.
     let arrivalHdPreparationStarted=false,arrivalHdActivationRequested=false;
     const startArrivalHdPreparation=()=>{
         if(!isCurrent()||activeDestination!==presentationDestination)return;
