@@ -13,7 +13,7 @@ permissions:
 
 concurrency:
   group: galaxy-viewer-release-pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   validate-and-deploy:
