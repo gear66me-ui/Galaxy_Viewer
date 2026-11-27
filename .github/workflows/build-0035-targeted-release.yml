@@ -597,6 +597,14 @@ jobs:
               assert "GV CURRENT AVM IMAGE RETIRED AT ZOOM-OUT COMPLETE" in rc, "Build 0172 current AVM retirement diagnostic missing"
               assert "GV ARRIVAL AVM ACTIVATED AT ZOOM-IN STAGE START" in rc, "Build 0172 arrival AVM activation diagnostic missing"
               assert "zoomInThreshold=.736,zoomOutCompleteThreshold=.264" in rc, "Build 0172 must shorten each zoom phase by 1.5s"
+          elif build == "0173":
+              assert "let arrivalHdPreparationStarted=false,arrivalHdActivationRequested=false;" in rc, "Build 0173 AVM preparation/activation state missing"
+              assert "onTMinusEight:startArrivalHdPreparation" in rc, "Build 0173 must retain the T-minus-eight AVM preparation fallback"
+              assert "onZoomOutComplete:retireCurrentHdAtZoomOutComplete" in rc, "Build 0173 must retire current AVM at zoom-out completion"
+              assert "onZoomInStart:activateArrivalHdAtZoomInStart" in rc, "Build 0173 arrival AVM must activate at zoom-in stage start"
+              assert "GV CURRENT AVM IMAGE RETIRED AT ZOOM-OUT COMPLETE" in rc, "Build 0173 current AVM retirement diagnostic missing"
+              assert "GV ARRIVAL AVM ACTIVATED AT ZOOM-IN STAGE START" in rc, "Build 0173 arrival AVM activation diagnostic missing"
+              assert "zoomInThreshold=.56,zoomOutCompleteThreshold=.44" in rc, "Build 0173 must preserve 11s zoom-out and 11s zoom-in stages"
           else:
               assert "let arrivalHdPreparationStarted=false;" in rc, "Mid-trip AVM preparation must be idempotent"
               assert "onZoomOutComplete:startArrivalHdPreparation" in rc, "Standard trip must start AVM preparation at translation start"
