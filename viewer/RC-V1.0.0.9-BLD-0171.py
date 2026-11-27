@@ -463,7 +463,7 @@ window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;
         state.blocked++;state.syntheticFetch++;
         state.lastBlocked={transport:'fetch-fake-url-204',url,at:performance.now()};
         // A local data: fake URL is used as the suppression target; never contact the tile origin.
-        return nativeFetch(GV_FAKE_TILE_URL).then(response=>new Response(null,{status:204,statusText:'HiPS tile suppressed during Galaxy Viewer travel',headers:{'Cache-Control':'no-store','X-GV-HiPS-Suppressed':'0171','X-GV-Fake-URL':GV_FAKE_TILE_URL}}).catch(()=>new Response(null,{status:204,statusText:'HiPS tile suppressed',headers:{'X-GV-HiPS-Suppressed':'0171'}));
+        return Promise.resolve(new Response(null,{status:204,statusText:'HiPS tile suppressed during Galaxy Viewer travel',headers:{'Cache-Control':'no-store','X-GV-HiPS-Suppressed':'0171','X-GV-Fake-URL':GV_FAKE_TILE_URL}}));
     }
     window.fetch=function(input,init){
         const url=getURL(input);
@@ -472,7 +472,7 @@ window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;
     };
     if(nativeXhrOpen&&nativeXhrSend&&xhrProto){
         xhrProto.open=function(method,url){
-            this.__gvHiPSUrl=String(url||'');this.__gvHiPSQueued=null;
+            this.__gvHiPSUrl=String(url||'');this.__gvHiPSOriginalOpenArgs=Array.from(arguments);this.__gvHiPSQueued=null;
             if(suspended()&&isTile(this.__gvHiPSUrl)){
                 state.blocked++;
                 state.lastBlocked={transport:'xhr-fake-url',url:this.__gvHiPSUrl,at:performance.now()};
@@ -536,7 +536,7 @@ window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;
             state.pendingXHR.delete(entry);
             if(entry.xhr.__gvHiPSQueued!==entry)return;
             entry.xhr.__gvHiPSQueued=null;
-            try{entry.fake?nativeXhrOpen.call(entry.xhr,'GET',entry.xhr.__gvHiPSUrl,true):nativeXhrSend.apply(entry.xhr,entry.args);if(entry.fake)nativeXhrSend.call(entry.xhr)}catch(error){console.warn('GV HiPS queued XHR release failed',error)}
+            try{if(entry.fake){nativeXhrOpen.apply(entry.xhr,entry.xhr.__gvHiPSOriginalOpenArgs);nativeXhrSend.apply(entry.xhr,entry.args)}else nativeXhrSend.apply(entry.xhr,entry.args)}catch(error){console.warn('GV HiPS queued XHR release failed',error)}
         });
         images.forEach(([img,pending])=>{
             if(state.pendingImages.get(img)!==pending)return;
