@@ -54,6 +54,28 @@ jobs:
           print("REPAIRED BUILD 0162 PYTHON/JS SYNTAX AND 4s+6s+6s PHASE CONTRACT VERIFIED")
           PY
 
+      - name: Independently validate Build 0172 runtime syntax and zoom/AVM choreography
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import pathlib, re, subprocess
+          source = pathlib.Path('viewer/RC-V1.0.0.9-BLD-0172.py').read_text()
+          compile(source, 'RC-V1.0.0.9-BLD-0172.py', 'exec')
+          match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', source, re.S)
+          assert match, 'Build 0172 JavaScript extraction failed'
+          runtime = match.group(1)
+          assert 'zoomInThreshold=.736,zoomOutCompleteThreshold=.264' in runtime
+          assert 'const translateStart=.264,translationComplete=.736;' in runtime
+          assert 'onZoomOutComplete:retireCurrentHdAtZoomOutComplete' in runtime
+          assert 'onZoomInStart:activateArrivalHdAtZoomInStart' in runtime
+          assert 'GV CURRENT AVM IMAGE RETIRED AT ZOOM-OUT COMPLETE' in runtime
+          assert 'GV ARRIVAL AVM ACTIVATED AT ZOOM-IN STAGE START' in runtime
+          pathlib.Path('/tmp/gv-build-0172-runtime.js').write_text(runtime)
+          subprocess.run(['node','--check','/tmp/gv-build-0172-runtime.js'],check=True)
+          print('BUILD 0172 PYTHON/JS SYNTAX AND ZOOM/AVM TIMING CONTRACT VERIFIED')
+          PY
+
       - name: Validate active release pointer, Earth pointer travel persistence, font readiness, linear AVM-anchored Earth distance, and preserved release behavior
         shell: bash
         run: |
@@ -563,11 +585,19 @@ jobs:
           assert "layer.setCenterConstellation(null)" in rc, "Old reticle highlight must clear at travel start and boundary changes"
           assert "gvUpdateTravelConstellationAt(pos[0],pos[1])" in rc, "First-trip path must update the active travel constellation"
           assert "gvUpdateTravelConstellationAt(ra1,dec1,true)" in rc, "Standard travel must refresh the final path constellation"
-          assert "let arrivalHdPreparationStarted=false;" in rc, "Mid-trip AVM preparation must be idempotent"
           assert "const startArrivalHdPreparation=()=>" in rc, "Mid-trip AVM preparation callback missing"
-          assert "onZoomOutComplete:startArrivalHdPreparation" in rc, "Standard trip must start AVM preparation at translation start"
           assert "onTMinusEight:startArrivalHdPreparation" in rc, "T-minus-eight must remain a fallback/first-trip preparation trigger"
-          assert "GV MID-TRIP AVM IMAGE ACTIVATED" in rc, "Incoming AVM image must activate as soon as the staged layer loads"
+          if build == "0172":
+              assert "let arrivalHdPreparationStarted=false,arrivalHdActivationRequested=false;" in rc, "Build 0172 AVM preparation/activation state missing"
+              assert "onZoomOutComplete:retireCurrentHdAtZoomOutComplete" in rc, "Build 0172 must retire current AVM at zoom-out completion"
+              assert "onZoomInStart:activateArrivalHdAtZoomInStart" in rc, "Build 0172 arrival AVM must activate at zoom-in stage start"
+              assert "GV CURRENT AVM IMAGE RETIRED AT ZOOM-OUT COMPLETE" in rc, "Build 0172 current AVM retirement diagnostic missing"
+              assert "GV ARRIVAL AVM ACTIVATED AT ZOOM-IN STAGE START" in rc, "Build 0172 arrival AVM activation diagnostic missing"
+              assert "zoomInThreshold=.736,zoomOutCompleteThreshold=.264" in rc, "Build 0172 must shorten each zoom phase by 1.5s"
+          else:
+              assert "let arrivalHdPreparationStarted=false;" in rc, "Mid-trip AVM preparation must be idempotent"
+              assert "onZoomOutComplete:startArrivalHdPreparation" in rc, "Standard trip must start AVM preparation at translation start"
+              assert "GV MID-TRIP AVM IMAGE ACTIVATED" in rc, "Incoming AVM image must activate as soon as the staged layer loads"
           assert "function gvRestoreAfterForeground(reason='foreground')" in rc, "Bounded foreground AVM restoration retry missing"
           assert "GV FOREGROUND HD RESTORE REQUEST ACCEPTED" in rc, "Foreground AVM restore diagnostics missing"
           assert "window.addEventListener('pageshow'" in rc, "Page-show AVM and artwork recovery hook missing"
