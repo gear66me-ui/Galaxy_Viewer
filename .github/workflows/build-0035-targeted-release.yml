@@ -62,7 +62,7 @@ jobs:
           import pathlib, re, subprocess
           source = pathlib.Path('viewer/RC-V1.0.0.9-BLD-0173.py').read_text()
           compile(source, 'RC-V1.0.0.9-BLD-0173.py', 'exec')
-          match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', source, re.S)
+          match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', source, re.S)
           assert match, 'Build 0173 JavaScript extraction failed'
           runtime = match.group(1)
           assert 'zoomInThreshold=.56,zoomOutCompleteThreshold=.44' in runtime
