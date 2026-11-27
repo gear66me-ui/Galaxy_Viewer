@@ -86,7 +86,7 @@ jobs:
           import pathlib, re, subprocess
           source = pathlib.Path('viewer/RC-V1.0.0.9-BLD-0175.py').read_text()
           compile(source, 'RC-V1.0.0.9-BLD-0175.py', 'exec')
-          match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', source, re.S)
+          match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', source, re.S)
           assert match, 'Build 0175 JavaScript extraction failed'
           runtime = match.group(1)
           assert "const phase1Seconds=6.0,phase2Seconds=7.0,phase3Seconds=7.0" in runtime
