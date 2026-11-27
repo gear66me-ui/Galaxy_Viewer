@@ -54,26 +54,29 @@ jobs:
           print("REPAIRED BUILD 0162 PYTHON/JS SYNTAX AND 4s+6s+6s PHASE CONTRACT VERIFIED")
           PY
 
-      - name: Independently validate Build 0172 runtime syntax and zoom/AVM choreography
+      - name: Independently validate Build 0173 runtime syntax and restored 0171 staggered choreography
         shell: bash
         run: |
           set -euo pipefail
           python3 - <<'PY'
           import pathlib, re, subprocess
-          source = pathlib.Path('viewer/RC-V1.0.0.9-BLD-0172.py').read_text()
-          compile(source, 'RC-V1.0.0.9-BLD-0172.py', 'exec')
-          match = re.search(r'display\(Javascript\(r"""(.*?)"""\)\)', source, re.S)
-          assert match, 'Build 0172 JavaScript extraction failed'
+          source = pathlib.Path('viewer/RC-V1.0.0.9-BLD-0173.py').read_text()
+          compile(source, 'RC-V1.0.0.9-BLD-0173.py', 'exec')
+          match = re.search(r'display\\(Javascript\\(r"""(.*?)"""\\)\\)', source, re.S)
+          assert match, 'Build 0173 JavaScript extraction failed'
           runtime = match.group(1)
-          assert 'zoomInThreshold=.736,zoomOutCompleteThreshold=.264' in runtime
-          assert 'const translateStart=.264,translationComplete=.736;' in runtime
+          assert 'zoomInThreshold=.56,zoomOutCompleteThreshold=.44' in runtime
+          assert 'const translateStart=.324,translationComplete=.676;' in runtime
+          assert 'if(t<.324){' in runtime
+          assert '}else if(t>=.6772727272727272){' in runtime
+          assert 't<=.44' in runtime and 't>=.56' in runtime
           assert 'onZoomOutComplete:retireCurrentHdAtZoomOutComplete' in runtime
           assert 'onZoomInStart:activateArrivalHdAtZoomInStart' in runtime
           assert 'GV CURRENT AVM IMAGE RETIRED AT ZOOM-OUT COMPLETE' in runtime
           assert 'GV ARRIVAL AVM ACTIVATED AT ZOOM-IN STAGE START' in runtime
-          pathlib.Path('/tmp/gv-build-0172-runtime.js').write_text(runtime)
-          subprocess.run(['node','--check','/tmp/gv-build-0172-runtime.js'],check=True)
-          print('BUILD 0172 PYTHON/JS SYNTAX AND ZOOM/AVM TIMING CONTRACT VERIFIED')
+          pathlib.Path('/tmp/gv-build-0173-runtime.js').write_text(runtime)
+          subprocess.run(['node','--check','/tmp/gv-build-0173-runtime.js'],check=True)
+          print('BUILD 0173 PYTHON/JS SYNTAX; 11s ZOOM-OUT + ORIGINAL 0171 TRANSLATION WINDOW + 11s ZOOM-IN VERIFIED')
           PY
 
       - name: Validate active release pointer, Earth pointer travel persistence, font readiness, linear AVM-anchored Earth distance, and preserved release behavior
