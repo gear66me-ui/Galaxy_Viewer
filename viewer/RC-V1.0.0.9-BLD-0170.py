@@ -425,6 +425,7 @@ window.GV_NAV_BACKGROUND_SUSPENDED=false;
 window.GV_NAV_HIPS_FETCH_SUSPENDED=false;
 window.GV_NAV_HIPS_ZOOM_SUSPENDED=false;
 window.GV_NAV_HIPS_ZOOM_RESUME_TIMER=0;
+// BUILD 0170 EXPERIMENT: suspended HiPS fetch() calls return immediate synthetic 204 responses instead of queueing for a T-minus-eight burst.
 // BUILD 0031: gate only HiPS tile traffic independently of app polling.
 // Restrict the gate to standard HiPS tile paths; survey metadata and app APIs remain available.
 (function gvInstallTravelHiPSFetchGate(){
